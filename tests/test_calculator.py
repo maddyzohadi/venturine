@@ -20,7 +20,7 @@ from scripts.calculator import (
 class TestFinancialCalculator(unittest.TestCase):
 
     def test_engine_version(self):
-        self.assertEqual(ENGINE_VERSION, "0.2.0")
+        self.assertEqual(ENGINE_VERSION, "0.2.1")
 
     def test_revenue(self):
         self.assertEqual(revenue(100, "29.99"), Decimal("2999.00"))
@@ -202,6 +202,57 @@ class TestBreakEvenWithAcquisition(unittest.TestCase):
     def test_negative_cac_rejected(self):
         with self.assertRaises(ValueError):
             break_even_units_with_acquisition(1000, 100, 20, -5)
+
+
+class TestMinimumMagnitude(unittest.TestCase):
+    """Regression tests for the audit finding on tiny divisors (H2)."""
+
+    def test_zero_is_allowed(self):
+        self.assertEqual(number("0"), Decimal("0"))
+        self.assertEqual(number("0.000"), Decimal("0.000"))
+
+    def test_smallest_allowed_nonzero(self):
+        self.assertEqual(number("0.000000001"), Decimal("1E-9"))
+
+    def test_below_minimum_rejected(self):
+        for text in ("0.0000000001", "1E-10", "1E-999990", "1E-999999",
+                     "0.0000000000000000000000000001"):
+            with self.assertRaises(ValueError, msg=text):
+                number(text)
+
+    def test_tiny_divisors_raise_valueerror_not_overflow(self):
+        with self.assertRaises(ValueError):
+            cash_runway(15000, "1E-999999")
+        with self.assertRaises(ValueError):
+            customer_acquisition_cost(1, "1E-999990")
+        with self.assertRaises(ValueError):
+            subscription_ltv(30, "1E-999990")
+
+    def test_break_even_with_tiny_margin_fails_fast(self):
+        with self.assertRaises(ValueError):
+            break_even_units(1, "1E-999990", 0)
+        with self.assertRaises(ValueError):
+            break_even_units_with_acquisition(1, "1E-999990", 0, 0)
+
+    def test_break_even_result_cap(self):
+        # 1e12 / 1e-9 = 1e21 units, above the 1e18 cap.
+        with self.assertRaises(ValueError):
+            break_even_units("1E12", "1.000000001", 1)
+        with self.assertRaises(ValueError):
+            break_even_units_with_acquisition(
+                "1E12", "1.000000001", 0, "0.999999999"
+            )
+
+    def test_break_even_at_cap_boundary_is_allowed(self):
+        self.assertEqual(
+            break_even_units("1E9", "0.000000002", "0.000000001"),
+            1000000000 * 1000000000,
+        )
+
+    def test_nearly_equal_price_and_cost_is_bounded(self):
+        # Subtraction can still produce a tiny margin from valid inputs.
+        with self.assertRaises(ValueError):
+            break_even_units(1, "1.0000000000000000000000000002", 1)
 
 
 class TestInputBounds(unittest.TestCase):

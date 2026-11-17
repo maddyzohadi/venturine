@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+.venv/
+venv/
+
+# Secrets and local configuration. Never commit these.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Node tooling (CI installs the Claude Code CLI globally; nothing is vendored)
+node_modules/
+
+# Build output and logs
+dist/
+build/
+*.log
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Intentionally NOT ignored: .claude-plugin/, .github/, assets/, docs/,
+# skills/, agents/, scripts/, tests/. These are required plugin assets and source.

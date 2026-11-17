@@ -1,7 +1,7 @@
 
 """
 Venturine Financial Calculator
-Version: 0.2.0
+Version: 0.2.1
 
 Pure financial calculation functions.
 No network access, file writes, or automatic execution.
@@ -11,12 +11,18 @@ Requires only the Python standard library.
 from decimal import Decimal, InvalidOperation, ROUND_CEILING
 
 
-ENGINE_VERSION = "0.2.0"
+ENGINE_VERSION = "0.2.1"
 
 # Input bounds. Prevent resource exhaustion from absurd magnitudes/exponents
 # (e.g. "1E999999999") while allowing any realistic business figure.
 MAX_INPUT_CHARS = 64
 MAX_ABS_VALUE = Decimal("1000000000000")  # 1e12
+# Nonzero inputs must be at least this large in absolute value. Without a
+# floor, a tiny divisor (e.g. "1E-999990") makes a quotient with a million
+# digits, which costs tens of seconds of CPU or overflows the Decimal context.
+MIN_NONZERO_ABS_VALUE = Decimal("0.000000001")  # 1e-9
+# Break-even results above this many units are rejected as implausible.
+MAX_BREAK_EVEN_UNITS = Decimal("1000000000000000000")  # 1e18
 
 
 def number(value):
@@ -39,9 +45,16 @@ def number(value):
         raise ValueError("Inputs must be finite numbers.")
 
     # copy_abs() avoids context-rounding Overflow on huge exponents.
-    if result.copy_abs() > MAX_ABS_VALUE:
+    magnitude = result.copy_abs()
+    if magnitude > MAX_ABS_VALUE:
         raise ValueError(
             f"Inputs cannot exceed {MAX_ABS_VALUE:,} in absolute value."
+        )
+
+    if magnitude != 0 and magnitude < MIN_NONZERO_ABS_VALUE:
+        raise ValueError(
+            "Nonzero inputs cannot be smaller than "
+            f"{MIN_NONZERO_ABS_VALUE:f} in absolute value."
         )
 
     return result
@@ -90,6 +103,19 @@ def contribution_margin(unit_price, variable_cost):
     return price - cost
 
 
+def _ceil_units(fixed, margin):
+    """Round fixed / margin up to whole units, rejecting absurd results."""
+    quotient = fixed / margin
+
+    if quotient > MAX_BREAK_EVEN_UNITS:
+        raise ValueError(
+            "Break-even exceeds 1,000,000,000,000,000,000 units; "
+            "check the inputs."
+        )
+
+    return int(quotient.to_integral_value(rounding=ROUND_CEILING))
+
+
 def break_even_units(fixed_costs, unit_price, variable_cost):
     """Calculate whole units required to break even."""
     fixed = require_nonnegative(fixed_costs, "Fixed costs")
@@ -100,9 +126,7 @@ def break_even_units(fixed_costs, unit_price, variable_cost):
             "Break-even requires positive contribution margin."
         )
 
-    return int(
-        (fixed / margin).to_integral_value(rounding=ROUND_CEILING)
-    )
+    return _ceil_units(fixed, margin)
 
 
 def break_even_units_with_acquisition(
@@ -137,9 +161,7 @@ def break_even_units_with_acquisition(
         )
 
     return {
-        "break_even_units": int(
-            (fixed / margin).to_integral_value(rounding=ROUND_CEILING)
-        ),
+        "break_even_units": _ceil_units(fixed, margin),
         "loaded_contribution_per_unit": margin,
         "acquisition_included": True,
         "assumes_one_purchase_per_customer": True,

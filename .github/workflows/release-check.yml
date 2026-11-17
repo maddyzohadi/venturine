@@ -1,0 +1,64 @@
+name: Release Check
+
+# Validates a version tag. This workflow never publishes a release,
+# uploads artifacts, or writes to the repository.
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-check-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-check:
+    name: Validate release tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.13"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+
+      - name: Check tag matches plugin version and changelog
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          version=$(python3 -c 'import json; print(json.load(open(".claude-plugin/plugin.json"))["version"])')
+          echo "plugin.json version: $version"
+          if [ "$REF_TYPE" = "tag" ]; then
+            if [ "$REF_NAME" != "v$version" ]; then
+              echo "Tag $REF_NAME does not match plugin version v$version" >&2
+              exit 1
+            fi
+          fi
+          grep -q "^## \[$version\]" CHANGELOG.md
+          grep -q "^\[$version\]:" CHANGELOG.md
+          test -f "docs/release-notes/v$version.md"
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Install Claude Code (pinned version)
+        run: npm install --global @anthropic-ai/claude-code@2.1.153
+
+      - name: Validate Venturine
+        run: claude plugin validate . --strict

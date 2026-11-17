@@ -1,0 +1,31 @@
+name: Feature request
+description: Suggest a skill, agent, calculator operation or documentation improvement.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the founder task you could not do or could not do reliably.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: How would we know it works?
+      description: Acceptance criteria and tests, if you have ideas. For calculator changes, include hand-computed expected values.
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Project rules
+      options:
+        - label: This does not require giving any agent shell (Bash) access.
+          required: true
+        - label: This does not require third-party dependencies in the calculator.
+          required: true

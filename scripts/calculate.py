@@ -1,9 +1,13 @@
 
 """
-Venturine calculation interface, v0.2.0.
+Venturine calculation interface, v0.2.1.
 
-Usage:
-python -m scripts.calculate revenue 100 29.99
+Usage (run by file path):
+python3 scripts/calculate.py revenue 100 29.99
+
+Always run this file by its path. Running it as "python -m scripts.calculate"
+puts the current directory first on the module path, so a "scripts" package
+in an unrelated project would run instead of this one.
 
 Accepts only explicitly supported financial operations.
 No network access, file writes, or automatic execution.
@@ -13,18 +17,35 @@ import argparse
 import json
 from decimal import Decimal
 
-from scripts.calculator import (
-    ENGINE_VERSION,
-    revenue,
-    gross_margin,
-    contribution_margin,
-    break_even_units,
-    break_even_units_with_acquisition,
-    operating_profit,
-    customer_acquisition_cost,
-    cash_runway,
-    subscription_ltv,
-)
+if __package__:
+    # Imported as part of the "scripts" package (tests, "python -m").
+    from .calculator import (
+        ENGINE_VERSION,
+        revenue,
+        gross_margin,
+        contribution_margin,
+        break_even_units,
+        break_even_units_with_acquisition,
+        operating_profit,
+        customer_acquisition_cost,
+        cash_runway,
+        subscription_ltv,
+    )
+else:
+    # Run by file path: Python puts this file's own directory first on the
+    # module path, ahead of the current directory, so this cannot be shadowed.
+    from calculator import (
+        ENGINE_VERSION,
+        revenue,
+        gross_margin,
+        contribution_margin,
+        break_even_units,
+        break_even_units_with_acquisition,
+        operating_profit,
+        customer_acquisition_cost,
+        cash_runway,
+        subscription_ltv,
+    )
 
 
 OPERATIONS = {
@@ -113,20 +134,22 @@ def main():
 
     try:
         result = function(*args.values)
-    except (ValueError, TypeError) as error:
-        parser.error(str(error))
+        output = {
+            "engine": "venturine",
+            "version": ENGINE_VERSION,
+            "operation": args.operation,
+            "inputs": args.values,
+            "result": serialize(result),
+            "status": "calculated",
+        }
+        output.update(OPERATION_NOTES.get(args.operation, {}))
+        text = json.dumps(output, indent=2)
+    except (ValueError, TypeError, ArithmeticError) as error:
+        # ArithmeticError covers decimal.Overflow and InvalidOperation, which
+        # are not ValueErrors and previously escaped as tracebacks.
+        parser.error(str(error) or error.__class__.__name__)
 
-    output = {
-        "engine": "venturine",
-        "version": ENGINE_VERSION,
-        "operation": args.operation,
-        "inputs": args.values,
-        "result": serialize(result),
-        "status": "calculated",
-    }
-    output.update(OPERATION_NOTES.get(args.operation, {}))
-
-    print(json.dumps(output, indent=2))
+    print(text)
 
 
 if __name__ == "__main__":

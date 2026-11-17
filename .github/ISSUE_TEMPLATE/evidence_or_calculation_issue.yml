@@ -1,0 +1,47 @@
+name: Evidence or calculation issue
+description: A finding is unsupported, a source is wrong, or a number does not reproduce.
+labels: ["evidence"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for wrong, unsupported or non-reproducible analysis. Use hypothetical data. Do not paste real confidential figures.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of problem is it?
+      options:
+        - A claim has no source or an invented source
+        - A source does not support the claim
+        - A claim is classified with the wrong evidence class
+        - A calculation result is wrong
+        - A calculation omits or double counts a cost
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: claim
+    attributes:
+      label: The claim or result
+      description: Quote the claim or result and say which skill or agent produced it.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should it be, and why?
+      description: Link a primary source, or show the arithmetic you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Calculator command and output (if applicable)
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: Venturine version
+      placeholder: "0.2.1"
+    validations:
+      required: true
