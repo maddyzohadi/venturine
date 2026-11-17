@@ -273,22 +273,24 @@ For every scenario, report:
 
 Do not invent probabilities.
 
+
 ## 15. Calculation Engine
 
 Venturine includes a Python financial calculator.
 
 Engine location:
-`scripts/calculator.py`
+`${CLAUDE_PLUGIN_ROOT}/scripts/calculator.py`
 
 Command-line interface:
-`scripts/calculate.py`
+`${CLAUDE_PLUGIN_ROOT}/scripts/calculate.py`
 
 ### Execution Rules
 
 - Use the calculator only when the user requests a financial calculation.
 - Run commands only with the user's authorization and the required Claude Code permissions.
-- Run the calculator from the Venturine repository root.
-- Use only the documented operations below.
+- Run the commands exactly as documented below.
+- `${CLAUDE_PLUGIN_ROOT}` identifies the installed Venturine plugin directory.
+- `PYTHONPATH` makes the calculator module importable from other working directories.
 - Do not install dependencies or execute unrelated scripts.
 - Do not use shell pipelines, command substitution, or redirection.
 - Never pass secrets or confidential personal data as command arguments.
@@ -297,25 +299,25 @@ Command-line interface:
 ### Supported Commands
 
 Revenue:
-`python -m scripts.calculate revenue 100 29.99`
+`PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m scripts.calculate revenue 100 29.99`
 
 Gross margin:
-`python -m scripts.calculate gross-margin 10000 4000`
+`PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m scripts.calculate gross-margin 10000 4000`
 
 Contribution margin:
-`python -m scripts.calculate contribution-margin 75 25`
+`PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m scripts.calculate contribution-margin 75 25`
 
 Break-even units:
-`python -m scripts.calculate break-even 1000 75 25`
+`PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m scripts.calculate break-even 1000 75 25`
 
 Customer acquisition cost:
-`python -m scripts.calculate cac 1200 30`
+`PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m scripts.calculate cac 1200 30`
 
 Cash runway:
-`python -m scripts.calculate runway 15000 3000`
+`PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m scripts.calculate runway 15000 3000`
 
 Simplified subscription LTV:
-`python -m scripts.calculate subscription-ltv 30 0.05`
+`PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m scripts.calculate subscription-ltv 30 0.05`
 
 All numeric arguments in these examples are illustrative.
 
