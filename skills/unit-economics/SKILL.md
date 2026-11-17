@@ -276,21 +276,76 @@ Do not invent probabilities.
 
 ## 15. Calculation Engine
 
-When a validated Venturine calculation engine is available:
+Venturine includes a Python financial calculator.
 
-- Use the engine for numerical computation.
-- Provide the input values and calculation results.
-- Preserve calculation metadata and engine version.
-- Do not claim results were engine-validated unless the engine was actually executed.
+Engine location:
+`scripts/calculator.py`
 
-If no engine is available:
+Command-line interface:
+`scripts/calculate.py`
 
-- Show the formulas and inputs.
-- Identify estimates and unresolved values.
-- Explain that the calculations have not been independently validated.
-- Do not imply the engine was used.
+### Execution Rules
 
-Never create fictional engine receipts or test results.
+- Use the calculator only when the user requests a financial calculation.
+- Run commands only with the user's authorization and the required Claude Code permissions.
+- Run the calculator from the Venturine repository root.
+- Use only the documented operations below.
+- Do not install dependencies or execute unrelated scripts.
+- Do not use shell pipelines, command substitution, or redirection.
+- Never pass secrets or confidential personal data as command arguments.
+- Do not claim the calculator was executed unless a tool actually ran it successfully.
+
+### Supported Commands
+
+Revenue:
+`python -m scripts.calculate revenue 100 29.99`
+
+Gross margin:
+`python -m scripts.calculate gross-margin 10000 4000`
+
+Contribution margin:
+`python -m scripts.calculate contribution-margin 75 25`
+
+Break-even units:
+`python -m scripts.calculate break-even 1000 75 25`
+
+Customer acquisition cost:
+`python -m scripts.calculate cac 1200 30`
+
+Cash runway:
+`python -m scripts.calculate runway 15000 3000`
+
+Simplified subscription LTV:
+`python -m scripts.calculate subscription-ltv 30 0.05`
+
+All numeric arguments in these examples are illustrative.
+
+### Result Handling
+
+When execution succeeds:
+
+1. Read the JSON output.
+2. Confirm the operation and inputs match the request.
+3. Report the returned calculation result.
+4. Explain the formula and units.
+5. Identify founder-provided and hypothetical inputs.
+6. State material assumptions and limitations.
+
+Do not treat a successful arithmetic calculation as verification of its input data.
+
+When execution fails or permission is unavailable:
+
+- Explain that the calculation was not executed.
+- Do not fabricate JSON output or an engine receipt.
+- Show the applicable formula and documented inputs.
+- Clearly label any independently derived calculation.
+
+### Security
+
+This interface does not require network access, external packages, or automatic hooks.
+
+Do not bypass Claude Code permissions or execute commands beyond the approved calculator interface.
+
 
 ## 16. Financial Evidence Review
 
@@ -376,7 +431,8 @@ Explain the conclusion without overstating certainty.
 
 ## 18. Safety and Privacy
 
-- Do not execute shell commands or scripts directly.
+- - Do not execute arbitrary shell commands or scripts.
+- The documented Venturine financial calculator is the only permitted script exception, subject to explicit user authorization and Claude Code tool permissions.
 - Do not install software or dependencies.
 - Do not modify or delete user files.
 - Do not access secrets, API keys, or environment variables.
