@@ -1,7 +1,7 @@
 ---
 name: competitor-intelligence
 description: Analyze direct and indirect competitors, pricing, market positioning, differentiation, and competitive risks using verifiable evidence. Use when founders need a structured competitive landscape or positioning analysis.
-disable-model-invocation: true
+
 ---
 
 # Venturine Competitor Intelligence
