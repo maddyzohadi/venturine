@@ -1,0 +1,40 @@
+
+name: Validate Venturine Plugin
+
+on:
+  push:
+    paths:
+      - ".claude-plugin/**"
+      - "skills/**"
+      - "agents/**"
+      - ".github/workflows/validate-plugin.yml"
+  pull_request:
+    paths:
+      - ".claude-plugin/**"
+      - "skills/**"
+      - "agents/**"
+      - ".github/workflows/validate-plugin.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate Plugin and Marketplace
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Claude Code
+        run: npm install --global @anthropic-ai/claude-code
+
+      - name: Validate Venturine
+        run: claude plugin validate . --strict
