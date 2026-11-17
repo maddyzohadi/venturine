@@ -1,4 +1,3 @@
-
 ---
 name: idea-validator
 description: Evaluate startup and business ideas using evidence, customer demand, feasibility, competition, and risk analysis. Use when a founder wants to validate a business idea before investing money or time.
