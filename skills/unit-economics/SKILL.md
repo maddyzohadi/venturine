@@ -1,4 +1,3 @@
-
 ---
 name: unit-economics
 description: Analyze business profitability, customer acquisition costs, lifetime value, contribution margins, break-even points, and financial scenarios using documented assumptions and reproducible calculations.
