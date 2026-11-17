@@ -1,4 +1,3 @@
-
 ---
 name: research-lead
 description: Researches markets, customer demand, competitors, and industry evidence for Venturine business analyses.
