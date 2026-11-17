@@ -1,7 +1,6 @@
 ---
 name: market-intelligence
 description: Research markets, customer demand, market size, industry trends, growth opportunities, and evidence-backed TAM/SAM/SOM estimates for founders.
-
 ---
 
 # Venturine Market Intelligence
