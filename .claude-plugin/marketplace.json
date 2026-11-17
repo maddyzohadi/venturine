@@ -1,0 +1,15 @@
+
+{
+  "name": "venturine-marketplace",
+  "description": "Official marketplace for Venturine AI skills.",
+  "owner": {
+    "name": "Venturine"
+  },
+  "plugins": [
+    {
+      "name": "venturine",
+      "source": "./",
+      "description": "Evidence-backed business research and decision support for founders."
+    }
+  ]
+}
