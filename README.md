@@ -41,6 +41,24 @@ Then install the plugin:
 The GitHub repository must be accessible to the installing user.
 
 
+## Financial Calculator
+
+The Python calculator (engine v0.2.0) uses only the standard library, with no network access or file writes. It supports:
+
+- `revenue`
+- `gross-margin`
+- `contribution-margin`
+- `break-even` (operating break-even; excludes customer acquisition, and its output says so)
+- `break-even-loaded` (includes per-customer acquisition cost; assumes one purchase per customer)
+- `operating-profit` (four mutually exclusive cost categories: COGS, variable operating, acquisition, fixed operating)
+- `cac`
+- `runway`
+- `subscription-ltv`
+
+Acquisition spending must be counted exactly once: either as a fixed cost with a CAC of 0, or as a per-customer CAC with the fixed costs excluding it, never both. Inputs are bounded (at most 64 characters, absolute value at most 1,000,000,000,000) and invalid values are rejected with clear errors.
+
+Run the tests with `python3 -m unittest discover -s tests`.
+
 ## Requirements
 
 - Claude Code with plugin support

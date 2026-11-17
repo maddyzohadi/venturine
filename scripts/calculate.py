@@ -1,6 +1,6 @@
 
 """
-Venturine calculation interface, v0.1.0.
+Venturine calculation interface, v0.2.0.
 
 Usage:
 python -m scripts.calculate revenue 100 29.99
@@ -19,6 +19,8 @@ from scripts.calculator import (
     gross_margin,
     contribution_margin,
     break_even_units,
+    break_even_units_with_acquisition,
+    operating_profit,
     customer_acquisition_cost,
     cash_runway,
     subscription_ltv,
@@ -30,10 +32,42 @@ OPERATIONS = {
     "gross-margin": (gross_margin, 2),
     "contribution-margin": (contribution_margin, 2),
     "break-even": (break_even_units, 3),
+    "break-even-loaded": (break_even_units_with_acquisition, 4),
+    "operating-profit": (operating_profit, 5),
     "cac": (customer_acquisition_cost, 2),
     "runway": (cash_runway, 2),
     "subscription-ltv": (subscription_ltv, 2),
 }
+
+
+# Extra, non-breaking fields merged into the JSON output of an operation.
+OPERATION_NOTES = {
+    "break-even": {
+        "acquisition_included": False,
+        "warning": (
+            "Operating break-even only. Customer acquisition costs are "
+            "not included; use break-even-loaded when acquisition "
+            "spending is relevant."
+        ),
+    },
+}
+
+# Positional input order, for documentation in --help.
+USAGE_NOTES = """\
+input order:
+  revenue            UNITS PRICE
+  gross-margin       REVENUE COGS
+  contribution-margin PRICE VARIABLE_COST
+  break-even         FIXED PRICE VARIABLE_COST   (excludes acquisition)
+  break-even-loaded  FIXED_EXCL_ACQUISITION PRICE VARIABLE_COST CAC_PER_CUSTOMER
+                     (one purchase per customer; do not count acquisition
+                      in both FIXED and CAC)
+  operating-profit   REVENUE COGS VARIABLE_OPERATING ACQUISITION FIXED_OPERATING
+                     (categories are mutually exclusive; enter 0 explicitly)
+  cac                SPEND NEW_CUSTOMERS
+  runway             CASH MONTHLY_NET_BURN
+  subscription-ltv   MONTHLY_CONTRIBUTION MONTHLY_CHURN_FRACTION
+"""
 
 
 def serialize(value):
@@ -51,7 +85,9 @@ def serialize(value):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Venturine financial calculator"
+        description="Venturine financial calculator",
+        epilog=USAGE_NOTES,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
     parser.add_argument(
@@ -88,6 +124,7 @@ def main():
         "result": serialize(result),
         "status": "calculated",
     }
+    output.update(OPERATION_NOTES.get(args.operation, {}))
 
     print(json.dumps(output, indent=2))
 
