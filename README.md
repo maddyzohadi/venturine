@@ -27,15 +27,19 @@ Venturine helps founders, entrepreneurs, and independent business builders evalu
 - `financial-analyst`
 - `evidence-auditor`
 
+
 ## Installation
 
-For compatible Claude Code versions, install Venturine from its marketplace:
+In Claude Code, first add the Venturine marketplace:
 
-```text
-/plugin install venturine --marketplace maddyzohadi/venturine
-```
+`/plugin marketplace add maddyzohadi/venturine`
 
-The repository must be accessible to the installing user.
+Then install the plugin:
+
+`/plugin install venturine@venturine-marketplace`
+
+The GitHub repository must be accessible to the installing user.
+
 
 ## Requirements
 
