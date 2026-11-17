@@ -1,4 +1,3 @@
-
 ---
 name: financial-analyst
 description: Evaluates business economics, startup costs, pricing assumptions, profitability, cash runway, and financial scenarios for Venturine.
