@@ -225,12 +225,39 @@ Distinguish:
 
 These are not interchangeable.
 
+### Break-even with Customer Acquisition
+
+The plain formula above is operating break-even that excludes customer acquisition. When paid or otherwise attributable acquisition costs are relevant, it overstates profitability and understates the units required.
+
+Loaded Contribution per Unit =
+Unit Price - Variable Cost per Unit - CAC per Customer
+
+Loaded Break-even Units =
+Fixed Costs (excluding acquisition) / Loaded Contribution per Unit
+
+Rules:
+- If acquisition spending is relevant, use the loaded calculation (`break-even-loaded`), not the plain one.
+- If CAC is relevant but unknown, report break-even as INCOMPLETE. Do not present the plain figure as the answer.
+- Assumes one purchase per customer. For repeat purchases, use a documented contribution schedule instead.
+- Only calculate when loaded contribution per unit is positive. If CAC consumes the unit margin, report that break-even is not reachable at those inputs.
+
+Double-counting safeguard: acquisition spending enters the model exactly once.
+- A fixed acquisition budget (for example a monthly ad budget) goes in fixed costs, with CAC per customer set to 0.
+- Or it is converted to a per-customer CAC and left out of fixed costs.
+- Never include the same spending in both. The fixed-costs input of `break-even-loaded` must exclude acquisition.
+
 ## 12. Operating Profit
 
 Operating Profit =
-Revenue - Cost of Goods Sold - Operating Expenses
+Revenue - Cost of Goods Sold - Variable Operating Costs - Acquisition Costs - Fixed Operating Costs
 
-Prevent double-counting costs already included in cost of goods sold.
+The calculator uses four mutually exclusive cost categories. Each cost belongs in exactly one:
+- Cost of goods sold: direct cost of goods or services sold.
+- Variable operating costs: other costs that scale with volume (payment fees, support, fulfillment) and are not already in cost of goods sold.
+- Acquisition costs: total customer acquisition spending for the period, whether budgeted or CAC x new customers. Enter it once.
+- Fixed operating costs: recurring costs that do not scale with volume, excluding acquisition.
+
+Prevent double-counting costs already included in cost of goods sold, and never include acquisition spending in fixed operating costs when it is entered as acquisition costs.
 
 Distinguish operating profit from net income and cash flow.
 
@@ -306,8 +333,18 @@ Gross margin:
 Contribution margin:
 `PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m scripts.calculate contribution-margin 75 25`
 
-Break-even units:
+Break-even units (operating break-even, excludes customer acquisition; the output states `acquisition_included: false`):
 `PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m scripts.calculate break-even 1000 75 25`
+
+Break-even units including customer acquisition:
+`PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m scripts.calculate break-even-loaded 1000 75 25 10`
+
+Input order: `FIXED_COSTS_EXCLUDING_ACQUISITION UNIT_PRICE VARIABLE_COST CAC_PER_CUSTOMER`. Assumes one purchase per customer. Do not count acquisition spending in both the fixed costs and the CAC. The result reports `loaded_contribution_per_unit` and the assumption flags. It fails when CAC leaves no positive contribution.
+
+Operating profit:
+`PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m scripts.calculate operating-profit 14900 0 1937 6000 1500`
+
+Input order: `REVENUE COGS VARIABLE_OPERATING ACQUISITION FIXED_OPERATING`. All five are required, so pass 0 explicitly for an empty category. The categories are mutually exclusive: enter each cost once. The result lists each category, total costs, operating profit, operating margin (null when revenue is zero), and exclusions (taxes, interest, capital expenditures, and owner compensation unless entered as fixed operating costs).
 
 Customer acquisition cost:
 `PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m scripts.calculate cac 1200 30`
@@ -319,6 +356,8 @@ Simplified subscription LTV:
 `PYTHONPATH="${CLAUDE_PLUGIN_ROOT}" python3 -m scripts.calculate subscription-ltv 30 0.05`
 
 All numeric arguments in these examples are illustrative.
+
+Input bounds: each argument must be a plain number of at most 64 characters with an absolute value of at most 1,000,000,000,000. Out-of-range or malformed inputs are rejected with an error.
 
 ### Result Handling
 
