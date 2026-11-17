@@ -1,7 +1,6 @@
 ---
 name: idea-validator
 description: Evaluate startup and business ideas using evidence, customer demand, feasibility, competition, and risk analysis. Use when a founder wants to validate a business idea before investing money or time.
-disable-model-invocation: true
 ---
 
 # Idea Validator
@@ -15,6 +14,7 @@ Evaluate business ideas and help founders make informed go/no-go decisions witho
 ## Analysis Process
 
 ### 1. Understand the Idea
+
 Identify:
 - Product or service
 - Target customers
@@ -27,6 +27,7 @@ Identify:
 Ask only for missing information that materially affects the evaluation. Otherwise, state assumptions clearly.
 
 ### 2. Customer Problem
+
 Assess:
 - Problem severity and frequency
 - Existing solutions
@@ -34,6 +35,7 @@ Assess:
 - Evidence of willingness to pay
 
 ### 3. Market Demand
+
 - Identify observable demand signals.
 - Use verifiable sources when available.
 - Do not fabricate market statistics.
@@ -41,6 +43,7 @@ Assess:
 - Never treat search volume alone as proof of demand.
 
 ### 4. Competitive Landscape
+
 Identify direct and indirect alternatives.
 
 Compare:
@@ -51,6 +54,7 @@ Compare:
 - Differentiation
 
 ### 5. Feasibility
+
 Evaluate:
 - Startup capital requirements
 - Technical complexity
@@ -60,11 +64,13 @@ Evaluate:
 - Time and resource constraints
 
 ### 6. Key Risks
+
 Identify the assumptions most likely to cause failure.
 
 For each major risk, recommend a practical validation experiment.
 
 ### 7. Evidence Review
+
 For every significant factual claim:
 - Record its source when available.
 - Separate facts from estimates.
@@ -72,7 +78,16 @@ For every significant factual claim:
 - Do not invent citations.
 - Do not claim independent verification unless performed.
 
+Before presenting a final recommendation:
+- Examine original sources when tools permit.
+- Distinguish verified sources from search summaries.
+- Identify evidence that contradicts the initial assessment.
+- Correct or downgrade unsupported claims.
+- Request an independent evidence audit when available.
+- Do not claim an audit occurred unless it actually ran.
+
 ### 8. Decision
+
 Provide one of:
 - PROCEED TO VALIDATION
 - REVISE THE CONCEPT
