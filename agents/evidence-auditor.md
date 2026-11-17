@@ -1,4 +1,3 @@
-
 ---
 name: evidence-auditor
 description: Independently audits business claims, citations, assumptions, and calculations in Venturine analyses.
