@@ -800,6 +800,82 @@ class TestIdeaValidatorAuditConditions(unittest.TestCase):
                              text, name)
 
 
+class TestVendorPublishedPriceClassification(unittest.TestCase):
+    """A vendor's observed list price is separate from claims about it."""
+
+    FILES = [
+        ROOT / "skills" / "competitor-intelligence" / "SKILL.md",
+        ROOT / "agents" / "research-lead.md",
+        ROOT / "agents" / "evidence-auditor.md",
+    ]
+
+    def setUp(self):
+        self.doc = read(ROOT / "docs" / "evidence-terminology.md")
+        self.section = self.doc.split("## Vendor-published prices", 1)[
+            1].split("## When the idea-validator", 1)[0]
+
+    def table_rows(self):
+        rows = {}
+        for line in self.section.splitlines():
+            match = re.match(r"\|\s*([^|]+?)\s*\|\s*`?([A-Z_]+)`?", line)
+            if match and match.group(2) in LABELS:
+                rows[match.group(1)] = match.group(2)
+        return rows
+
+    def test_reference_section_exists_and_uses_only_defined_labels(self):
+        rows = self.table_rows()
+        self.assertEqual(len(rows), 4, rows)
+        for label in rows.values():
+            self.assertIn(label, LABELS)
+
+    def label_for(self, prefix):
+        matches = [v for k, v in self.table_rows().items()
+                   if k.startswith(prefix)]
+        self.assertEqual(len(matches), 1, prefix)
+        return matches[0]
+
+    def test_each_source_type_gets_one_specific_label(self):
+        self.assertEqual(self.label_for("The vendor's own page"), "VERIFIED")
+        self.assertEqual(
+            self.label_for("A search snippet"), "PARTIALLY_SUPPORTED")
+        self.assertEqual(self.label_for("Text"), "FOUNDER_PROVIDED")
+        self.assertEqual(self.label_for("No price found"), "UNKNOWN")
+
+    def test_observed_price_is_scoped_and_requires_provenance(self):
+        for needle in ("that the vendor published this list price on that "
+                       "date", "billing period", "URL", "date you accessed"):
+            self.assertIn(needle, self.section)
+
+    def test_claims_about_the_price_are_separate_and_unverified(self):
+        for needle in ("Claims about the price are separate claims",
+                       "cheapest or the market rate", "actually pay",
+                       "equivalent in scope", "still current",
+                       "trusted by thousands", "separate ledger rows"):
+            self.assertIn(needle, self.section)
+        self.assertRegex(self.section, r"`UNVERIFIED` without it")
+
+    def test_hostile_page_lowers_confidence_without_calling_price_false(self):
+        self.assertRegex(self.section, r"lower your confidence")
+        self.assertRegex(self.section, r"do not call its price false")
+
+    def test_blanket_marketing_page_rule_no_longer_contradicts_it(self):
+        self.assertNotIn("a competitor's own marketing page, or",
+                         self.doc)
+        self.assertIn("does not verify what the vendor says about itself",
+                      self.doc)
+
+    def test_vendor_price_wording_is_the_same_in_every_file_that_uses_it(
+            self):
+        for path in self.FILES:
+            text = read(path)
+            with self.subTest(file=path.name):
+                self.assertIn("vendor-published list price", text)
+                self.assertIn("only when you examined the vendor's own page",
+                              text)
+                self.assertIn('"Vendor-published prices"', text)
+                self.assertIn("separate ledger rows", text)
+
+
 class TestScenarioFindings(unittest.TestCase):
     """Defects found by running each skill and agent on hypothetical
     scenarios (see docs/scenario-testing.md)."""

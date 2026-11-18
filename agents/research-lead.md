@@ -58,6 +58,7 @@ Do not treat estimates, forecasts, or opinions as established facts.
 - Check source dates and geographic relevance.
 - Look for evidence that contradicts the leading hypothesis.
 - Do not confuse competitor marketing claims with independently verified results.
+- Treat a listed price as a vendor-published list price: label it `VERIFIED` only when you examined the vendor's own page, and keep claims about the price (cheapest, what customers actually pay, equivalence to another plan, still current) in separate ledger rows labeled on their own evidence. See "Vendor-published prices" in `docs/evidence-terminology.md`.
 - Identify when available data is insufficient for a conclusion.
 
 ## Output Structure

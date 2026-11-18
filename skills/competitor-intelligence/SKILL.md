@@ -106,6 +106,7 @@ When verifiable pricing information exists:
 - Separate starting prices from enterprise or custom pricing.
 - Note usage limits or relevant plan restrictions.
 - Record when pricing was checked.
+- Treat a listed price as a vendor-published list price: label it `VERIFIED` only when you examined the vendor's own page, and keep claims about the price (cheapest, what customers actually pay, equivalence to another plan, still current) in separate ledger rows labeled on their own evidence. See "Vendor-published prices" in `docs/evidence-terminology.md`.
 - Avoid comparing plans with materially different scope as if they were equivalent.
 
 If pricing is not publicly disclosed, state "Not publicly verified."
