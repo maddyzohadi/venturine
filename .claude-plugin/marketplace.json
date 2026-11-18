@@ -1,9 +1,8 @@
-
 {
   "name": "venturine-marketplace",
-  "description": "Official marketplace for Venturine AI skills.",
+  "description": "Marketplace for the Venturine plugin: skills and agents for evidence-based startup validation.",
   "owner": {
-    "name": "Venturine"
+    "name": "Maddy Zohadi"
   },
   "plugins": [
     {

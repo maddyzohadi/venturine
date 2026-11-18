@@ -37,7 +37,7 @@ Venturine does not claim to be better than other tools. If you are comparing opt
 **1. Check prerequisites (1 minute).**
 
 - Claude Code with plugin support
-- Python 3: run `python3 --version`
+- Python 3.9 or newer: run `python3 --version` (macOS ships 3.9, which works)
 - Access to this repository (it is private during the beta)
 
 **2. Install (1 minute).** In Claude Code:
@@ -125,6 +125,10 @@ The calculator lives in `scripts/` and uses only the Python standard library. It
 | `subscription-ltv` | `MONTHLY_CONTRIBUTION MONTHLY_CHURN_FRACTION` | |
 
 Acquisition spending must be counted exactly once: either as a fixed cost with a CAC of 0, or as a per-customer CAC with the fixed costs excluding it, never both. Inputs are limited to 64 characters and an absolute value of 1,000,000,000,000. Nonzero values must be at least 0.000000001, and invalid values are rejected with clear errors.
+
+Numbers must be written with ASCII digits and an optional sign, decimal point and exponent (`1500`, `19.37`, `1e3`). Thousands separators, underscores, spaces and non-ASCII digits are rejected.
+
+Results are printed in plain notation (never `6E+2`), rounded half-up to 2 decimal places for display, or to 4 significant digits when the magnitude is below 1 (so `0.0149` is not shown as `0.01`). The arithmetic itself is exact, and whole-unit results such as break-even are exact integers. A `display_rounding` field in the output states this. Rounding can change a later answer if you feed a displayed value into another calculation, for example a rounded CAC into `break-even-loaded`, so when rounding changed a value the output also includes `unrounded_result` with full-precision values for that purpose. Report the rounded result, not the unrounded digits, and do not read extra precision into either.
 
 A successful calculation shows the arithmetic is right for the inputs you gave. It does not verify that the inputs are true.
 

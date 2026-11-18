@@ -8,6 +8,7 @@ No network access, file writes, or automatic execution.
 Requires only the Python standard library.
 """
 
+import re
 from decimal import Decimal, InvalidOperation, ROUND_CEILING
 
 
@@ -21,6 +22,13 @@ MAX_ABS_VALUE = Decimal("1000000000000")  # 1e12
 # floor, a tiny divisor (e.g. "1E-999990") makes a quotient with a million
 # digits, which costs tens of seconds of CPU or overflows the Decimal context.
 MIN_NONZERO_ABS_VALUE = Decimal("0.000000001")  # 1e-9
+# Accepted number syntax: ASCII digits only, with an optional sign, decimal
+# point and exponent. Python's Decimal would also accept non-ASCII digits
+# (for example Arabic-Indic), underscores, and surrounding whitespace; none
+# of those are intended inputs.
+_NUMBER_PATTERN = re.compile(
+    r"[+-]?(?:[0-9]+\.?[0-9]*|\.[0-9]+)(?:[eE][+-]?[0-9]+)?"
+)
 # Break-even results above this many units are rejected as implausible.
 MAX_BREAK_EVEN_UNITS = Decimal("1000000000000000000")  # 1e18
 
@@ -36,13 +44,23 @@ def number(value):
             f"Inputs cannot exceed {MAX_INPUT_CHARS} characters."
         )
 
+    if not _NUMBER_PATTERN.fullmatch(text):
+        # Keep the specific message for NaN and infinity.
+        try:
+            parsed = Decimal(text)
+        except (InvalidOperation, ValueError, TypeError):
+            parsed = None
+        if parsed is not None and not parsed.is_finite():
+            raise ValueError("Inputs must be finite numbers.")
+        raise ValueError(
+            "A valid numeric input is required: ASCII digits with an "
+            "optional sign, decimal point and exponent."
+        )
+
     try:
         result = Decimal(text)
     except (InvalidOperation, ValueError, TypeError):
         raise ValueError("A valid numeric input is required.")
-
-    if not result.is_finite():
-        raise ValueError("Inputs must be finite numbers.")
 
     # copy_abs() avoids context-rounding Overflow on huge exponents.
     magnitude = result.copy_abs()

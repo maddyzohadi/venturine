@@ -15,7 +15,7 @@ No network access, file writes, or automatic execution.
 
 import argparse
 import json
-from decimal import Decimal
+from decimal import Context, Decimal, InvalidOperation, ROUND_HALF_UP
 
 if __package__:
     # Imported as part of the "scripts" package (tests, "python -m").
@@ -62,8 +62,12 @@ OPERATIONS = {
 
 
 # Extra, non-breaking fields merged into the JSON output of an operation.
+UNITS_ROUNDING_NOTE = "Rounded up to whole units."
+
 OPERATION_NOTES = {
+    "break-even-loaded": {"units_rounding": UNITS_ROUNDING_NOTE},
     "break-even": {
+        "units_rounding": UNITS_ROUNDING_NOTE,
         "acquisition_included": False,
         "warning": (
             "Operating break-even only. Customer acquisition costs are "
@@ -91,9 +95,54 @@ input order:
 """
 
 
+CENT = Decimal("0.01")
+SIGNIFICANT_DIGITS_BELOW_ONE = Context(prec=4, rounding=ROUND_HALF_UP)
+
+DISPLAY_ROUNDING_NOTE = (
+    "Decimal results are displayed in plain notation, rounded half-up to 2 "
+    "decimal places, or to 4 significant digits when the magnitude is below "
+    "1. Calculations use exact decimal arithmetic; whole-unit results are "
+    "exact integers."
+)
+UNROUNDED_NOTE = (
+    "unrounded_result holds full-precision values for feeding a result into "
+    "another calculation, because rounding can change a whole-unit answer "
+    "by one. Report the rounded result, not these digits."
+)
+
+
+def format_decimal(value):
+    """
+    Render a Decimal for display: plain notation (no exponent), no negative
+    zero, and a bounded number of digits so results do not imply precision
+    the inputs never had. Magnitudes below 1 keep 4 significant digits so a
+    small value is never reduced to one or two digits (0.0149 stays
+    0.0149, not 0.01).
+    """
+    if value.is_zero():
+        return "0.00"
+
+    try:
+        if abs(value) < 1:
+            rounded = SIGNIFICANT_DIGITS_BELOW_ONE.create_decimal(value)
+            if abs(rounded) < 1:
+                # No trailing zeros: 0.30004 and 0.3 both display as 0.3.
+                return format(rounded, "f").rstrip("0")
+        rounded = value.quantize(CENT, rounding=ROUND_HALF_UP)
+    except InvalidOperation:
+        rounded = value
+
+    return format(rounded, "f")
+
+
+def format_exact(value):
+    """Full-precision plain-notation string for an unrounded value."""
+    return "0" if value.is_zero() else format(value, "f")
+
+
 def serialize(value):
     if isinstance(value, Decimal):
-        return str(value)
+        return format_decimal(value)
 
     if isinstance(value, dict):
         return {
@@ -102,6 +151,41 @@ def serialize(value):
         }
 
     return value
+
+
+def serialize_exact(value):
+    if isinstance(value, Decimal):
+        return format_exact(value)
+
+    if isinstance(value, dict):
+        return {
+            key: serialize_exact(item)
+            for key, item in value.items()
+            if isinstance(item, (Decimal, dict))
+        }
+
+    return value
+
+
+def contains_decimal(value):
+    if isinstance(value, Decimal):
+        return True
+
+    if isinstance(value, dict):
+        return any(contains_decimal(item) for item in value.values())
+
+    return False
+
+
+def rounding_changed_a_value(value):
+    """True when the displayed string is not the exact value."""
+    if isinstance(value, Decimal):
+        return Decimal(format_decimal(value)) != value
+
+    if isinstance(value, dict):
+        return any(rounding_changed_a_value(v) for v in value.values())
+
+    return False
 
 
 def main():
@@ -143,6 +227,12 @@ def main():
             "status": "calculated",
         }
         output.update(OPERATION_NOTES.get(args.operation, {}))
+        if contains_decimal(result):
+            note = DISPLAY_ROUNDING_NOTE
+            if rounding_changed_a_value(result):
+                output["unrounded_result"] = serialize_exact(result)
+                note = note + " " + UNROUNDED_NOTE
+            output["display_rounding"] = note
         text = json.dumps(output, indent=2)
     except (ValueError, TypeError, ArithmeticError) as error:
         # ArithmeticError covers decimal.Overflow and InvalidOperation, which

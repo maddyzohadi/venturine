@@ -13,7 +13,7 @@ For a larger change, open an issue first so the design can be agreed before you 
 
 ## Development setup
 
-Requirements: Python 3 and Git. Venturine has no third-party dependencies, so there is nothing to install.
+Requirements: Python 3.9 or newer, and Git. Venturine has no third-party dependencies, so there is nothing to install. CI runs the tests on Python 3.9, 3.11, 3.13 and 3.14; a change must not use syntax or standard-library features newer than 3.9.
 
 ```bash
 git clone https://github.com/maddyzohadi/venturine.git
@@ -26,6 +26,8 @@ To validate the plugin and marketplace manifests (needs Claude Code):
 ```bash
 claude plugin validate . --strict
 ```
+
+CI installs Claude Code from `.github/ci/claude-code/` with `npm ci`, which verifies an integrity hash for every package. To change the pinned version, edit `package.json` there, run `npm install --package-lock-only` in that directory, and commit both files. Do not install it with an unlocked `npm install`.
 
 ## Project rules
 
