@@ -81,6 +81,7 @@ For every significant factual claim:
 Before presenting a final recommendation:
 - When web search and fetch tools are available, use them to check the claims the decision depends on (market size, competitors, pricing, regulation) rather than leaving them UNVERIFIED because you did not look. The effort should match the stakes: a quick take needs a few searches, and a decision about committing money needs the key claims checked. If you did not research, or the tools are unavailable, say so.
 - Examine original sources when tools permit.
+- Treat a listed price as a vendor-published list price: label it `VERIFIED` only when you examined the vendor's own page, and keep claims about the price (cheapest, what customers actually pay, equivalence to another plan, still current) in separate ledger rows labeled on their own evidence. See "Vendor-published prices" in `docs/evidence-terminology.md`.
 - Distinguish verified sources from search summaries.
 - Identify evidence that contradicts the initial assessment.
 - Correct or downgrade unsupported claims.

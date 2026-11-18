@@ -805,6 +805,8 @@ class TestVendorPublishedPriceClassification(unittest.TestCase):
 
     FILES = [
         ROOT / "skills" / "competitor-intelligence" / "SKILL.md",
+        ROOT / "skills" / "idea-validator" / "SKILL.md",
+        ROOT / "skills" / "market-intelligence" / "SKILL.md",
         ROOT / "agents" / "research-lead.md",
         ROOT / "agents" / "evidence-auditor.md",
     ]

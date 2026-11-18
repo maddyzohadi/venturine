@@ -238,6 +238,8 @@ Prioritize original sources.
 
 Check that cited sources actually support the claim.
 
+Treat a listed price as a vendor-published list price: label it `VERIFIED` only when you examined the vendor's own page, and keep claims about the price (cheapest, what customers actually pay, equivalence to another plan, still current) in separate ledger rows labeled on their own evidence. See "Vendor-published prices" in `docs/evidence-terminology.md`.
+
 Never fabricate citations, quotations, statistics, or URLs.
 
 Clearly distinguish historical data, forecasts, opinions, and assumptions.

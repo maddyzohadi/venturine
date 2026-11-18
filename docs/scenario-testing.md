@@ -56,4 +56,14 @@ A second pass re-ran the research-related behavior with fresh hypothetical scena
 | Rounding | Two defects found and fixed. Feeding a displayed (rounded) CAC into a later calculation changed the break-even answer by one unit in about 3% of random cases, so rounded results now carry `unrounded_result` for chaining. Values below 1 lost significance (0.0149 displayed as 0.01), so they now keep 4 significant digits. Display rounding is applied only when printing, and tests confirm the library results and break-even integers do not depend on it. |
 
 Additional limitations: one run per case, simulated invocation rather than native, and the audit gate when it triggers is untested end to end.
-- Two runs labeled the same vendor-page price differently (`UNVERIFIED` and `PARTIALLY_SUPPORTED`). The reference page does not say how to label a vendor's statement about its own price, so labeling can vary.
+- Two runs labeled the same vendor-page price differently (`UNVERIFIED` and `PARTIALLY_SUPPORTED`). This is addressed in the third pass below.
+
+## Pre-merge verification (third pass)
+
+| Check | Result |
+|---|---|
+| idea-validator on a high-stakes decision | A hypothetical "spend my savings" request whose founder-supplied facts pointed to `NOT VIABLE UNDER STATED CONSTRAINTS`. The skill ran 3 searches and 1 fetch without asking for approval, then invoked the evidence-auditor with its evidence ledger and draft decision. The auditor declined to support a high-confidence verdict and flagged an overstated `CONTRADICTED` label. The skill corrected both and issued `REVISE THE CONCEPT`, marked `AUDITED`, and said it was not a high-confidence go or no-go. The subagent had an Agent tool, and the auditor was a general-purpose agent following the current `evidence-auditor.md`, not the registered agent type. The branch where the auditor is unavailable was exercised in the second pass and produced `PRELIMINARY` with "no independent review took place". |
+| Vendor-published prices | A rule now separates the observed list price from claims about it (see `docs/evidence-terminology.md`). In a test, a vendor price read from the vendor's own live page was `VERIFIED (list price as observed)`, a price a friend pasted was `FOUNDER_PROVIDED`, and "cheapest", "used by thousands", "still current" and "equivalent to another plan" were separate `UNVERIFIED` rows. The idea-validator had labeled a vendor price `UNVERIFIED` because the rule was missing there, so the rule was added to it and to market-intelligence. |
+| Native invocation | NOT VERIFIED. `claude auth status` reports a signed-in claude.ai account and no auth environment variables are set, but a minimal non-interactive call with no plugin loaded fails with HTTP 401 "OAuth access token has been revoked". The stored login appears revoked on the server side, so this is not caused by Venturine. The supported fix is for the account holder to run `claude auth login` interactively. |
+
+Limitations of this pass: one run per case, simulated invocation, and the auditor was not the registered agent type.
