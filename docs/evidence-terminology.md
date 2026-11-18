@@ -40,4 +40,4 @@ The `idea-validator` skill runs the `evidence-auditor` agent before a final reco
 
 It does not run the auditor automatically for a simple or preliminary question (a quick sanity check, brainstorming, "is this worth exploring"), for a decision of `INSUFFICIENT EVIDENCE` or `REVISE THE CONCEPT` (an audit is offered as a next step), or when the founder declines.
 
-If the conditions apply and the auditor is unavailable or declined, the recommendation is marked `PRELIMINARY` and says no independent review took place. Otherwise it is marked `AUDITED` with the auditor's result. As always, "audited" means another AI pass ran, not a human audit.
+If the conditions apply and the auditor is unavailable or declined, the recommendation is marked `PRELIMINARY` and says no independent review took place. `PRELIMINARY` applies whenever no review ran, including when the auditor was skipped because the request was simple or preliminary. A recommendation is marked `AUDITED`, with the auditor's result, only when the auditor actually ran. As always, "audited" means another AI pass ran, not a human audit.

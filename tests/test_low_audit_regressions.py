@@ -764,6 +764,20 @@ class TestIdeaValidatorAuditConditions(unittest.TestCase):
             self.skill, r"no independent review took place")
         self.assertRegex(self.skill, r"do not call it high-confidence")
 
+    def test_preliminary_means_no_review_ran_even_when_exempt(self):
+        self.assertRegex(
+            self.skill,
+            r"PRELIMINARY whenever no independent review ran")
+        self.assertRegex(self.skill, r"AUDITED only when the auditor actually ran")
+        self.assertIn("whenever no review ran", self.doc)
+
+    def test_skill_tells_the_model_to_check_key_claims_with_web_tools(self):
+        self.assertRegex(
+            self.skill,
+            r"use them to check the claims the decision depends on")
+        self.assertRegex(self.skill, r"match the stakes")
+        self.assertRegex(self.skill, r"If you did not research")
+
     def test_output_marks_the_recommendation(self):
         self.assertRegex(
             self.skill,

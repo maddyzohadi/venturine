@@ -42,3 +42,18 @@ This is a model following the repository's current files. It is **not native plu
 - Two skills chose not to search the web even where it would have helped. The wording was clarified but not re-run.
 - The idea-validator does not say whether to launch the evidence-auditor automatically, and the skills do not say whether to quote an injected instruction. Both remain open.
 - No model-behavior test can prove a model will obey an instruction every time.
+
+## Pre-merge verification (second pass)
+
+A second pass re-ran the research-related behavior with fresh hypothetical scenarios and rechecked the numeric output.
+
+| Check | Result |
+|---|---|
+| Research skills perform read-only research without asking for approval | idea-validator (quick take) ran 2 searches and market-intelligence ran 3, neither asked for approval, and the confidential company and investor names stayed out of every query. idea-validator on a "final go or no-go" request made no searches at all, so the skill now says to check the claims a decision depends on, scaled to the stakes. That wording change was not re-run. |
+| Injection reporting | A fictional page with hidden instructions, supplied as a saved file, and a memo with a hidden comment were each ignored and reported in paraphrase. The marker phrase, link and command did not appear in any report. Before this pass the reports repeated the injected instruction and link, and the wording was changed. Fetching the page over the network was not tested: WebFetch cannot reach localhost because it upgrades HTTP to HTTPS. |
+| idea-validator audit gate | A quick take did not run the auditor and was marked PRELIMINARY. A request for a reliable final decision ended at INSUFFICIENT EVIDENCE, so the gate did not trigger, and it was marked PRELIMINARY with "no independent review took place". The case where the gate triggers and the auditor really runs was not exercised, because agents cannot be invoked from the test harness. |
+| Native plugin loading | VERIFIED for loading: a session with only this plugin listed 4 skills and 3 agents, and strict validation passes. Native invocation is NOT VERIFIED: a nested non-interactive session failed authentication (HTTP 401), and no workaround was attempted. |
+| Rounding | Two defects found and fixed. Feeding a displayed (rounded) CAC into a later calculation changed the break-even answer by one unit in about 3% of random cases, so rounded results now carry `unrounded_result` for chaining. Values below 1 lost significance (0.0149 displayed as 0.01), so they now keep 4 significant digits. Display rounding is applied only when printing, and tests confirm the library results and break-even integers do not depend on it. |
+
+Additional limitations: one run per case, simulated invocation rather than native, and the audit gate when it triggers is untested end to end.
+- Two runs labeled the same vendor-page price differently (`UNVERIFIED` and `PARTIALLY_SUPPORTED`). The reference page does not say how to label a vendor's statement about its own price, so labeling can vary.
