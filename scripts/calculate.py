@@ -15,7 +15,7 @@ No network access, file writes, or automatic execution.
 
 import argparse
 import json
-from decimal import Decimal
+from decimal import Context, Decimal, InvalidOperation, ROUND_HALF_UP
 
 if __package__:
     # Imported as part of the "scripts" package (tests, "python -m").
@@ -91,9 +91,40 @@ input order:
 """
 
 
+CENT = Decimal("0.01")
+SMALL_VALUE_CONTEXT = Context(prec=4, rounding=ROUND_HALF_UP)
+
+DISPLAY_ROUNDING_NOTE = (
+    "Decimal results are displayed in plain notation, rounded half-up to 2 "
+    "decimal places (4 significant digits when the magnitude is below "
+    "0.01). Calculations use exact decimal arithmetic; whole-unit results "
+    "are exact integers."
+)
+
+
+def format_decimal(value):
+    """
+    Render a Decimal for display: plain notation (no exponent), no negative
+    zero, and a bounded number of digits so results do not imply precision
+    the inputs never had.
+    """
+    if value.is_zero():
+        return "0.00"
+
+    try:
+        if abs(value) >= CENT:
+            rounded = value.quantize(CENT, rounding=ROUND_HALF_UP)
+        else:
+            rounded = SMALL_VALUE_CONTEXT.create_decimal(value)
+    except InvalidOperation:
+        rounded = value
+
+    return format(rounded, "f")
+
+
 def serialize(value):
     if isinstance(value, Decimal):
-        return str(value)
+        return format_decimal(value)
 
     if isinstance(value, dict):
         return {
@@ -102,6 +133,16 @@ def serialize(value):
         }
 
     return value
+
+
+def contains_decimal(value):
+    if isinstance(value, Decimal):
+        return True
+
+    if isinstance(value, dict):
+        return any(contains_decimal(item) for item in value.values())
+
+    return False
 
 
 def main():
@@ -143,6 +184,8 @@ def main():
             "status": "calculated",
         }
         output.update(OPERATION_NOTES.get(args.operation, {}))
+        if contains_decimal(result):
+            output["display_rounding"] = DISPLAY_ROUNDING_NOTE
         text = json.dumps(output, indent=2)
     except (ValueError, TypeError, ArithmeticError) as error:
         # ArithmeticError covers decimal.Overflow and InvalidOperation, which

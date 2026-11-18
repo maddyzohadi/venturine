@@ -49,10 +49,10 @@ class TestCalculatorCLI(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         data = json.loads(result.stdout)
         self.assertEqual(
-            data["result"]["gross_profit"], "6000"
+            data["result"]["gross_profit"], "6000.00"
         )
         self.assertEqual(
-            data["result"]["gross_margin_percent"], "60.0"
+            data["result"]["gross_margin_percent"], "60.00"
         )
 
     def test_contribution_margin(self):
@@ -61,7 +61,7 @@ class TestCalculatorCLI(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0)
         data = json.loads(result.stdout)
-        self.assertEqual(data["result"], "50")
+        self.assertEqual(data["result"], "50.00")
 
     def test_break_even(self):
         result = self.run_calculator(
@@ -77,7 +77,7 @@ class TestCalculatorCLI(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0)
         data = json.loads(result.stdout)
-        self.assertEqual(data["result"], "40")
+        self.assertEqual(data["result"], "40.00")
 
     def test_runway(self):
         result = self.run_calculator(
@@ -85,7 +85,7 @@ class TestCalculatorCLI(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0)
         data = json.loads(result.stdout)
-        self.assertEqual(data["result"], "5")
+        self.assertEqual(data["result"], "5.00")
 
     def test_subscription_ltv(self):
         result = self.run_calculator(
@@ -94,7 +94,7 @@ class TestCalculatorCLI(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         data = json.loads(result.stdout)
         self.assertEqual(
-            data["result"], "6E+2"
+            data["result"], "600.00"
         )
 
     def test_invalid_operation(self):
@@ -158,10 +158,10 @@ class TestCalculatorCLI(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         data = json.loads(result.stdout)
         self.assertEqual(
-            data["result"]["operating_profit"], "5463"
+            data["result"]["operating_profit"], "5463.00"
         )
-        self.assertEqual(data["result"]["acquisition"], "6000")
-        self.assertEqual(data["result"]["total_costs"], "9437")
+        self.assertEqual(data["result"]["acquisition"], "6000.00")
+        self.assertEqual(data["result"]["total_costs"], "9437.00")
 
     def test_operating_profit_zero_revenue_margin_null(self):
         result = self.run_calculator(
@@ -229,7 +229,7 @@ class TestRunByScriptPath(unittest.TestCase):
         with tempfile.TemporaryDirectory() as other:
             result = self.run_script("revenue", "2", "5", cwd=other)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(json.loads(result.stdout)["result"], "10")
+        self.assertEqual(json.loads(result.stdout)["result"], "10.00")
 
     def test_decoy_scripts_package_in_cwd_is_ignored(self):
         with tempfile.TemporaryDirectory() as decoy:
@@ -344,20 +344,30 @@ class TestNoTracebacks(unittest.TestCase):
             self.assertNotIn("Traceback", message)
 
     def test_serialization_errors_are_reported_cleanly(self):
-        # json.dumps cannot render integers above 4300 digits.
-        huge = 10 ** 5000
         from scripts import calculate
 
-        patched = dict(calculate.OPERATIONS, revenue=(lambda a, b: huge, 2))
-        stderr = io.StringIO()
-        with mock.patch.object(calculate, "OPERATIONS", patched), \
-                mock.patch.object(sys, "argv",
-                                  ["calculate", "revenue", "1", "2"]), \
-                contextlib.redirect_stderr(stderr):
-            with self.assertRaises(SystemExit) as raised:
-                calculate.main()
-        self.assertEqual(raised.exception.code, 2)
-        self.assertIn("error:", stderr.getvalue())
+        cases = {"unserializable object": object()}
+        # json.dumps refuses integers above 4300 digits, but only on Python
+        # versions that have the integer-string conversion limit (3.11+ and
+        # patched 3.9/3.10 releases), so that case is conditional.
+        if hasattr(sys, "set_int_max_str_digits"):
+            cases["huge integer"] = 10 ** 5000
+
+        for label, value in cases.items():
+            with self.subTest(label):
+                patched = dict(
+                    calculate.OPERATIONS, revenue=(lambda a, b: value, 2)
+                )
+                stderr = io.StringIO()
+                with mock.patch.object(calculate, "OPERATIONS", patched), \
+                        mock.patch.object(
+                            sys, "argv", ["calculate", "revenue", "1", "2"]
+                        ), \
+                        contextlib.redirect_stderr(stderr):
+                    with self.assertRaises(SystemExit) as raised:
+                        calculate.main()
+                self.assertEqual(raised.exception.code, 2)
+                self.assertIn("error:", stderr.getvalue())
 
     def test_minimum_magnitude_message_is_clear(self):
         result = subprocess.run(
