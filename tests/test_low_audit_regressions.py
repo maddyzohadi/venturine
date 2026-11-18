@@ -390,6 +390,12 @@ class TestPythonSupportIsDeclaredAndTested(unittest.TestCase):
         self.assertGreaterEqual(len(listed), 3)
         self.assertNotIn('python-version: "3.13"', text)
 
+    def test_matrix_runs_on_an_image_that_has_the_minimum_python(self):
+        # ubuntu-latest moved to 26.04, which has no prebuilt Python 3.9.
+        text = read(ROOT / ".github" / "workflows" / "test-calculator.yml")
+        self.assertRegex(text, r"runs-on:\s*ubuntu-(22|24)\.04\b")
+        self.assertNotIn("runs-on: ubuntu-latest", text)
+
     def test_sources_use_only_python_3_9_syntax(self):
         for folder in ("scripts", "tests"):
             for path in sorted((ROOT / folder).glob("*.py")):

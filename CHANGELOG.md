@@ -10,7 +10,7 @@ Quality hardening before Phase 1, from the remaining low-severity audit findings
 - **Calculator output formatting.** Results are printed in plain notation, never exponent form (`subscription-ltv 30 0.05` now prints `600.00`, not `6E+2`) and never as `-0`. Decimal values are rounded half-up to 2 decimal places for display, or to 4 significant digits below 0.01, and a `display_rounding` field says so. The arithmetic is unchanged and exact; whole-unit results are still integers. This changes the printed strings of existing operations.
 - **Input syntax.** Numbers must be ASCII digits with an optional sign, decimal point and exponent. Non-ASCII digits (such as Arabic-Indic), underscores and surrounding whitespace were silently accepted before and are now rejected with a clear message.
 - Marketplace metadata: the description no longer calls the marketplace "official", the owner is a named person instead of "Venturine", and `plugin.json` gains a `homepage`.
-- Documented a minimum of Python 3.9 and test it in CI on 3.9, 3.11, 3.13 and 3.14 (previously only 3.13).
+- Documented a minimum of Python 3.9 and test it in CI on 3.9, 3.11, 3.13 and 3.14 (previously only 3.13). The test job runs on `ubuntu-24.04` because `ubuntu-latest` is now 26.04, which has no prebuilt Python 3.9.
 - CI installs the Claude Code CLI from a committed lockfile with `npm ci`, so every package is checked against a recorded integrity hash.
 - Break-even output states that units are rounded up to whole units.
 - The research skills now say read-only public research needs no separate approval and confidential details stay out of queries. This clarifies an ambiguous line that led two skills to skip research in testing; review it as a behavior change.
