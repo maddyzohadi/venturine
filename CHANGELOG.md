@@ -12,8 +12,13 @@ Quality hardening before Phase 1, from the remaining low-severity audit findings
 - Marketplace metadata: the description no longer calls the marketplace "official", the owner is a named person instead of "Venturine", and `plugin.json` gains a `homepage`.
 - Documented a minimum of Python 3.9 and test it in CI on 3.9, 3.11, 3.13 and 3.14 (previously only 3.13).
 - CI installs the Claude Code CLI from a committed lockfile with `npm ci`, so every package is checked against a recorded integrity hash.
+- Break-even output states that units are rounded up to whole units.
+- The research skills now say read-only public research needs no separate approval and confidential details stay out of queries. This clarifies an ambiguous line that led two skills to skip research in testing; review it as a behavior change.
+- The unit-economics skill and financial-analyst agent share one rule for a negative loaded contribution and for a fixed budget that is also the source of CAC. The evidence-auditor defines how to label an internal contradiction and may fetch cited URLs.
+- Added `docs/scenario-testing.md`, a record of running each skill and agent on hypothetical scenarios.
 
 ### Fixed
+- A doubled `- -` bullet in the unit-economics safety section.
 - One test assumed Python's integer-string digit limit, so the suite failed on Python 3.9.6; it now checks serialization errors in a version-independent way.
 - The 0.2.1 entry said it was not yet tagged; the `v0.2.1` tag exists.
 

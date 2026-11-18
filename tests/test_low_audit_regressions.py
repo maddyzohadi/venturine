@@ -567,5 +567,64 @@ class TestCostCategoriesAgreeAcrossDocuments(unittest.TestCase):
             self.assertRegex(text, r"(?i)runway")
 
 
+class TestScenarioFindings(unittest.TestCase):
+    """Defects found by running each skill and agent on hypothetical
+    scenarios (see docs/scenario-testing.md)."""
+
+    def test_no_markdown_file_has_a_doubled_bullet_marker(self):
+        files = (
+            SKILLS + AGENTS + sorted((ROOT / "docs").rglob("*.md"))
+            + [ROOT / "README.md", ROOT / "CONTRIBUTING.md"]
+        )
+        for path in files:
+            with self.subTest(file=path.name):
+                self.assertNotRegex(read(path), r"(?m)^\s*- - ")
+
+    def test_break_even_output_states_its_rounding_mode(self):
+        for command in (
+            ("break-even", "1500", "149", "19.37"),
+            ("break-even-loaded", "1500", "149", "19.37", "60"),
+        ):
+            with self.subTest(command=command[0]):
+                note = cli_json(*command)["units_rounding"]
+                self.assertIn("up", note)
+                self.assertIn("whole units", note)
+
+    def test_research_skills_say_read_only_research_needs_no_extra_approval(
+            self):
+        for name in ("idea-validator", "market-intelligence",
+                     "competitor-intelligence"):
+            text = read(ROOT / "skills" / name / "SKILL.md")
+            with self.subTest(skill=name):
+                self.assertRegex(
+                    text, r"(?i)read-only public (web )?research")
+                self.assertRegex(text, r"(?i)needs no separate approval")
+                self.assertRegex(text, r"(?i)confidential")
+
+    def test_loaded_break_even_guidance_is_the_same_in_skill_and_agent(self):
+        skill = read(ROOT / "skills" / "unit-economics" / "SKILL.md")
+        agent = read(ROOT / "agents" / "financial-analyst.md")
+        for text, name in ((skill, "skill"), (agent, "agent")):
+            with self.subTest(file=name):
+                self.assertRegex(
+                    text, r"not reachable on single purchases")
+                self.assertRegex(text, r"(?i)do not invent")
+                self.assertRegex(text, r"(?i)same money")
+                self.assertRegex(text, r"(?i)which framing|framing each")
+
+    def test_auditor_defines_internal_contradictions_and_url_fetching(self):
+        text = read(ROOT / "agents" / "evidence-auditor.md")
+        self.assertRegex(text, r"contradicts another claim in the same")
+        self.assertIn("evidence is internal", text)
+        self.assertRegex(text, r"(?i)fetching public URLs cited")
+        self.assertIn("in the Audit Summary", text)
+
+    def test_scenario_testing_record_exists_and_states_its_limits(self):
+        text = read(ROOT / "docs" / "scenario-testing.md")
+        for needle in ("hypothetical", "not native plugin loading",
+                       "Limitations"):
+            self.assertIn(needle, text)
+
+
 if __name__ == "__main__":
     unittest.main()

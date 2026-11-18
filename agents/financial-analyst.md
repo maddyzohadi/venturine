@@ -109,6 +109,8 @@ Rules:
 - When acquisition spending is relevant, use the loaded form. When CAC is relevant but unknown, report break-even as incomplete and do not present the operating figure as the answer.
 - The loaded form assumes each customer buys exactly one unit.
 - The fixed costs input of the loaded form must exclude acquisition.
+- If the loaded contribution is zero or negative on a first purchase, report that break-even is not reachable on single purchases and that viability depends on repeat purchases or retention. Do not invent repeat or churn data.
+- If a fixed acquisition budget and a CAC derived from that same budget are both given, they are the same money: count it once, and state which framing each figure comes from. The two valid framings (budget in fixed costs with CAC 0, or loaded break-even per customer with fixed costs excluding acquisition) give different figures.
 
 ### Operating Profit
 

@@ -129,7 +129,8 @@ A decision must be supported by the analysis.
 - Do not modify or delete user files.
 - Do not send private data externally.
 - Do not make purchases or publish content.
-- Obtain explicit approval before external actions.
+- Obtain explicit approval before external actions that send data or change something, such as messages, purchases or publishing.
+- Read-only public research (web search and fetching public pages) is expected when those tools are available and needs no separate approval. Keep confidential business details out of search queries.
 
 ## Limitations
 

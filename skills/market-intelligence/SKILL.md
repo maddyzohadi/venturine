@@ -325,7 +325,7 @@ Explain the supporting evidence and limitations.
 - Do not contact external parties on the founder's behalf.
 - Do not claim actions or verification steps that were not performed.
 
-Public web research, when available and authorized, must not include confidential business information in search queries without explicit user approval.
+Read-only public web research (search and fetching public pages) is expected when those tools are available and needs no separate approval. It must not include confidential business information in search queries without explicit user approval.
 
 ## 15. Professional Boundaries
 

@@ -62,8 +62,12 @@ OPERATIONS = {
 
 
 # Extra, non-breaking fields merged into the JSON output of an operation.
+UNITS_ROUNDING_NOTE = "Rounded up to whole units."
+
 OPERATION_NOTES = {
+    "break-even-loaded": {"units_rounding": UNITS_ROUNDING_NOTE},
     "break-even": {
+        "units_rounding": UNITS_ROUNDING_NOTE,
         "acquisition_included": False,
         "warning": (
             "Operating break-even only. Customer acquisition costs are "

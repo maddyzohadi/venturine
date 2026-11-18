@@ -304,7 +304,8 @@ Explain the evidence behind the assessment.
 - Do not transmit confidential information to third parties.
 - Do not contact competitors or customers.
 - Do not publish or submit information externally.
-- Obtain explicit approval before external actions.
+- Obtain explicit approval before external actions that send data or change something, such as messages, purchases or publishing.
+- Read-only public research (web search and fetching public pages) is expected when those tools are available and needs no separate approval. Keep confidential business details out of search queries.
 
 Public research must not expose confidential founder information in search queries without explicit approval.
 
