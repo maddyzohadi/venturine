@@ -64,7 +64,7 @@ Foundations and adoption hygiene, plus two security and robustness fixes to the 
 - Initial release: skills `idea-validator`, `market-intelligence`, `competitor-intelligence` and `unit-economics`; agents `research-lead`, `financial-analyst` and `evidence-auditor`; a standard-library financial calculator with seven operations and automated tests; plugin and marketplace manifests; CI workflows.
 
 [Unreleased]: https://github.com/maddyzohadi/venturine/compare/v0.2.1...HEAD
-[0.2.1]: https://github.com/maddyzohadi/venturine/compare/2c64af9...v0.2.1
-[0.2.0]: https://github.com/maddyzohadi/venturine/compare/98fb1d0...1f840e2
-[0.1.1]: https://github.com/maddyzohadi/venturine/compare/7b1f7c3...98fb1d0
+[0.2.1]: https://github.com/maddyzohadi/venturine/compare/72f0b6d...v0.2.1
+[0.2.0]: https://github.com/maddyzohadi/venturine/compare/b17fb10...f8eba45
+[0.1.1]: https://github.com/maddyzohadi/venturine/compare/7231175...b17fb10
 [0.1.0]: https://github.com/maddyzohadi/venturine/commits/7b1f7c3
