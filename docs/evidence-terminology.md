@@ -30,3 +30,14 @@ The four distinctions that matter most:
 - "Independent review" means the `evidence-auditor` agent was actually run. It is another AI pass over the work, not a human audit or a guarantee. If it did not run, say no audit took place.
 - Record the source title, URL, publication date and access date for every `VERIFIED` or `PARTIALLY_SUPPORTED` claim.
 - Do not invent sources, quotes, statistics or calculator output.
+
+## When the idea-validator requires an independent review
+
+The `idea-validator` skill runs the `evidence-auditor` agent before a final recommendation only when both conditions hold:
+
+1. The decision is `PROCEED TO VALIDATION` or `NOT VIABLE UNDER STATED CONSTRAINTS`, which tells the founder to commit or stop committing money or time.
+2. The recommendation would be presented as final or high-confidence, for example because the founder asked for a go or no-go or is about to spend money.
+
+It does not run the auditor automatically for a simple or preliminary question (a quick sanity check, brainstorming, "is this worth exploring"), for a decision of `INSUFFICIENT EVIDENCE` or `REVISE THE CONCEPT` (an audit is offered as a next step), or when the founder declines.
+
+If the conditions apply and the auditor is unavailable or declined, the recommendation is marked `PRELIMINARY` and says no independent review took place. Otherwise it is marked `AUDITED` with the auditor's result. As always, "audited" means another AI pass ran, not a human audit.

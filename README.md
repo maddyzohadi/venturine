@@ -128,7 +128,7 @@ Acquisition spending must be counted exactly once: either as a fixed cost with a
 
 Numbers must be written with ASCII digits and an optional sign, decimal point and exponent (`1500`, `19.37`, `1e3`). Thousands separators, underscores, spaces and non-ASCII digits are rejected.
 
-Results are printed in plain notation (never `6E+2`), rounded half-up to 2 decimal places for display, or to 4 significant digits when the magnitude is below 0.01. The arithmetic itself is exact, and whole-unit results such as break-even are exact integers. A `display_rounding` field in the output states this. Round again when you report, and do not read extra precision into a result.
+Results are printed in plain notation (never `6E+2`), rounded half-up to 2 decimal places for display, or to 4 significant digits when the magnitude is below 1 (so `0.0149` is not shown as `0.01`). The arithmetic itself is exact, and whole-unit results such as break-even are exact integers. A `display_rounding` field in the output states this. Rounding can change a later answer if you feed a displayed value into another calculation, for example a rounded CAC into `break-even-loaded`, so when rounding changed a value the output also includes `unrounded_result` with full-precision values for that purpose. Report the rounded result, not the unrounded digits, and do not read extra precision into either.
 
 A successful calculation shows the arithmetic is right for the inputs you gave. It does not verify that the inputs are true.
 

@@ -52,11 +52,27 @@ def cli_json(*args):
 
 
 def round_half_up_cents(value):
-    """Exact half-away-from-zero rounding of a Fraction to 2 places."""
-    scaled = abs(value) * 100
-    cents = math.floor(scaled + Fraction(1, 2))
-    text = f"{cents // 100}.{cents % 100:02d}"
-    return ("-" if value < 0 and cents else "") + text
+    """
+    Independent model of the display rule, in exact arithmetic: 2 decimal
+    places at magnitude 1 or more, 4 significant digits below 1, half away
+    from zero.
+    """
+    value = Fraction(value)
+    if value == 0:
+        return "0.00"
+    magnitude = abs(value)
+    sign = "-" if value < 0 else ""
+    if magnitude < 1:
+        exponent = 0
+        while magnitude * 10 ** (exponent + 1) < 1:
+            exponent += 1  # magnitude is in [10**-(exponent+1), 10**-exponent)
+        places = exponent + 4  # first significant digit sits at 10**-(e+1)
+        scaled = math.floor(magnitude * 10 ** places + Fraction(1, 2))
+        if scaled < 10 ** places:  # still below 1 after rounding
+            digits = str(scaled).rjust(places, "0")
+            return sign + "0." + digits.rstrip("0")
+    scaled = math.floor(magnitude * 100 + Fraction(1, 2))
+    return f"{sign}{scaled // 100}.{scaled % 100:02d}"
 
 
 class TestInputSyntaxIsAsciiOnly(unittest.TestCase):
@@ -153,7 +169,7 @@ class TestOutputFormatting(unittest.TestCase):
 
     def test_long_repeating_results_are_bounded(self):
         self.assertEqual(cli_json("cac", "100", "3")["result"], "33.33")
-        self.assertEqual(cli_json("runway", "1", "3")["result"], "0.33")
+        self.assertEqual(cli_json("runway", "1", "3")["result"], "0.3333")
         margin = cli_json(
             "operating-profit", "14900", "0", "1937", "6000", "1500"
         )["result"]["operating_margin_percent"]
@@ -170,8 +186,8 @@ class TestOutputFormatting(unittest.TestCase):
 
     def test_rounding_is_half_up_away_from_zero(self):
         for value, expected in (
-            ("0.125", "0.13"), ("2.675", "2.68"), ("0.015", "0.02"),
-            ("-0.125", "-0.13"), ("1.005", "1.01"), ("1.004", "1.00"),
+            ("1.125", "1.13"), ("2.675", "2.68"), ("10.015", "10.02"),
+            ("-1.125", "-1.13"), ("1.005", "1.01"), ("1.004", "1.00"),
             ("999.995", "1000.00"),
         ):
             with self.subTest(value=value):
@@ -188,6 +204,35 @@ class TestOutputFormatting(unittest.TestCase):
                 shown = calculate.format_decimal(Decimal(text))
                 self.assertNotEqual(Decimal(shown), 0)
                 self.assertNotRegex(shown, r"[eE]")
+
+    def test_values_below_one_keep_four_significant_digits(self):
+        # Two decimal places would turn 0.0149 into 0.01, a 33% error.
+        for text, expected in (
+            ("0.0149", "0.0149"), ("0.0999", "0.0999"),
+            ("0.3333333", "0.3333"), ("0.5", "0.5"),
+            ("0.12345", "0.1235"), ("-0.0149", "-0.0149"),
+            ("0.00149", "0.00149"), ("0.30004", "0.3"),
+            ("0.1000", "0.1"), ("0.99996", "1.00"),
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(
+                    calculate.format_decimal(Decimal(text)), expected)
+
+    def test_rounding_up_to_one_does_not_show_extra_digits(self):
+        self.assertEqual(
+            calculate.format_decimal(Decimal("0.999996")), "1.00")
+
+    def test_relative_display_error_is_always_small(self):
+        rng = random.Random(11)
+        for _ in range(2000):
+            exponent = rng.randint(-8, 11)
+            value = Decimal(rng.randint(1, 10 ** 6)) * Decimal(10) ** exponent
+            shown = Decimal(calculate.format_decimal(value))
+            error = abs(shown - value) / value
+            # 2 decimals at magnitude 1+ is at most 0.5%; below 1, 0.05%.
+            self.assertLess(error, Decimal("0.005"), (value, shown))
+            if value < 1:
+                self.assertLess(error, Decimal("0.0006"), (value, shown))
 
     def test_large_values_use_plain_notation(self):
         for text in ("1E+24", "123456789012345678901234", "1E+21"):
@@ -233,6 +278,87 @@ class TestOutputFormatting(unittest.TestCase):
             cli_json("break-even", "1", "3", "2.999999")["result"], 1000000)
 
 
+class TestRoundingNeverChangesTheCalculation(unittest.TestCase):
+    """Display rounding must not feed back into any financial result."""
+
+    CHAIN = ("4607", "38", "166", "27", "12966")  # spend, n, price, vc, fixed
+
+    def chained_answers(self):
+        spend, customers, price, cost, fixed = self.CHAIN
+        exact_cac = customer_acquisition_cost(spend, customers)
+        exact = break_even_units_with_acquisition(
+            fixed, price, cost, exact_cac)["break_even_units"]
+        data = cli_json("cac", spend, customers)
+        shown = break_even_units_with_acquisition(
+            fixed, price, cost, data["result"])["break_even_units"]
+        unrounded = break_even_units_with_acquisition(
+            fixed, price, cost, data["unrounded_result"])["break_even_units"]
+        return exact, shown, unrounded
+
+    def test_chaining_the_displayed_value_can_change_the_answer(self):
+        # This is why unrounded_result exists: 121.24 is not 121.2368...
+        exact, shown, _ = self.chained_answers()
+        self.assertNotEqual(exact, shown)
+
+    def test_chaining_the_unrounded_value_matches_the_exact_answer(self):
+        exact, _, unrounded = self.chained_answers()
+        self.assertEqual(exact, unrounded)
+
+    def test_unrounded_result_appears_only_when_rounding_changed_something(
+            self):
+        data = cli_json("cac", "4607", "38")
+        self.assertEqual(data["result"], "121.24")
+        self.assertTrue(data["unrounded_result"].startswith("121.2368421"))
+        self.assertIn("unrounded_result", data["display_rounding"])
+        self.assertNotIn("unrounded_result", cli_json("cac", "1200", "30"))
+        self.assertNotIn("unrounded_result", cli_json(
+            "break-even", "1500", "149", "19.37"))
+
+    def test_unrounded_values_are_plain_exact_decimals(self):
+        data = cli_json("operating-profit", "14900", "0", "1937", "6000",
+                        "1500")
+        for key, text in data["unrounded_result"].items():
+            self.assertRegex(text, r"^-?[0-9]+(\.[0-9]+)?$", key)
+            self.assertNotRegex(text, r"[eE]")
+        self.assertEqual(
+            Fraction(data["unrounded_result"]["operating_profit"]), 5463)
+
+    def test_unrounded_result_equals_the_engine_value_exactly(self):
+        for spend, customers in (("100", "3"), ("1", "7"), ("999.99", "13")):
+            with self.subTest(spend=spend):
+                data = cli_json("cac", spend, customers)
+                self.assertEqual(
+                    Decimal(data["unrounded_result"]),
+                    customer_acquisition_cost(spend, customers))
+
+    def test_break_even_does_not_depend_on_the_display_formatter(self):
+        from unittest import mock
+        args = ("1500", "149", "19.37", "60")
+        baseline = break_even_units_with_acquisition(*args)
+        for formatter in (lambda v: "X", lambda v: "0.00"):
+            with mock.patch.object(calculate, "format_decimal", formatter):
+                again = break_even_units_with_acquisition(*args)
+            self.assertEqual(again["break_even_units"],
+                             baseline["break_even_units"])
+        # And the library never returns rounded values.
+        self.assertEqual(
+            baseline["loaded_contribution_per_unit"], Decimal("69.63"))
+        self.assertEqual(
+            customer_acquisition_cost("100", "3"), Decimal(100) / Decimal(3))
+
+    def test_library_results_are_identical_before_and_after_serialization(
+            self):
+        for operation, args in (
+            ("cac", ("100", "3")), ("runway", ("1", "7")),
+            ("gross-margin", ("1000", "333")),
+            ("subscription-ltv", ("10", "0.07")),
+        ):
+            function, _ = calculate.OPERATIONS[operation]
+            before = function(*args)
+            calculate.serialize(before)
+            self.assertEqual(function(*args), before)
+
+
 class TestOracleAgreement(unittest.TestCase):
     """Exact rational arithmetic as an independent oracle (seeded)."""
 
@@ -265,8 +391,8 @@ class TestOracleAgreement(unittest.TestCase):
                 "runway": a / b,
             }
             for operation, expected in cases.items():
-                if expected is None or 0 < abs(expected) < Fraction(1, 100):
-                    continue  # sub-cent values use significant digits
+                if expected is None:
+                    continue
                 with self.subTest(operation=operation, a=ta, b=tb):
                     shown = self.displayed(operation, (ta, tb))
                     self.assertEqual(shown, round_half_up_cents(expected))
@@ -571,6 +697,93 @@ class TestCostCategoriesAgreeAcrossDocuments(unittest.TestCase):
         for text in (skill, agent):
             self.assertRegex(text, r"(?i)churn")
             self.assertRegex(text, r"(?i)runway")
+
+
+class TestInjectionReportingDoesNotReproducePayloads(unittest.TestCase):
+    """The reporting rule must not require repeating the malicious text."""
+
+    FILES = SKILLS + AGENTS
+
+    def test_every_skill_and_agent_forbids_repeating_injected_text(self):
+        for path in self.FILES:
+            text = read(path)
+            with self.subTest(file=path.name):
+                self.assertRegex(text, r"in your own words")
+                self.assertRegex(
+                    text, r"Do not repeat the instruction text")
+                self.assertRegex(text, r"links")
+
+    def test_old_wording_that_invited_quoting_is_gone(self):
+        for path in self.FILES:
+            self.assertNotIn(
+                "note it briefly (source and what it tried to do)",
+                read(path), path.name)
+
+    def test_reporting_is_still_required(self):
+        for path in self.FILES:
+            text = read(path)
+            with self.subTest(file=path.name):
+                self.assertRegex(
+                    text, r"(?i)report the attempt|Report the attempt")
+
+
+class TestIdeaValidatorAuditConditions(unittest.TestCase):
+    """The auditor is required for final high-confidence decisions only."""
+
+    def setUp(self):
+        self.skill = read(ROOT / "skills" / "idea-validator" / "SKILL.md")
+        self.doc = read(ROOT / "docs" / "evidence-terminology.md")
+
+    def test_unconditional_audit_request_is_gone(self):
+        self.assertNotIn(
+            "- Request an independent evidence audit when available.",
+            self.skill)
+
+    def test_audit_is_required_for_final_high_confidence_decisions(self):
+        section = self.skill.split(
+            "Independent audit before a high-confidence recommendation", 1
+        )[1].split("### 8.", 1)[0]
+        self.assertIn("PROCEED TO VALIDATION", section)
+        self.assertIn("NOT VIABLE UNDER STATED CONSTRAINTS", section)
+        self.assertRegex(section, r"(?i)final or high-confidence")
+        self.assertIn("evidence-auditor", section)
+
+    def test_audit_is_not_automatic_for_preliminary_questions(self):
+        section = self.skill.split(
+            "Do not run the auditor automatically for:", 1)[1].split(
+            "If the conditions apply", 1)[0]
+        for needle in ("simple or preliminary", "quick sanity check",
+                       "INSUFFICIENT EVIDENCE", "REVISE THE CONCEPT",
+                       "declines"):
+            self.assertIn(needle, section)
+
+    def test_unavailable_auditor_caps_the_confidence(self):
+        self.assertIn("PRELIMINARY", self.skill)
+        self.assertIn("AUDITED", self.skill)
+        self.assertRegex(
+            self.skill, r"no independent review took place")
+        self.assertRegex(self.skill, r"do not call it high-confidence")
+
+    def test_output_marks_the_recommendation(self):
+        self.assertRegex(
+            self.skill,
+            r"(?m)^9\. Recommendation, marked AUDITED .* or PRELIMINARY")
+
+    def test_conditions_are_documented_in_the_reference_page(self):
+        self.assertIn("When the idea-validator requires an independent "
+                      "review", self.doc)
+        for needle in ("PROCEED TO VALIDATION", "simple or preliminary",
+                       "PRELIMINARY", "AUDITED", "not a human audit"):
+            self.assertIn(needle, self.doc)
+
+    def test_other_skills_do_not_auto_invoke_the_auditor_for_everything(
+            self):
+        # Only idea-validator defines the high-confidence audit gate.
+        for name in ("market-intelligence", "competitor-intelligence",
+                     "unit-economics"):
+            text = read(ROOT / "skills" / name / "SKILL.md")
+            self.assertNotIn("Independent audit before a high-confidence",
+                             text, name)
 
 
 class TestScenarioFindings(unittest.TestCase):

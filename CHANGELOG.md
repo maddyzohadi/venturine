@@ -7,7 +7,7 @@ All notable changes to this project are documented here. The format follows [Kee
 Quality hardening before Phase 1, from the remaining low-severity audit findings. No new skills or operations.
 
 ### Changed
-- **Calculator output formatting.** Results are printed in plain notation, never exponent form (`subscription-ltv 30 0.05` now prints `600.00`, not `6E+2`) and never as `-0`. Decimal values are rounded half-up to 2 decimal places for display, or to 4 significant digits below 0.01, and a `display_rounding` field says so. The arithmetic is unchanged and exact; whole-unit results are still integers. This changes the printed strings of existing operations.
+- **Calculator output formatting.** Results are printed in plain notation, never exponent form (`subscription-ltv 30 0.05` now prints `600.00`, not `6E+2`) and never as `-0`. Decimal values are rounded half-up to 2 decimal places for display, or to 4 significant digits below 1, and a `display_rounding` field says so. When rounding changed a value, an `unrounded_result` field holds the full-precision values, because feeding a rounded CAC into `break-even-loaded` changed the whole-unit answer by one in about 3% of random cases. The arithmetic is unchanged and exact; whole-unit results are still integers. This changes the printed strings of existing operations.
 - **Input syntax.** Numbers must be ASCII digits with an optional sign, decimal point and exponent. Non-ASCII digits (such as Arabic-Indic), underscores and surrounding whitespace were silently accepted before and are now rejected with a clear message.
 - Marketplace metadata: the description no longer calls the marketplace "official", the owner is a named person instead of "Venturine", and `plugin.json` gains a `homepage`.
 - Documented a minimum of Python 3.9 and test it in CI on 3.9, 3.11, 3.13 and 3.14 (previously only 3.13). The test job runs on `ubuntu-24.04` because `ubuntu-latest` is now 26.04, which has no prebuilt Python 3.9.
@@ -16,6 +16,8 @@ Quality hardening before Phase 1, from the remaining low-severity audit findings
 - The research skills now say read-only public research needs no separate approval and confidential details stay out of queries. This clarifies an ambiguous line that led two skills to skip research in testing; review it as a behavior change.
 - The unit-economics skill and financial-analyst agent share one rule for a negative loaded contribution and for a fixed budget that is also the source of CAC. The evidence-auditor defines how to label an internal contradiction and may fetch cited URLs.
 - Added `docs/scenario-testing.md`, a record of running each skill and agent on hypothetical scenarios.
+- **Untrusted content:** when content tries to direct a skill or agent, it now reports the attempt in its own words and does not repeat the instruction text, commands or links. Testing showed the previous wording reproduced the injected instruction and link.
+- **idea-validator audit conditions:** the evidence-auditor is required before a final, high-confidence `PROCEED TO VALIDATION` or `NOT VIABLE UNDER STATED CONSTRAINTS` recommendation, and is not run automatically for simple or preliminary questions or for `INSUFFICIENT EVIDENCE` and `REVISE THE CONCEPT` decisions. Recommendations are marked `AUDITED` or `PRELIMINARY`. See `docs/evidence-terminology.md`.
 
 ### Fixed
 - A doubled `- -` bullet in the unit-economics safety section.
