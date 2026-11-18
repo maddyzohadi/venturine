@@ -1,4 +1,3 @@
-
 {
   "name": "venturine",
   "description": "Open-source AI skills for startup validation, market intelligence, financial analysis, and evidence-backed business decisions.",
@@ -7,6 +6,7 @@
     "name": "Maddy Zohadi"
   },
   "repository": "https://github.com/maddyzohadi/venturine",
+  "homepage": "https://github.com/maddyzohadi/venturine",
   "license": "Apache-2.0",
   "keywords": [
     "startup",

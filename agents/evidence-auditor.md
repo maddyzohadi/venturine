@@ -42,7 +42,7 @@ Classify each reviewed claim or input with these labels. They are defined in `do
 - FOUNDER_PROVIDED: supplied directly by the founder and not checked.
 - DERIVED: calculated from documented inputs.
 - ASSUMPTION: a hypothetical value or planning hypothesis, not an established fact.
-- UNKNOWN: missing or not supported by enough information.
+- UNKNOWN: missing or not supported by enough information. Do not fill it in.
 - NOT_APPLICABLE: an opinion, recommendation or decision rather than a checkable fact.
 
 Do not label a claim VERIFIED unless the supporting evidence was actually examined.

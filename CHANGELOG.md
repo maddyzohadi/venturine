@@ -4,9 +4,22 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+Quality hardening before Phase 1, from the remaining low-severity audit findings. No new skills or operations.
+
+### Changed
+- **Calculator output formatting.** Results are printed in plain notation, never exponent form (`subscription-ltv 30 0.05` now prints `600.00`, not `6E+2`) and never as `-0`. Decimal values are rounded half-up to 2 decimal places for display, or to 4 significant digits below 0.01, and a `display_rounding` field says so. The arithmetic is unchanged and exact; whole-unit results are still integers. This changes the printed strings of existing operations.
+- **Input syntax.** Numbers must be ASCII digits with an optional sign, decimal point and exponent. Non-ASCII digits (such as Arabic-Indic), underscores and surrounding whitespace were silently accepted before and are now rejected with a clear message.
+- Marketplace metadata: the description no longer calls the marketplace "official", the owner is a named person instead of "Venturine", and `plugin.json` gains a `homepage`.
+- Documented a minimum of Python 3.9 and test it in CI on 3.9, 3.11, 3.13 and 3.14 (previously only 3.13).
+- CI installs the Claude Code CLI from a committed lockfile with `npm ci`, so every package is checked against a recorded integrity hash.
+
+### Fixed
+- One test assumed Python's integer-string digit limit, so the suite failed on Python 3.9.6; it now checks serialization errors in a version-independent way.
+- The 0.2.1 entry said it was not yet tagged; the `v0.2.1` tag exists.
+
 ## [0.2.1] - 2026-11-16
 
-Not yet tagged or released. The audit follow-up work below is part of this version.
+Tagged as `v0.2.1`; no GitHub Release has been published. The audit follow-up work below is part of this version.
 
 Foundations and adoption hygiene, plus two security and robustness fixes to the calculator found in a pre-release audit. Analysis behavior is otherwise unchanged.
 

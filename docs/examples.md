@@ -89,11 +89,11 @@ python3 scripts/calculate.py break-even-loaded 1500 149 19.37 60
 python3 scripts/calculate.py operating-profit 14900 0 1937 6000 1500
 ```
 
-Result: `total_costs` of `9437` and `operating_profit` of `5463`. The output lists each category and says what is excluded: taxes, interest, capital expenditures, and owner compensation unless you entered it as a fixed operating cost.
+Result: `total_costs` of `9437.00` and `operating_profit` of `5463.00`. The output lists each category and says what is excluded: taxes, interest, capital expenditures, and owner compensation unless you entered it as a fixed operating cost.
 
 The four categories are mutually exclusive, so each cost goes in exactly one: cost of goods sold, variable operating, acquisition, or fixed operating. All five inputs are required, so pass `0` for an empty category.
 
-The operating margin field is printed with many digits. Round it when you report it, and do not read false precision into it.
+Decimal results are printed in plain notation and rounded for display (here the operating margin is `36.66`), and the output includes a `display_rounding` note. The underlying arithmetic is exact, so rounding in the output does not change the break-even or profit logic.
 
 ## 4. Ask the auditor to challenge the result
 

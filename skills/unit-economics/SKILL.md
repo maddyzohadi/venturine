@@ -351,7 +351,7 @@ Simplified subscription LTV:
 
 All numeric arguments in these examples are illustrative.
 
-Input bounds: each argument must be a plain number of at most 64 characters with an absolute value of at most 1,000,000,000,000. Nonzero values must be at least 0.000000001 in absolute value, and break-even results above 1,000,000,000,000,000,000 units are rejected. Out-of-range or malformed inputs are rejected with an error.
+Input bounds: each argument must be a plain number written with ASCII digits (optional sign, decimal point and exponent; no separators or spaces) of at most 64 characters with an absolute value of at most 1,000,000,000,000. Nonzero values must be at least 0.000000001 in absolute value, and break-even results above 1,000,000,000,000,000,000 units are rejected. Out-of-range or malformed inputs are rejected with an error.
 
 ### Result Handling
 
@@ -359,7 +359,7 @@ When execution succeeds:
 
 1. Read the JSON output.
 2. Confirm the operation and inputs match the request.
-3. Report the returned calculation result.
+3. Report the returned calculation result as printed. Decimal values are already rounded for display, and the output says so; do not add digits or imply more precision than the inputs support.
 4. Explain the formula and units.
 5. Identify founder-provided and hypothetical inputs.
 6. State material assumptions and limitations.
