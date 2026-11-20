@@ -91,8 +91,8 @@ For how vendor prices should be labeled, see "Vendor-published prices" in [evide
 
 - Secrets. A string that looks like a private key, an AWS or GitHub token, a Slack token, an API key, or a URL with a password is an error. The value is never printed.
 - Personal data. An email address produces a warning. A handoff is meant to be shared, so leave out personal and confidential details the analysis does not need.
-- Limits. A file larger than 1 MB, nesting deeper than 12 levels, more than 20,000 values, arrays of more than 500 items, and strings over 5,000 characters are rejected. Duplicate keys, `NaN` and `Infinity` are rejected.
-- The validator never prints the contents of the file it reads, only a field path and a rule.
+- Limits. A file larger than 1 MB, nesting deeper than 12 levels, or more than 20,000 values is rejected. In the fields the format defines, arrays of more than 500 items and text over a field's length limit are rejected too. Custom `x_` fields and calculation results are not length-limited, only counted toward the file limits. Duplicate keys, `NaN` and `Infinity` are rejected.
+- The validator never prints the contents of the file it reads, only a field path and a rule. It does not even print the names of fields it does not recognize, because a field name can itself be a secret.
 
 ## Using the validator
 

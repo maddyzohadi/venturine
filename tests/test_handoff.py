@@ -650,6 +650,32 @@ class TestLimitsAndHostileInput(unittest.TestCase):
         document["x_big"] = list(range(vh.MAX_NODES + 5))
         self.assertTrue(has_error(document, "too large"))
 
+    def test_a_very_long_string_does_not_hang_the_scan(self):
+        # An unbounded email pattern backtracked quadratically: one 900 KB
+        # string of ordinary characters ran for minutes.
+        import time
+        for field in ("x_long", "notes"):
+            document = example()
+            document[field] = "a" * 900000
+            started = time.monotonic()
+            validate(document)
+            self.assertLess(time.monotonic() - started, 3.0, field)
+
+    def test_key_names_from_the_file_are_never_echoed(self):
+        # A key can itself be a secret, so only the format's own field
+        # names may appear in output.
+        secret_key = "sk-" + "Z" * 30
+        document = example()
+        document["x_" + secret_key] = {"inner": "AKIA" + "B" * 16}
+        document["private_key_value_ghp_" + "q" * 20] = 1
+        document["venture"]["db_password_hunter2"] = {
+            "n": "AKIA" + "C" * 16}
+        output = json.dumps(validate(document))
+        for leaked in ("ZZZZZ", "qqqqq", "hunter2", "private_key_value"):
+            self.assertNotIn(leaked, output)
+        self.assertTrue(has_error(document, "unknown field"))
+        self.assertTrue(has_error(document, "AWS access key id"))
+
     def test_error_output_is_capped(self):
         document = example()
         document["evidence_ledger"] = [{"id": "bad"}] * 400

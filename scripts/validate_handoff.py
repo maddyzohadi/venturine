@@ -108,6 +108,7 @@ INPUT_KEYS = ("name", "value", "evidence")
 DECISION_KEYS = ("label", "confidence", "rationale")
 REVIEW_KEYS = ("reviewer", "result", "date", "summary")
 
+KNOWN_KEYS = None  # filled in below, once every key table exists
 ID_PATTERN = re.compile(r"^[A-Z][0-9]{1,4}$", re.ASCII)
 COMPONENT_PATTERN = re.compile(r"^[a-z][a-z0-9-]{1,40}$", re.ASCII)
 SEMVER_PATTERN = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$", re.ASCII)
@@ -132,7 +133,32 @@ SECRET_PATTERNS = (
      re.compile(r"(?<![A-Za-z0-9])AIza[0-9A-Za-z_-]{35}")),
     ("credentials in a URL", re.compile(r"https?://[^/\s:@]+:[^/\s@]+@")),
 )
-EMAIL_PATTERN = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.[A-Za-z0-9.-]+")
+# Every quantifier is bounded so that a long run of ordinary characters is
+# scanned in linear time. An unbounded local part backtracked quadratically
+# and let one 1 MB string hang the validator.
+EMAIL_PATTERN = re.compile(
+    r"[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9-]{1,63}(?:\.[A-Za-z0-9-]{1,63})+"
+)
+
+
+KNOWN_KEYS = frozenset(
+    TOP_REQUIRED + TOP_OPTIONAL + PRODUCER_KEYS + VENTURE_KEYS + LEDGER_KEYS
+    + SOURCE_KEYS + CALCULATION_KEYS + INPUT_KEYS + DECISION_KEYS
+    + REVIEW_KEYS
+)
+
+
+def key_label(key):
+    """
+    Text for a key in a message. Only the format's own field names are ever
+    shown. Any other key could be a secret or personal data, so it is not
+    echoed.
+    """
+    if key in KNOWN_KEYS:
+        return key
+    if key.startswith(EXTENSION_PREFIX):
+        return "<custom field>"
+    return "<unrecognized field>"
 
 
 class Report:
@@ -229,7 +255,7 @@ def iter_strings(document):
         elif isinstance(value, dict):
             for key, item in value.items():
                 yield f"{path}.<key>", key
-                stack.append((f"{path}.{key[:40]}", item))
+                stack.append((f"{path}.{key_label(key)}", item))
         elif isinstance(value, list):
             for index, item in enumerate(value):
                 stack.append((f"{path}[{index}]", item))
@@ -260,8 +286,10 @@ def check_object(value, path, report, allowed, required=()):
     for key in value:
         if key in allowed or key.startswith(EXTENSION_PREFIX):
             continue
-        report.error(path, f"unknown field '{key[:40]}'; custom fields "
-                           f"must start with '{EXTENSION_PREFIX}'")
+        report.error(path, "unknown field (its name is not shown); allowed "
+                           "fields here: " + ", ".join(sorted(allowed))
+                           + f"; custom fields must start with "
+                             f"'{EXTENSION_PREFIX}'")
     return True
 
 
