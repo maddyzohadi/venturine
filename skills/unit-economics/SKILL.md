@@ -353,6 +353,8 @@ Simplified subscription LTV:
 
 All numeric arguments in these examples are illustrative.
 
+For a monthly cash-flow forecast, scenarios, sensitivity analysis or a comparison of candidate prices, use the `scenario-comparison` and `pricing-analysis` skills, which run the separate forecasting calculator and give each result a receipt.
+
 Input bounds: each argument must be a plain number written with ASCII digits (optional sign, decimal point and exponent; no separators or spaces) of at most 64 characters with an absolute value of at most 1,000,000,000,000. Nonzero values must be at least 0.000000001 in absolute value, and break-even results above 1,000,000,000,000,000,000 units are rejected. Out-of-range or malformed inputs are rejected with an error.
 
 ### Result Handling

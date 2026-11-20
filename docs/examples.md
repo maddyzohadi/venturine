@@ -146,6 +146,48 @@ recommendation, a premortem, and any evidence that contradicts it.
 
 Expect a verdict of `STANDS`, `STANDS WITH WEAKNESSES`, `DOES NOT STAND` or `NOT ENOUGH INFORMATION`, with ranked failure paths, assumption stress tests and a statement of what evidence would change its mind. It does not invent counter-evidence, and finding none is not proof that the claim is right.
 
+## 6. Forecasts, scenarios and prices (unreleased)
+
+These components are built but not yet in a release. The scenario is a hypothetical bakery with invented numbers.
+
+**Forecast cash flow.** Starting cash of $5,000, 12 months, 100 loaves in month 1 growing 3% a month, a price of $24, a variable cost of $9.50, fixed costs of $1,500 a month and advertising of $600 a month:
+
+```bash
+python3 scripts/forecast.py monthly-forecast 5000 12 100 0.03 24 9.50 1500 600
+```
+
+The output has the monthly table, a summary, and a receipt with the exact inputs, the assumptions and exclusions, and a fingerprint. Run the same command again and the fingerprint is identical. Change one input and it changes.
+
+**Compare scenarios.** The `scenario-comparison` skill compares assumptions you supply, for example 80 loaves growing 1% a month against 100 growing 3%:
+
+```bash
+python3 scripts/forecast.py scenario-compare --scenario conservative 5000 12 80 0.01 24 9.50 1500 600 --scenario base 5000 12 100 0.03 24 9.50 1500 600
+```
+
+It lists which inputs differ, each scenario's ending cash, lowest cash and cash-out month, and the difference from the first scenario. It does not call any scenario likely, and it does not make up the values. In this example the conservative scenario runs out of cash in month 6, while the base scenario ends the year with $378.44, with each result resting on assumptions you gave it.
+
+**See what moves the result.**
+
+```bash
+python3 scripts/forecast.py sensitivity 5000 12 100 0.03 24 9.50 1500 600 --delta 10 --delta 20
+```
+
+Each input is moved down and up by 10% and 20% while the others stay put, and the inputs are ranked by their effect on ending cash. In this example price moves ending cash the most. That describes the model, not the business.
+
+**Compare prices.** With a variable cost of $9.50, fixed costs of $1,500, an acquisition cost of $12 per customer and 100 units a month:
+
+```bash
+python3 scripts/forecast.py price-compare 9.50 1500 12 100 24 29 34
+```
+
+For each price: the contribution and margin, break-even units with and without acquisition cost, the profit at 100 units, and the units needed to match the first price's profit. The expected volume is held the same at every price, because the model does not know how demand responds to price. Test that with customers.
+
+**Put a forecast in a handoff.** [forecast-handoff.example.json](forecast-handoff.example.json) shows a forecast recorded in the handoff format, with every input labeled and the calculator's receipt attached. Check it with the validator:
+
+```bash
+python3 scripts/validate_handoff.py docs/forecast-handoff.example.json
+```
+
 ## Tips
 
 - Name the skill in your prompt so it is used.

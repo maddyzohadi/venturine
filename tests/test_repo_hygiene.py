@@ -116,9 +116,11 @@ class TestNoHiddenExecution(unittest.TestCase):
         self.assertFalse((ROOT / ".claude-plugin" / "hooks.json").exists())
 
     def test_calculator_imports_are_limited(self):
-        # "re" is used only to validate the numeric input syntax.
+        # "re" validates input syntax. "hashlib" computes the SHA-256
+        # fingerprint of a calculation receipt, and nothing else.
         allowed = {
-            "decimal", "argparse", "json", "re", "scripts", "calculator",
+            "decimal", "argparse", "json", "re", "hashlib", "scripts",
+            "calculator", "calculate",
         }
         for path in (ROOT / "scripts").glob("*.py"):
             tree = ast.parse(path.read_text(encoding="utf-8"))

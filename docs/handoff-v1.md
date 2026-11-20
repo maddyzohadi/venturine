@@ -53,11 +53,11 @@ A `source` has a `type` (`vendor_page`, `official_statistic`, `regulator`, `fili
 
 Each calculation has an `id` like `C1`, an `operation`, a list of `inputs`, a `result`, and `engine_validated`.
 
-- `operation` is one of the nine calculator operations (see the README) or `manual`.
+- `operation` is one of the nine calculator operations (see the README), one of the four forecasting operations (`monthly-forecast`, `scenario-compare`, `sensitivity`, `price-compare`; see [forecasting.md](forecasting.md)), or `manual`.
 - Each input is `{"name", "value", "evidence"}`. The value is a plain number written with ASCII digits, and `evidence` is the id of the ledger entry that says where the number came from. This is what stops a number from appearing with no label.
 - `result` is the output as printed. `unrounded_result` may carry the full-precision values the calculator returns when rounding changed a value.
-- `engine_validated: true` means the main session ran the Venturine calculator and this is its output. It needs `engine_version`. A `manual` calculation cannot be engine-validated and needs a `method`.
-- `break-even-loaded` and `operating-profit` need `acquisition_counted_once: true`, because acquisition spending must enter a model exactly once, never in both fixed costs and CAC.
+- `engine_validated: true` means the main session ran a Venturine calculator and this is its output. It needs `engine_version`. A forecasting result also needs `receipt`, the fingerprint the calculator printed. A result that was not engine-validated must not have one. A `manual` calculation cannot be engine-validated and needs a `method`.
+- `break-even-loaded`, `operating-profit` and the four forecasting operations need `acquisition_counted_once: true`, because acquisition spending must enter a model exactly once, never in both fixed costs and CAC.
 
 ### decision
 
@@ -81,6 +81,7 @@ Each entry records a review that ran: `reviewer` (`evidence-auditor` or `red-tea
 | An `ASSUMPTION` without `validation` produces a warning. | An assumption should say how to test it. |
 | Every calculation input names an existing ledger entry. | Every number carries a label. |
 | An engine operation has the right number of inputs. | The calculator would reject anything else. |
+| An engine-validated forecasting result has a `receipt` of the form `sha256:` plus 64 hexadecimal characters, and no other result has one. | A receipt makes a calculation reproducible, so it must not be claimed without a run. |
 | `AUDITED` needs an `evidence-auditor` entry in `reviews`. | Do not claim a review that did not happen. |
 | A `PROCEED TO VALIDATION` or `NOT VIABLE UNDER STATED CONSTRAINTS` decision can be `AUDITED` only if the auditor result is `PASS` or `PASS WITH LIMITATIONS`. | A high-confidence decision needs a review it survived. |
 | `PRELIMINARY` cannot be paired with an `evidence-auditor` review. | `PRELIMINARY` means no independent review ran. |
@@ -111,7 +112,7 @@ A complete hypothetical example is in [handoff-v1.example.json](handoff-v1.examp
 ## Compatibility
 
 - **Unchanged behavior.** Existing skills and agents behave as before unless a handoff is requested.
-- **v1 will only grow in compatible ways.** Within v1, new optional fields and new optional values may be added. Required fields, field meanings and the label vocabulary will not change.
+- **v1 will only grow in compatible ways.** Within v1, new optional fields and new optional values may be added. The forecasting operations and `receipt` were added this way, and every earlier handoff stays valid. Required fields, field meanings and the label vocabulary will not change.
 - **A breaking change is a new schema id.** It would be `venturine-handoff/v2`. The v1 validator rejects any other version with a clear message instead of guessing.
 - **Custom fields.** Fields that start with `x_` are allowed anywhere an object is allowed. Consumers must ignore `x_` fields they do not understand. Any other unknown field is an error, which catches typos.
 - **Validator version.** The validator has its own version, reported in its output, because fixing a validator bug is not a change to the format.

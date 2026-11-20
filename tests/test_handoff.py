@@ -95,8 +95,11 @@ class TestExampleAndSchema(unittest.TestCase):
                          list(vh.STAGES))
         self.assertEqual(props["producer"]["properties"]["kind"]["enum"],
                          list(vh.PRODUCER_KINDS))
-        self.assertEqual(calc["operation"]["enum"],
-                         list(vh.ENGINE_OPERATIONS) + [vh.MANUAL_OPERATION])
+        self.assertEqual(
+            calc["operation"]["enum"],
+            list(vh.ENGINE_OPERATIONS) + list(vh.FORECAST_OPERATIONS)
+            + [vh.MANUAL_OPERATION])
+        self.assertEqual(calc["receipt"]["pattern"], "^sha256:[0-9a-f]{64}$")
         self.assertEqual(props["decision"]["properties"]["label"]["enum"],
                          list(vh.DECISION_LABELS))
         self.assertEqual(props["decision"]["properties"]["confidence"]["enum"],

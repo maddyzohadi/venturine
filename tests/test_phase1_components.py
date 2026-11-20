@@ -61,6 +61,7 @@ ORIGINAL_OPERATIONS = {
     "subscription-ltv",
 }
 NEW_SKILLS = ("venture-intake", "evidence-audit")
+PHASE2_SKILLS = ("scenario-comparison", "pricing-analysis")
 NEW_AGENTS = ("red-team-reviewer",)
 LABELS = list(vh.LABELS)
 
@@ -95,21 +96,22 @@ def section(text, heading, level="##"):
     return rest[:match.start()] if match else rest
 
 
-ALL_SKILLS = sorted(ORIGINAL_SKILLS) + list(NEW_SKILLS)
+ALL_SKILLS = sorted(ORIGINAL_SKILLS) + list(NEW_SKILLS) + list(PHASE2_SKILLS)
 ALL_AGENTS = sorted(ORIGINAL_AGENTS) + list(NEW_AGENTS)
 HANDOFF_OPTIONAL = [f"skills/{n}/SKILL.md" for n in sorted(ORIGINAL_SKILLS)]
 HANDOFF_OPTIONAL += ["skills/evidence-audit/SKILL.md"]
+HANDOFF_OPTIONAL += [f"skills/{n}/SKILL.md" for n in PHASE2_SKILLS]
 HANDOFF_OPTIONAL += [f"agents/{n}.md" for n in ALL_AGENTS]
 
 
 class TestComponentInventory(unittest.TestCase):
 
-    def test_there_are_exactly_six_skills_and_four_agents(self):
+    def test_there_are_exactly_eight_skills_and_four_agents(self):
         skills = sorted(p.name for p in (ROOT / "skills").iterdir())
         agents = sorted(p.stem for p in (ROOT / "agents").glob("*.md"))
         self.assertEqual(skills, sorted(ALL_SKILLS))
         self.assertEqual(agents, sorted(ALL_AGENTS))
-        self.assertEqual((len(skills), len(agents)), (6, 4))
+        self.assertEqual((len(skills), len(agents)), (8, 4))
 
     def test_every_component_has_complete_frontmatter(self):
         for name in NEW_SKILLS:
@@ -556,9 +558,9 @@ class TestDocumentation(unittest.TestCase):
 
     def test_roadmap_records_phase_one_as_built_but_unreleased(self):
         text = read("docs/roadmap.md")
-        self.assertIn("## Built, not yet released (Phase 1)", text)
+        self.assertIn("## Built, not yet released (Phases 1 and 2)", text)
         self.assertIn("The plugin version is still 0.2.1", text)
-        self.assertIn("No change to the calculator", text)
+        self.assertIn("No change to the original calculator", text)
         self.assertIn("## Shipped (v0.2.1)", text)
         self.assertIn("- Skills (4):", text)
         self.assertIn("- Agents (3):", text)

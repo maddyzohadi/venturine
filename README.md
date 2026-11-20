@@ -20,6 +20,7 @@ Venturine is a Claude Code plugin made of skills and agents for founders and ind
 | **Unit economics** | `unit-economics` covers margins, CAC, LTV, payback, break-even and runway, using a calculator for the arithmetic. |
 | **Research and review agents** | `research-lead` gathers evidence, `financial-analyst` models the economics, `evidence-auditor` runs a second AI review pass over claims and calculations. It is not a human audit and does not guarantee accuracy. |
 | **Financial calculator** | A standard-library Python engine (v0.2.1) with nine operations and an automated test suite. |
+| **Forecasting and pricing** (unreleased) | `scenario-comparison` compares scenarios over a monthly forecast of cash flow and runway, and shows how sensitive the outcome is to each input. `pricing-analysis` compares candidate prices by margin, break-even and profit. A separate calculator does the arithmetic and gives each result a receipt. See [docs/forecasting.md](docs/forecasting.md). |
 | **Intake and handoff** (unreleased) | `venture-intake` turns a rough description into a structured venture profile with labeled inputs and a list of what is missing. Skills can pass their results on in the [`venturine-handoff/v1`](docs/handoff-v1.md) format, which a standard-library validator checks. |
 | **Independent review** (unreleased) | `evidence-audit` prepares an analysis for the `evidence-auditor` and reports what changed. `red-team-reviewer` argues the strongest case against a conclusion and looks for disconfirming evidence. Both are AI passes, not human audits. |
 
@@ -27,7 +28,7 @@ Venturine is a Claude Code plugin made of skills and agents for founders and ind
 
 - **Evidence labels, not vibes.** Claims and inputs are labeled VERIFIED, PARTIALLY_SUPPORTED, UNVERIFIED, CONTRADICTED, FOUNDER_PROVIDED, DERIVED, ASSUMPTION or UNKNOWN, with the same meanings in every skill and agent ([definitions](docs/evidence-terminology.md)). Skills are instructed never to invent sources, statistics or citations. These are instructions to an AI model, so labels can still be wrong; check the sources behind anything that matters.
 - **Reproducible numbers.** Calculations run through a deterministic engine that echoes its inputs, so a result can be re-run. See [Financial calculator](#financial-calculator).
-- **Least privilege.** No agent has shell access. The only code that runs is the calculator and the handoff validator, in your main Claude Code session, with your permission. See [security and privacy](docs/security-and-privacy.md).
+- **Least privilege.** No agent has shell access. The only code that runs is the calculators and the handoff validator, in your main Claude Code session, with your permission. See [security and privacy](docs/security-and-privacy.md).
 - **Honest limits.** A skill reports "insufficient evidence" instead of filling gaps, and states what it did not verify or audit.
 
 Venturine does not claim to be better than other tools. If you are comparing options, the [competitive landscape](docs/competitive-landscape.md) lists similar projects with dated, sourced facts.
@@ -126,6 +127,23 @@ evidence-auditor, tell me what changed, and say whether the result is
 AUDITED or PRELIMINARY.
 ```
 
+**Compare scenarios** (unreleased)
+
+```text
+Use scenario-comparison on this hypothetical bakery: $5,000 cash, 12 months,
+100 loaves in month 1, price $24, variable cost $9.50, fixed costs $1,500 a
+month, advertising $600 a month. Conservative is 80 loaves growing 1% a month;
+base is 100 growing 3%. Label every input and give me the receipts.
+```
+
+**Test a price** (unreleased)
+
+```text
+Use pricing-analysis to compare $24, $29 and $34 for that bakery: variable
+cost $9.50, fixed costs $1,500, acquisition cost $12 per customer, 100 units a
+month. Do not assume how demand changes with price.
+```
+
 **Challenge a conclusion** (unreleased)
 
 ```text
@@ -162,6 +180,7 @@ A successful calculation shows the arithmetic is right for the inputs you gave. 
 - No telemetry, and the plugin has no hooks and no bundled servers.
 - Agents have no shell access. This is enforced by a test.
 - The calculator cannot reach the network, read or write files, or run other programs.
+- The forecasting calculator is deterministic, uses only the Python standard library, and cannot reach the network, read or write files, or run other programs.
 - The handoff validator reads only the one `.json` file you name, never writes files or reaches the network, and never prints the file's contents.
 - `research-lead`, `evidence-auditor` and `red-team-reviewer` can search and fetch web pages. Do not put confidential details into research requests. Skills and agents are instructed to treat fetched content as data, not instructions. This reduces prompt-injection risk but cannot eliminate it.
 
@@ -171,10 +190,10 @@ Read [docs/security-and-privacy.md](docs/security-and-privacy.md) for the full p
 
 ```text
 .claude-plugin/   plugin and marketplace manifests
-skills/           idea-validator, market-intelligence, competitor-intelligence, unit-economics, venture-intake, evidence-audit
+skills/           idea-validator, market-intelligence, competitor-intelligence, unit-economics, venture-intake, evidence-audit, scenario-comparison, pricing-analysis
 agents/           research-lead, financial-analyst, evidence-auditor, red-team-reviewer
 schemas/          JSON Schema for the handoff format
-scripts/          calculator, handoff validator, and command-line interfaces
+scripts/          calculator, forecasting calculator, handoff validator, and command-line interfaces
 tests/            calculator and repository tests
 docs/             security, evidence terminology, competitive landscape, examples, roadmap, release process and notes, repository settings, commit metadata
 assets/           logo and social preview image
@@ -182,7 +201,7 @@ assets/           logo and social preview image
 
 ## Roadmap
 
-The planned architecture is 12 skills and 6 agents, delivered in phases: shared evidence and handoff contracts, scenario comparison, go-to-market and customer discovery, and an integrated business report. Release v0.2.1 ships 4 skills and 3 agents. Phase 1 (2 more skills, 1 more agent, and the handoff format) is built but not yet released. See [docs/roadmap.md](docs/roadmap.md).
+The planned architecture is 12 skills and 6 agents, delivered in phases: shared evidence and handoff contracts, scenario comparison, go-to-market and customer discovery, and an integrated business report. Release v0.2.1 ships 4 skills and 3 agents. Phases 1 and 2 (4 more skills, 1 more agent, the handoff format, and forecasting and pricing calculations) are built but not yet released. See [docs/roadmap.md](docs/roadmap.md).
 
 ## Contributing
 
