@@ -223,6 +223,11 @@ class TestRequiredFiles(unittest.TestCase):
         "docs/security-and-privacy.md", "docs/competitive-landscape.md",
         "docs/examples.md", "docs/roadmap.md", "docs/release-notes/v0.2.1.md",
         "docs/evidence-terminology.md", "docs/releasing.md",
+        "docs/handoff-v1.md", "docs/handoff-v1.example.json",
+        "schemas/venturine-handoff.v1.schema.json",
+        "scripts/validate_handoff.py",
+        "skills/venture-intake/SKILL.md", "skills/evidence-audit/SKILL.md",
+        "agents/red-team-reviewer.md",
         "docs/commit-metadata.md", "docs/repository-settings.md",
         ".gitignore", ".github/workflows/release-check.yml",
         ".github/PULL_REQUEST_TEMPLATE.md", ".github/CODEOWNERS",
@@ -288,7 +293,8 @@ class TestDocumentation(unittest.TestCase):
 
     def test_security_doc_matches_agent_permissions(self):
         text = read("docs/security-and-privacy.md")
-        for agent in ("research-lead", "evidence-auditor", "financial-analyst"):
+        for agent in ("research-lead", "evidence-auditor", "financial-analyst",
+                      "red-team-reviewer"):
             self.assertIn(agent, text)
 
 

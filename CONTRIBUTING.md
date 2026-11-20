@@ -34,9 +34,9 @@ CI installs Claude Code from `.github/ci/claude-code/` with `npm ci`, which veri
 These are checked by tests where possible.
 
 1. **Agents never get Bash.** Agent definitions in `agents/` must not list `Bash`. Calculator commands run only in the main session, with the user's permission. The hygiene tests fail if this changes.
-2. **No dependencies.** The calculator uses only the Python standard library. It must not use the network, write files or run other programs.
+2. **No dependencies.** The calculator and the handoff validator use only the Python standard library. They must not use the network, write files or run other programs. The validator reads only the one `.json` file it is given and never prints its contents.
 3. **Calculations are reproducible.** Use `Decimal`, validate and bound inputs, and return clear errors. Every new calculation needs hand-computed expected values in its tests, and tests for invalid and boundary inputs.
-4. **Evidence is honest.** Do not invent sources, statistics, quotes or testimonials, in code, skills, docs or examples. Use the evidence labels defined in [docs/evidence-terminology.md](docs/evidence-terminology.md). Any new skill or agent that reads external content must include the standard "Untrusted Content" section; a test checks this.
+4. **Evidence is honest.** Do not invent sources, statistics, quotes or testimonials, in code, skills, docs or examples. Use the evidence labels defined in [docs/evidence-terminology.md](docs/evidence-terminology.md). Any new skill or agent that reads external content must include the standard "Untrusted Content" section; a test checks this. A change to the handoff format must keep `venturine-handoff/v1` compatible (see [docs/handoff-v1.md](docs/handoff-v1.md)), or introduce a new schema id.
 5. **No unsupported claims.** Do not claim Venturine is better than another tool, or that it guarantees any outcome. Describe what it does and let readers judge.
 6. **Privacy.** Never put real customer, financial or confidential business data in issues, tests or examples.
 7. **Naming.** Follow [TRADEMARK.md](TRADEMARK.md) when you refer to the project.
