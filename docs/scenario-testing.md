@@ -64,6 +64,27 @@ Additional limitations: one run per case, simulated invocation rather than nativ
 |---|---|
 | idea-validator on a high-stakes decision | A hypothetical "spend my savings" request whose founder-supplied facts pointed to `NOT VIABLE UNDER STATED CONSTRAINTS`. The skill ran 3 searches and 1 fetch without asking for approval, then invoked the evidence-auditor with its evidence ledger and draft decision. The auditor declined to support a high-confidence verdict and flagged an overstated `CONTRADICTED` label. The skill corrected both and issued `REVISE THE CONCEPT`, marked `AUDITED`, and said it was not a high-confidence go or no-go. The subagent had an Agent tool, and the auditor was a general-purpose agent following the current `evidence-auditor.md`, not the registered agent type. The branch where the auditor is unavailable was exercised in the second pass and produced `PRELIMINARY` with "no independent review took place". |
 | Vendor-published prices | A rule now separates the observed list price from claims about it (see `docs/evidence-terminology.md`). In a test, a vendor price read from the vendor's own live page was `VERIFIED (list price as observed)`, a price a friend pasted was `FOUNDER_PROVIDED`, and "cheapest", "used by thousands", "still current" and "equivalent to another plan" were separate `UNVERIFIED` rows. The idea-validator had labeled a vendor price `UNVERIFIED` because the rule was missing there, so the rule was added to it and to market-intelligence. |
-| Native invocation | NOT VERIFIED. `claude auth status` reports a signed-in claude.ai account and no auth environment variables are set, but a minimal non-interactive call with no plugin loaded fails with HTTP 401 "OAuth access token has been revoked". The stored login appears revoked on the server side, so this is not caused by Venturine. The supported fix is for the account holder to run `claude auth login` interactively. |
+| Native invocation | NOT VERIFIED at the time of the third pass (see the Phase 1 verification below, which supersedes this). `claude auth status` reports a signed-in claude.ai account and no auth environment variables are set, but a minimal non-interactive call with no plugin loaded fails with HTTP 401 "OAuth access token has been revoked". The stored login appears revoked on the server side, so this is not caused by Venturine. The supported fix is for the account holder to run `claude auth login` interactively. |
 
 Limitations of this pass: one run per case, simulated invocation, and the auditor was not the registered agent type.
+
+## Phase 1 native verification
+
+After the Claude Code login was refreshed, the plugin was invoked through Claude Code's own plugin loading instead of a subagent reading the files. Each run used a scratch directory, `--plugin-dir` pointing at the repository, user-level settings excluded, no MCP servers, a spending cap, and only the tools the test needed. The installed plugin directory and the user settings file were byte-identical before and after (checked by fingerprint), and no credentials were read or copied.
+
+| Component | How it was invoked | What was observed |
+|---|---|---|
+| Plugin loading | `--plugin-dir` session | Only `venturine` loaded, with 6 skills and 4 agents. |
+| `unit-economics` skill | Skill tool | The skill ran the calculator by file path and reported a break-even of 207 units. |
+| `evidence-auditor` agent | Agent tool | The agent caught a revenue error (200 cups at $4 for 30 days is $24,000, not $20,000). |
+| `venture-intake` skill | Skill tool | The reply ended with a handoff. The first run produced an invalid one (wrong field names, numeric values, a value on an UNKNOWN entry) because the model could not read the specification file and had only a one-line summary. The essential format and a minimal example are now inline in every component that emits a handoff. The second run produced a handoff that passes the validator with zero errors, labeled a guess as `ASSUMPTION`, and included no decision, review or calculation. |
+| `evidence-audit` skill | Skill tool, then Agent tool | The skill dispatched `venturine:evidence-auditor`, reported the auditor's REVISION REQUIRED result, lowered a "PROCEED, high confidence" decision, and marked the result AUDITED. |
+| `red-team-reviewer` agent | Agent tool | The report had every required section and a valid verdict (`DOES NOT STAND`). |
+
+Not natively exercised: `idea-validator`, `market-intelligence`, `competitor-intelligence`, `research-lead` and `financial-analyst`. They were checked in the earlier simulated passes, and their only Phase 1 change is the optional handoff section.
+
+Limitations of this verification:
+- One run per case. A model-behavior test shows what can happen, not that it always will.
+- The skill tried to read `docs/handoff-v1.md` relative to its own folder, and the read was denied by the test's tool allowlist. The inline format makes this harmless, but the documentation path convention is not reliable inside a skill.
+- The evidence-audit run lowered the decision to "REVISE ANALYSIS BEFORE PROCEEDING" with "LOW" confidence, which is not one of the four decision labels and would fail the handoff validator's decision check. The skill now says to use one of the four labels and not to invent a new label or confidence level. That change was not re-run.
+- The prompt-injection behavior of the new agent was not exercised natively, because the calling session removed the planted instruction before passing the memo on.
