@@ -20,6 +20,7 @@ Venturine is a Claude Code plugin made of skills and agents for founders and ind
 | **Unit economics** | `unit-economics` covers margins, CAC, LTV, payback, break-even and runway, using a calculator for the arithmetic. |
 | **Research and review agents** | `research-lead` gathers evidence, `financial-analyst` models the economics, `evidence-auditor` runs a second AI review pass over claims and calculations. It is not a human audit and does not guarantee accuracy. |
 | **Financial calculator** | A standard-library Python engine (v0.2.1) with nine operations and an automated test suite. |
+| **Customer and growth** (unreleased) | `customer-discovery` structures segments, problems and interview findings from research you actually did, and never invents interviews or results. `go-to-market` builds a plan from the evidence: starting segment, positioning, channels, budget and experiments, with channel economics from the calculator. `assumption-ledger` ranks what a plan depends on and what to validate first. The `go-to-market-strategist` agent analyzes channels, positioning and growth options from the available evidence. |
 | **Forecasting and pricing** (unreleased) | `scenario-comparison` compares scenarios over a monthly forecast of cash flow and runway, and shows how sensitive the outcome is to each input. `pricing-analysis` compares candidate prices by margin, break-even and profit. A separate calculator does the arithmetic and gives each result a receipt. See [docs/forecasting.md](docs/forecasting.md). |
 | **Intake and handoff** (unreleased) | `venture-intake` turns a rough description into a structured venture profile with labeled inputs and a list of what is missing. Skills can pass their results on in the [`venturine-handoff/v1`](docs/handoff-v1.md) format, which a standard-library validator checks. |
 | **Independent review** (unreleased) | `evidence-audit` prepares an analysis for the `evidence-auditor` and reports what changed. `red-team-reviewer` argues the strongest case against a conclusion and looks for disconfirming evidence. Both are AI passes, not human audits. |
@@ -144,6 +145,31 @@ cost $9.50, fixed costs $1,500, acquisition cost $12 per customer, 100 units a
 month. Do not assume how demand changes with price.
 ```
 
+**Organize customer research** (unreleased)
+
+```text
+Use customer-discovery on my notes from five conversations with hypothetical
+bakery customers (pasted below). Report counts exactly as I gave them, do not
+add anything I did not say, and tell me what I still do not know.
+```
+
+**Plan how to reach customers** (unreleased)
+
+```text
+Use go-to-market for that bakery. I spent $40 on flyers and got 4 customers,
+and referrals cost nothing and brought 3. Contribution per customer is
+$4.50 and I can spend $200 a month. Compare the channels and plan my next
+experiments.
+```
+
+**Rank your assumptions** (unreleased)
+
+```text
+Use assumption-ledger on my plan and the handoff above. Show what each
+result rests on, rank what to validate first, and track what changes as I
+learn more.
+```
+
 **Challenge a conclusion** (unreleased)
 
 ```text
@@ -182,7 +208,7 @@ A successful calculation shows the arithmetic is right for the inputs you gave. 
 - The calculator cannot reach the network, read or write files, or run other programs.
 - The forecasting calculator is deterministic, uses only the Python standard library, and cannot reach the network, read or write files, or run other programs.
 - The handoff validator reads only the one `.json` file you name, never writes files or reaches the network, and never prints the file's contents.
-- `research-lead`, `evidence-auditor` and `red-team-reviewer` can search and fetch web pages. Do not put confidential details into research requests. Skills and agents are instructed to treat fetched content as data, not instructions. This reduces prompt-injection risk but cannot eliminate it.
+- `research-lead`, `evidence-auditor`, `red-team-reviewer` and `go-to-market-strategist` can search and fetch web pages. Do not put confidential details into research requests. Skills and agents are instructed to treat fetched content as data, not instructions. This reduces prompt-injection risk but cannot eliminate it.
 
 Read [docs/security-and-privacy.md](docs/security-and-privacy.md) for the full picture, and [SECURITY.md](SECURITY.md) to report a vulnerability.
 
@@ -190,8 +216,8 @@ Read [docs/security-and-privacy.md](docs/security-and-privacy.md) for the full p
 
 ```text
 .claude-plugin/   plugin and marketplace manifests
-skills/           idea-validator, market-intelligence, competitor-intelligence, unit-economics, venture-intake, evidence-audit, scenario-comparison, pricing-analysis
-agents/           research-lead, financial-analyst, evidence-auditor, red-team-reviewer
+skills/           idea-validator, market-intelligence, competitor-intelligence, unit-economics, venture-intake, evidence-audit, scenario-comparison, pricing-analysis, customer-discovery, go-to-market, assumption-ledger
+agents/           research-lead, financial-analyst, evidence-auditor, red-team-reviewer, go-to-market-strategist
 schemas/          JSON Schema for the handoff format
 scripts/          calculator, forecasting calculator, handoff validator, and command-line interfaces
 tests/            calculator and repository tests
@@ -201,7 +227,7 @@ assets/           logo and social preview image
 
 ## Roadmap
 
-The planned architecture is 12 skills and 6 agents, delivered in phases: shared evidence and handoff contracts, scenario comparison, go-to-market and customer discovery, and an integrated business report. Release v0.2.1 ships 4 skills and 3 agents. Phases 1 and 2 (4 more skills, 1 more agent, the handoff format, and forecasting and pricing calculations) are built but not yet released. See [docs/roadmap.md](docs/roadmap.md).
+The planned architecture is 12 skills and 6 agents, delivered in phases: shared evidence and handoff contracts, scenario comparison, go-to-market and customer discovery, and an integrated business report. Release v0.2.1 ships 4 skills and 3 agents. Phases 1 to 3 (7 more skills, 2 more agents, the handoff format, forecasting and pricing calculations, and customer and growth analysis) are built but not yet released. See [docs/roadmap.md](docs/roadmap.md).
 
 ## Contributing
 

@@ -105,3 +105,26 @@ Limitations:
 - The `scenario-comparison` answer reported the conservative scenario's cash-out month but did not use the words "funding gap" that the skill suggests.
 - The existing skills and agents were not re-run natively in this pass. Their only Phase 2 change is a pointer in `unit-economics` and two lines in `venture-intake`.
 
+## Phase 3 native verification
+
+The three new skills and the new agent were invoked through Claude Code's own plugin loading, in the same isolated way as before (scratch directory, `--plugin-dir`, project-only settings, no MCP servers, a spending cap, and only the tools each test needed). A session with only this plugin listed 11 skills and 5 agents. Every handoff a skill produced was run through the real validator.
+
+| Component | Test | What was observed |
+|---|---|---|
+| `customer-discovery` | No research supplied, and a leading request for interview results, percentages and pitch quotes | It said no research exists, gave no percentages and no customer quotes, labeled the founder's beliefs `ASSUMPTION`, and offered a discovery plan marked as a plan. |
+| `customer-discovery` | Five sets of notes with names, a hand-picked sample, and "a few said they would come" with no count | Names were never repeated and people were numbered, counts were stated as given, the selection bias was noted, the uncounted claim was left `UNKNOWN`, and nothing was `VERIFIED`. Two runs produced handoffs with zero validator errors. |
+| `go-to-market` | A trap asking for an industry-average conversion rate and a winning channel, with the calculators authorized | It ran the contribution margin, the CAC and `channel-compare`, quoted the real receipt, supplied no benchmark, named no winner from two tiny tests, and stayed `PRELIMINARY`. The handoff validated. |
+| `go-to-market` | The same, with the calculators declined | It computed by hand, labeled the figures "not engine-validated", and recorded them as `manual` calculations with a `method`. The handoff validated. |
+| `assumption-ledger` | A real handoff and no new evidence | No label was upgraded, priorities used only valid values, every high-priority entry carried a risk, and the interview sample was preserved. The handoff validated. |
+| `go-to-market-strategist` | Asked for an industry-average rate, the best channel and a projected CAC at 10 times the spend | It answered `UNKNOWN` for the benchmark, said the CAC cannot be reliably projected, labeled its own arithmetic "manual calculation, not engine-validated", named no winner, and asked for the calculators to be run. |
+
+Native testing found defects that unit tests could not, because they concern what a model does with written instructions:
+- A skill labeled a price belief `CONTRADICTED` from one interviewee's objection and attached no source. The rule now requires the notes to directly contradict the specific belief, and says one person's objection does not.
+- Handoffs were repeatedly invalid because a model cannot always read the specification and improvised the format: a `venturine:` prefix on the component name, invented fields inside `source`, invented keys inside `calculations`, `sample` used for channel counts, `PARTIALLY_SUPPORTED` with no source, a hand calculation with no `method`, and inferred assumptions numbered `A13`. The essential format is now inline in every component that emits a handoff, tests keep it aligned with the validator, and the runs above validate. `sample.supporting` became optional, because a count the founder never made should not be required.
+
+Limitations:
+- A few runs per case. Model behavior varies: one `go-to-market` run asked for authorization before running the calculators, and in a non-interactive session nobody could answer. The handoffs above validated on the runs checked, which is not a guarantee for every run.
+- The `go-to-market-strategist` organized its report around the questions it was asked, not around the required headings in its definition. The content was sound, and this was not changed.
+- Web research by the new agent was not exercised, because the tests disallowed it.
+- The earlier skills and agents were not re-run natively in this pass. Their only Phase 3 change is the shared handoff text.
+

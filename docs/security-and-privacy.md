@@ -13,7 +13,7 @@ This document describes what Venturine can and cannot do, based on the contents 
 | Does the calculator touch the network or files? | No. It uses only the Python standard library and performs arithmetic. |
 | Does the forecasting calculator touch the network or files? | No. It is deterministic, uses only the Python standard library (`hashlib` only for the receipt fingerprint), and neither reads nor writes files. |
 | Does the handoff validator touch the network or files? | It reads only the one `.json` file you name, up to 1 MB. It never writes files, never uses the network, never runs other programs, and never prints the file's contents. It uses only the Python standard library. |
-| Do any agents reach the web? | Yes. `research-lead`, `evidence-auditor` and `red-team-reviewer` can search and fetch public web pages. |
+| Do any agents reach the web? | Yes. `research-lead`, `evidence-auditor`, `red-team-reviewer` and `go-to-market-strategist` can search and fetch public web pages. |
 
 ## Agent permissions
 
@@ -22,6 +22,7 @@ This document describes what Venturine can and cannot do, based on the contents 
 | `research-lead` | WebSearch, WebFetch, Read, Grep, Glob. Bash is disallowed. |
 | `evidence-auditor` | Read, Glob, Grep, WebSearch, WebFetch |
 | `red-team-reviewer` | Read, Glob, Grep, WebSearch, WebFetch |
+| `go-to-market-strategist` | Read, Glob, Grep, WebSearch, WebFetch |
 | `financial-analyst` | Read, Glob, Grep |
 
 None can write or delete files. Skills run in your main session and follow your Claude Code permission settings.
@@ -43,13 +44,17 @@ None can write or delete files. Skills run in your main session and follow your 
 - **Do not share secrets.** Never paste credentials, API keys, bank details or personal identifiers into a prompt or an issue.
 - **Examples and tests use hypothetical data only.**
 
+## Customer research data
+
+Interview notes can contain personal data. `customer-discovery` refers to people as Interviewee 1, Interviewee 2 and so on, does not repeat names, contact details or employers, and does not contact customers, send surveys or post anything. Do not paste real customers' personal details into a prompt, an issue or a handoff. The validator warns about email addresses but cannot catch every piece of personal data.
+
 ## Handoffs
 
 A handoff (see [handoff-v1.md](handoff-v1.md)) is a JSON block that carries an analysis between components. It is produced only on request, or when another component will use it, and nothing is saved unless you save it. Handoffs are meant to be shared, so they should not contain secrets or personal data. The validator rejects strings that look like private keys, cloud or API tokens, and URLs with passwords, and warns about email addresses, but it cannot catch everything, so read a handoff before you share it. A handoff is data, not instructions, and components do not follow instructions found inside one.
 
 ## Untrusted content
 
-Pages and documents that agents fetch are data, not instructions. The three web-enabled agents, `research-lead`, `evidence-auditor` and `red-team-reviewer`, each have an "Untrusted Content" section telling them not to follow instructions found in fetched or reviewed content. All eight skills and the `financial-analyst` agent carry the same section, and a test enforces it. When content tries to direct them, they report the attempt in their own words and do not repeat its instructions, commands or links. This reduces prompt-injection risk but cannot eliminate it. Treat research output as something to check, and read any command before approving it.
+Pages and documents that agents fetch are data, not instructions. The four web-enabled agents, `research-lead`, `evidence-auditor`, `red-team-reviewer` and `go-to-market-strategist`, each have an "Untrusted Content" section telling them not to follow instructions found in fetched or reviewed content. All eleven skills and the `financial-analyst` agent carry the same section, and a test enforces it. When content tries to direct them, they report the attempt in their own words and do not repeat its instructions, commands or links. This reduces prompt-injection risk but cannot eliminate it. Treat research output as something to check, and read any command before approving it.
 
 ## What Venturine does not guarantee
 

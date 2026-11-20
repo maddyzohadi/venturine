@@ -606,7 +606,7 @@ class TestHandoffIntegration(unittest.TestCase):
         self.assertEqual(
             set(vh.FORECAST_OPERATIONS),
             {"monthly-forecast", "scenario-compare", "sensitivity",
-             "price-compare"})
+             "price-compare", "channel-compare"})
         self.assertEqual(vh.FORECAST_OPERATIONS["monthly-forecast"],
                          (len(fc.PARAMETERS), len(fc.PARAMETERS)))
         low, high = vh.FORECAST_OPERATIONS["scenario-compare"]
@@ -618,6 +618,8 @@ class TestHandoffIntegration(unittest.TestCase):
                           len(fc.PARAMETERS) + fc.MAX_DELTAS))
         self.assertEqual(vh.FORECAST_OPERATIONS["price-compare"],
                          (5, 4 + fc.MAX_PRICES))
+        self.assertEqual(vh.FORECAST_OPERATIONS["channel-compare"],
+                         (4, 2 + 2 * fc.MAX_CHANNELS))
 
     def test_an_engine_validated_forecast_needs_its_receipt(self):
         document = self.example()
@@ -695,8 +697,9 @@ class TestPhase2Skills(unittest.TestCase):
             self.assertNotIn("python3 -m scripts", self.text(name))
 
     def test_both_skills_cover_every_forecast_operation_between_them(self):
-        combined = self.text("scenario-comparison") + self.text(
-            "pricing-analysis")
+        combined = (self.text("scenario-comparison")
+                    + self.text("pricing-analysis")
+                    + self.text("go-to-market"))
         for operation in vh.FORECAST_OPERATIONS:
             self.assertIn(f"forecast.py\" {operation} ", combined)
 

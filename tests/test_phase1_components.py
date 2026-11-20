@@ -62,6 +62,8 @@ ORIGINAL_OPERATIONS = {
 }
 NEW_SKILLS = ("venture-intake", "evidence-audit")
 PHASE2_SKILLS = ("scenario-comparison", "pricing-analysis")
+PHASE3_SKILLS = ("customer-discovery", "go-to-market", "assumption-ledger")
+PHASE3_AGENTS = ("go-to-market-strategist",)
 NEW_AGENTS = ("red-team-reviewer",)
 LABELS = list(vh.LABELS)
 
@@ -96,22 +98,24 @@ def section(text, heading, level="##"):
     return rest[:match.start()] if match else rest
 
 
-ALL_SKILLS = sorted(ORIGINAL_SKILLS) + list(NEW_SKILLS) + list(PHASE2_SKILLS)
-ALL_AGENTS = sorted(ORIGINAL_AGENTS) + list(NEW_AGENTS)
+ALL_SKILLS = (sorted(ORIGINAL_SKILLS) + list(NEW_SKILLS)
+              + list(PHASE2_SKILLS) + list(PHASE3_SKILLS))
+ALL_AGENTS = sorted(ORIGINAL_AGENTS) + list(NEW_AGENTS) + list(PHASE3_AGENTS)
 HANDOFF_OPTIONAL = [f"skills/{n}/SKILL.md" for n in sorted(ORIGINAL_SKILLS)]
 HANDOFF_OPTIONAL += ["skills/evidence-audit/SKILL.md"]
 HANDOFF_OPTIONAL += [f"skills/{n}/SKILL.md" for n in PHASE2_SKILLS]
+HANDOFF_OPTIONAL += [f"skills/{n}/SKILL.md" for n in PHASE3_SKILLS]
 HANDOFF_OPTIONAL += [f"agents/{n}.md" for n in ALL_AGENTS]
 
 
 class TestComponentInventory(unittest.TestCase):
 
-    def test_there_are_exactly_eight_skills_and_four_agents(self):
+    def test_there_are_exactly_eleven_skills_and_five_agents(self):
         skills = sorted(p.name for p in (ROOT / "skills").iterdir())
         agents = sorted(p.stem for p in (ROOT / "agents").glob("*.md"))
         self.assertEqual(skills, sorted(ALL_SKILLS))
         self.assertEqual(agents, sorted(ALL_AGENTS))
-        self.assertEqual((len(skills), len(agents)), (8, 4))
+        self.assertEqual((len(skills), len(agents)), (11, 5))
 
     def test_every_component_has_complete_frontmatter(self):
         for name in NEW_SKILLS:
@@ -257,9 +261,13 @@ class TestInlineHandoffFormat(unittest.TestCase):
     EMITTERS = HANDOFF_OPTIONAL + ["skills/venture-intake/SKILL.md"]
 
     def example_in(self, relative):
-        blocks = re.findall(r"```json\n(.*?)\n```", read(relative), re.S)
-        self.assertEqual(len(blocks), 1, relative)
-        return json.loads(blocks[0])
+        blocks = [json.loads(b) for b in re.findall(
+            r"```json\n(.*?)\n```", read(relative), re.S)]
+        # Skills that run calculators also embed a calculation fragment, so
+        # pick the one block that is a whole handoff.
+        whole = [b for b in blocks if "schema" in b]
+        self.assertEqual(len(whole), 1, relative)
+        return whole[0]
 
     def test_every_emitter_embeds_an_example_that_passes_the_validator(self):
         for relative in self.EMITTERS:
@@ -297,6 +305,21 @@ class TestInlineHandoffFormat(unittest.TestCase):
                 for field in optional:
                     self.assertIn(f"`{field}`", text, field)
                 self.assertIn("always a string", text)
+                # A native run showed that without these a model invents
+                # fields inside source and prefixes its own name.
+                for key in vh.SOURCE_KEYS:
+                    self.assertIn(f"`{key}`", text, key)
+                for kind in vh.SOURCE_TYPES:
+                    self.assertIn(f"`{kind}`", text, kind)
+                self.assertIn("in lowercase with no prefix", text)
+                self.assertIn("not `venturine:go-to-market`", text)
+                self.assertIn("if counted", text)
+                self.assertIn("each need a `source` with a `title` or "
+                              "`url`", text)
+                self.assertIn("`PARTIALLY_SUPPORTED` also needs "
+                              "`limitations`", text)
+                self.assertIn("`VERIFIED` also needs `accessed` and "
+                              "`examined` set to true", text)
                 self.assertIn("Leave `value` out of an UNKNOWN entry", text)
                 self.assertIn("A custom field must start with `x_`", text)
                 self.assertIn("`open_questions` and `next_steps` are lists "
@@ -310,9 +333,11 @@ class TestInlineHandoffFormat(unittest.TestCase):
                           "folder", text, relative)
 
     def test_every_label_in_the_inline_text_is_a_real_label(self):
+        # The shared evidence rules name every label in general. What an
+        # intake itself may use is stated in its own "For an intake" part.
         text = read("skills/venture-intake/SKILL.md")
-        mentioned = set(re.findall(r"\b[A-Z]{2,}(?:_[A-Z]+)*\b", section(
-            text, "Handoff")))
+        own = section(text, "Handoff").split("For an intake:", 1)[1]
+        mentioned = set(re.findall(r"\b[A-Z]{2,}(?:_[A-Z]+)*\b", own))
         labelish = {m for m in mentioned if m in set(vh.LABELS)}
         self.assertEqual(labelish, {"FOUNDER_PROVIDED", "ASSUMPTION",
                                     "UNKNOWN"})
@@ -553,12 +578,13 @@ class TestDocumentation(unittest.TestCase):
         text = read("README.md")
         self.assertIn("handoff validator reads only the one `.json` file",
                       text)
-        self.assertIn("`research-lead`, `evidence-auditor` and "
-                      "`red-team-reviewer` can search and fetch", text)
+        self.assertIn("`research-lead`, `evidence-auditor`, "
+                      "`red-team-reviewer` and `go-to-market-strategist` "
+                      "can search and fetch", text)
 
     def test_roadmap_records_phase_one_as_built_but_unreleased(self):
         text = read("docs/roadmap.md")
-        self.assertIn("## Built, not yet released (Phases 1 and 2)", text)
+        self.assertIn("## Built, not yet released (Phases 1 to 3)", text)
         self.assertIn("The plugin version is still 0.2.1", text)
         self.assertIn("No change to the original calculator", text)
         self.assertIn("## Shipped (v0.2.1)", text)

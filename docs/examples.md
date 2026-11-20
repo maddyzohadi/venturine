@@ -188,6 +188,28 @@ For each price: the contribution and margin, break-even units with and without a
 python3 scripts/validate_handoff.py docs/forecast-handoff.example.json
 ```
 
+## 7. Customer research, go-to-market and assumptions (unreleased)
+
+These components are built but not yet in a release. The scenario is the same hypothetical bakery, with invented numbers. In real use you would give a skill only research you actually did.
+
+**Organize research.** The `customer-discovery` skill structures what you tell it. Give it notes from conversations you really had, and it reports the counts exactly as you gave them, quotes only words you supplied, and ranks what you still do not know. If you have done no research it says so and offers a plan, marked as a plan. It never describes what customers "would" say, and an interview never makes a claim `VERIFIED`, because it records what people said and not a fact about the market.
+
+**Compare channels.** Suppose a flyer test cost $40 and brought 4 customers, referrals cost nothing and brought 3, a customer is worth $4.50 of contribution, and you can spend $200 a month:
+
+```bash
+python3 scripts/forecast.py channel-compare 200 4.50 --channel flyers 40 4 --channel referrals 0 3
+```
+
+The flyers have a CAC of $10, so $200 buys 20 customers, but a $4.50 first purchase does not recover a $10 CAC. The referral test cost nothing, so the budget does not limit it, and its real cost is time. The output orders channels by CAC without recommending one, and its receipt says that a CAC from a small test may not hold at a larger budget. Two small tests are a start, not a conclusion.
+
+**Rank assumptions.** The `assumption-ledger` skill lists what a plan depends on, shows which results rest on which assumptions, and sets each priority from a stated table of impact against evidence strength, not from a score it invents. A forecast built on a guess is still a guess, and the ledger keeps that visible.
+
+**Put it in a handoff.** [customer-growth-handoff.example.json](customer-growth-handoff.example.json) records an interview finding with its sample (5 of 8 people), assumptions with priorities and risks, and the channel comparison with the calculator's receipt. Every interview result in it is invented for documentation. Check it with the validator:
+
+```bash
+python3 scripts/validate_handoff.py docs/customer-growth-handoff.example.json
+```
+
 ## Tips
 
 - Name the skill in your prompt so it is used.

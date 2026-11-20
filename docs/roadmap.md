@@ -10,9 +10,9 @@ Venturine's target architecture is **12 skills and 6 specialized agents**. This 
 - Plugin and marketplace manifests with strict validation in CI.
 - Community and project files, security and privacy documentation, and repository tests.
 
-## Built, not yet released (Phases 1 and 2)
+## Built, not yet released (Phases 1 to 3)
 
-Phases 1 and 2 are implemented on the main branch. The plugin version is still 0.2.1 until a release is cut, and the roadmap versions below are planned, not assigned.
+Phases 1 to 3 are implemented on the main branch. The plugin version is still 0.2.1 until a release is cut, and the roadmap versions below are planned, not assigned.
 
 - Skills (2 added, 6 total): `venture-intake`, `evidence-audit`.
 - Agent (1 added, 4 total): `red-team-reviewer`.
@@ -27,6 +27,13 @@ Phase 2 adds:
 - Handoff support: the four new operations and receipts, added compatibly to `venturine-handoff/v1`.
 - Not included: repeat-purchase customer lifetime value, which stays on the roadmap.
 
+Phase 3 adds:
+
+- Skills (3 added, 11 total): `customer-discovery`, `go-to-market`, `assumption-ledger`.
+- Agent (1 added, 5 total): `go-to-market-strategist`.
+- A `channel-compare` operation in the forecasting calculator: CAC from a channel test, the customers a budget buys at that CAC, and whether a first purchase recovers it. It makes no recommendation. See [forecasting.md](forecasting.md).
+- Compatible handoff additions: the ledger fields `category`, `priority`, `risk` and `sample`, and an `interview` source type that can never make a claim `VERIFIED`.
+
 ## Planned phases
 
 | Phase | Version | Planned scope | Skills / agents after |
@@ -34,7 +41,7 @@ Phase 2 adds:
 | 0 | v0.2.1 | Foundations and adoption hygiene (this release) | 4 / 3 |
 | 1 | v0.3.0 | Handoff and evidence-ledger schemas with a validator, `venture-intake`, `evidence-audit`, and a `red-team-reviewer` agent (built, not yet released) | 6 / 4 |
 | 2 | v0.4.0 | Calculator v0.3.0 (scenario comparison, sensitivity, monthly cash flow, repeat-purchase LTV, calculation receipts), `scenario-comparison`, `pricing-analysis` (all but repeat-purchase LTV built, not yet released) | 8 / 4 |
-| 3 | v0.5.0 | `customer-discovery`, `go-to-market`, `assumption-ledger`, and a `go-to-market-strategist` agent | 11 / 5 |
+| 3 | v0.5.0 | `customer-discovery`, `go-to-market`, `assumption-ledger`, and a `go-to-market-strategist` agent (built, not yet released) | 11 / 5 |
 | 4 | v0.6.0 | `business-report` and a `report-editor` agent for an integrated report | 12 / 6 |
 | 5 | v1.0.0 | Compatibility checks, independent security review, semver and deprecation policy, release process | 12 / 6 |
 

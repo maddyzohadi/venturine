@@ -182,6 +182,7 @@
                   "third_party_analysis",
                   "search_summary",
                   "founder",
+                  "interview",
                   "calculation",
                   "other"
                 ]
@@ -231,6 +232,54 @@
           "validation": {
             "type": "string",
             "maxLength": 1000
+          },
+          "category": {
+            "enum": [
+              "customer",
+              "segment",
+              "problem",
+              "channel",
+              "positioning",
+              "pricing",
+              "cost",
+              "market",
+              "competition",
+              "operations",
+              "regulatory",
+              "other"
+            ]
+          },
+          "priority": {
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "risk": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "sample": {
+            "type": "object",
+            "required": [
+              "n"
+            ],
+            "additionalProperties": false,
+            "patternProperties": {
+              "^x_": {}
+            },
+            "properties": {
+              "n": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100000
+              },
+              "supporting": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
           }
         }
       }
@@ -272,6 +321,7 @@
               "scenario-compare",
               "sensitivity",
               "price-compare",
+              "channel-compare",
               "manual"
             ]
           },

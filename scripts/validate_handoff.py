@@ -36,12 +36,22 @@ STAGES = ("idea", "validating", "pre-launch", "launched")
 SOURCE_TYPES = (
     "vendor_page", "official_statistic", "regulator", "filing", "news",
     "academic", "third_party_analysis", "search_summary", "founder",
-    "calculation", "other",
+    "interview", "calculation", "other",
 )
 # Source types that can never make a claim VERIFIED by themselves.
+# An interview records what a person said, which is not a fact about a
+# market, so it cannot make a claim VERIFIED either.
 NON_VERIFYING_SOURCE_TYPES = ("search_summary", "third_party_analysis",
-                              "founder")
+                              "founder", "interview")
 PRODUCER_KINDS = ("skill", "agent", "user", "other")
+# Optional tags on ledger entries, used by the customer and growth skills.
+CATEGORIES = (
+    "customer", "segment", "problem", "channel", "positioning", "pricing",
+    "cost", "market", "competition", "operations", "regulatory", "other",
+)
+PRIORITIES = ("high", "medium", "low")
+WEAK_LABELS = ("ASSUMPTION", "UNVERIFIED", "UNKNOWN", "CONTRADICTED")
+MAX_SAMPLE = 100000
 
 # Calculator operations and their input counts. A test keeps this table in
 # step with scripts/calculate.py.
@@ -63,6 +73,7 @@ FORECAST_OPERATIONS = {
     "scenario-compare": (16, 40),
     "sensitivity": (9, 13),
     "price-compare": (5, 12),
+    "channel-compare": (4, 14),
 }
 MANUAL_OPERATION = "manual"
 # Operations where acquisition spending must be counted exactly once.
@@ -106,8 +117,12 @@ VENTURE_KEYS = (
 )
 LEDGER_KEYS = (
     "id", "claim", "label", "value", "unit", "source", "derived_from",
-    "calculation", "limitations", "validation",
+    "calculation", "limitations", "validation", "category", "priority",
+    "risk", "sample",
 )
+SAMPLE_KEYS = ("n", "supporting")
+# Only n is required: "a few of five said so" has no count of supporters.
+SAMPLE_REQUIRED = ("n",)
 SOURCE_KEYS = ("type", "title", "url", "published", "accessed", "examined")
 CALCULATION_KEYS = (
     "id", "operation", "inputs", "result", "unrounded_result",
@@ -461,6 +476,28 @@ def check_label_rules(entry, path, source, report):
                          "fill in what is not known")
 
 
+def check_sample(sample, path, report):
+    """How many people were asked and, if counted, how many support it."""
+    if not check_object(sample, path, report, SAMPLE_KEYS, SAMPLE_REQUIRED):
+        return
+    values = {}
+    for key in SAMPLE_KEYS:
+        value = sample.get(key)
+        if key in sample and (isinstance(value, bool)
+                              or not isinstance(value, int)):
+            report.error(f"{path}.{key}", "must be a whole number")
+        elif key in sample:
+            values[key] = value
+    if "n" in values and not 1 <= values["n"] <= MAX_SAMPLE:
+        report.error(f"{path}.n", f"must be from 1 to {MAX_SAMPLE}")
+    if "supporting" in values:
+        if values["supporting"] < 0:
+            report.error(f"{path}.supporting", "cannot be negative")
+        elif "n" in values and values["supporting"] > values["n"]:
+            report.error(f"{path}.supporting",
+                         "cannot be larger than n, the number asked")
+
+
 def check_ledger_entry(entry, index, report, ids):
     path = f"evidence_ledger[{index}]"
     if not check_object(entry, path, report, LEDGER_KEYS,
@@ -480,6 +517,16 @@ def check_ledger_entry(entry, index, report, ids):
     check_text(entry, "unit", path, report, 60)
     check_text(entry, "limitations", path, report, 1000)
     check_text(entry, "validation", path, report, 1000)
+    check_choice(entry, "category", path, report, CATEGORIES)
+    priority = check_choice(entry, "priority", path, report, PRIORITIES)
+    check_text(entry, "risk", path, report, 1000)
+    if "sample" in entry:
+        check_sample(entry["sample"], f"{path}.sample", report)
+    if (priority == "high" and entry.get("label") in WEAK_LABELS
+            and entry.get("label") != "ASSUMPTION"
+            and not entry.get("validation")):
+        report.warn(path, "a high-priority item should say how to validate "
+                          "it (validation)")
     source = None
     if "source" in entry:
         source = check_source(entry["source"], f"{path}.source", report)
@@ -606,6 +653,12 @@ def check_calculation(calc, index, report, ids, calc_ids):
                     f"{path}.inputs",
                     f"{operation} takes from {allowed[0]} to {allowed[1]} "
                     "inputs")
+            elif operation == "channel-compare" and len(inputs) % 2:
+                report.error(
+                    f"{path}.inputs",
+                    "channel-compare takes a budget and a contribution per "
+                    "customer, then a test spend and a customer count for "
+                    "each channel, so the number of inputs must be even")
 
     validated = calc.get("engine_validated")
     if "engine_validated" in calc and not isinstance(validated, bool):

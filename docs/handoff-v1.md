@@ -45,19 +45,21 @@ All text fields are plain strings. Dates are `YYYY-MM-DD`. Unknown fields are re
 
 Each entry has an `id` like `E1`, a `claim`, and a `label` from the shared vocabulary in [evidence-terminology.md](evidence-terminology.md): `VERIFIED`, `PARTIALLY_SUPPORTED`, `UNVERIFIED`, `CONTRADICTED`, `FOUNDER_PROVIDED`, `DERIVED`, `ASSUMPTION`, `UNKNOWN`.
 
-Optional fields: `value` and `unit` (the figure as written, as a string), `source`, `derived_from` (a list of other entry ids), `calculation` (a calculation id), `limitations`, and `validation` (how to test the claim).
+Optional fields: `value` and `unit` (the figure as written, as a string), `source`, `derived_from` (a list of other entry ids), `calculation` (a calculation id), `limitations`, `validation` (how to test the claim), `category` (`customer`, `segment`, `problem`, `channel`, `positioning`, `pricing`, `cost`, `market`, `competition`, `operations`, `regulatory` or `other`), `priority` (`high`, `medium` or `low`), `risk` (what happens if the claim is wrong), and `sample`.
 
-A `source` has a `type` (`vendor_page`, `official_statistic`, `regulator`, `filing`, `news`, `academic`, `third_party_analysis`, `search_summary`, `founder`, `calculation` or `other`) and optionally `title`, `url`, `published`, `accessed` and `examined` (`true` only if the source was actually read).
+`sample` records how many people stood behind a finding: `n` is the number of people asked, from 1 to 100,000, and `supporting`, if the founder counted, is how many back the claim, from 0 up to `n`. Both are whole numbers the founder reported. Leave `supporting` out when they did not count, leave `sample` out when they gave no numbers, and never estimate them.
+
+A `source` has a `type` (`vendor_page`, `official_statistic`, `regulator`, `filing`, `news`, `academic`, `third_party_analysis`, `search_summary`, `founder`, `interview`, `calculation` or `other`) and optionally `title`, `url`, `published`, `accessed` and `examined` (`true` only if the source was actually read).
 
 ### calculations
 
 Each calculation has an `id` like `C1`, an `operation`, a list of `inputs`, a `result`, and `engine_validated`.
 
-- `operation` is one of the nine calculator operations (see the README), one of the four forecasting operations (`monthly-forecast`, `scenario-compare`, `sensitivity`, `price-compare`; see [forecasting.md](forecasting.md)), or `manual`.
+- `operation` is one of the nine calculator operations (see the README), one of the five forecasting operations (`monthly-forecast`, `scenario-compare`, `sensitivity`, `price-compare`, `channel-compare`; see [forecasting.md](forecasting.md)), or `manual`.
 - Each input is `{"name", "value", "evidence"}`. The value is a plain number written with ASCII digits, and `evidence` is the id of the ledger entry that says where the number came from. This is what stops a number from appearing with no label.
 - `result` is the output as printed. `unrounded_result` may carry the full-precision values the calculator returns when rounding changed a value.
 - `engine_validated: true` means the main session ran a Venturine calculator and this is its output. It needs `engine_version`. A forecasting result also needs `receipt`, the fingerprint the calculator printed. A result that was not engine-validated must not have one. A `manual` calculation cannot be engine-validated and needs a `method`.
-- `break-even-loaded`, `operating-profit` and the four forecasting operations need `acquisition_counted_once: true`, because acquisition spending must enter a model exactly once, never in both fixed costs and CAC.
+- `break-even-loaded`, `operating-profit` and the five forecasting operations need `acquisition_counted_once: true`, because acquisition spending must enter a model exactly once, never in both fixed costs and CAC.
 
 ### decision
 
@@ -72,13 +74,15 @@ Each entry records a review that ran: `reviewer` (`evidence-auditor` or `red-tea
 | Rule | Why |
 |---|---|
 | `VERIFIED` needs a source with a `url` or `title`, an `accessed` date and `examined: true`. | A claim is verified only if the source was read. |
-| A source of type `search_summary`, `third_party_analysis` or `founder` cannot make a claim `VERIFIED`. | Snippets, comparison sites and the founder's own word do not verify a claim. |
+| A source of type `search_summary`, `third_party_analysis`, `founder` or `interview` cannot make a claim `VERIFIED`. | Snippets, comparison sites, the founder's own word and what an interviewee said do not verify a claim. |
 | `PARTIALLY_SUPPORTED` needs a source and `limitations`. | The gap between claim and evidence must be stated. |
 | `CONTRADICTED` needs the contradicting source. | Both sides of a conflict must be visible. |
 | `FOUNDER_PROVIDED` cannot have `examined: true`. | An input you checked is no longer unchecked. |
 | `DERIVED` needs `derived_from` or `calculation`, with no cycles and no self-reference. | A derived figure must trace to its inputs. |
 | `UNKNOWN` cannot have a `value`. | Do not fill in what is not known. |
 | An `ASSUMPTION` without `validation` produces a warning. | An assumption should say how to test it. |
+| A `high` priority entry that is `UNVERIFIED`, `UNKNOWN` or `CONTRADICTED` and has no `validation` produces a warning. | The things that matter most should say how to learn the answer. |
+| `sample.supporting` cannot exceed `sample.n`, and both must be whole numbers. | A finding cannot be backed by more people than were asked. |
 | Every calculation input names an existing ledger entry. | Every number carries a label. |
 | An engine operation has the right number of inputs. | The calculator would reject anything else. |
 | An engine-validated forecasting result has a `receipt` of the form `sha256:` plus 64 hexadecimal characters, and no other result has one. | A receipt makes a calculation reproducible, so it must not be claimed without a run. |
@@ -112,7 +116,7 @@ A complete hypothetical example is in [handoff-v1.example.json](handoff-v1.examp
 ## Compatibility
 
 - **Unchanged behavior.** Existing skills and agents behave as before unless a handoff is requested.
-- **v1 will only grow in compatible ways.** Within v1, new optional fields and new optional values may be added. The forecasting operations and `receipt` were added this way, and every earlier handoff stays valid. Required fields, field meanings and the label vocabulary will not change.
+- **v1 will only grow in compatible ways.** Within v1, new optional fields and new optional values may be added. The forecasting operations, `receipt`, the ledger fields `category`, `priority`, `risk` and `sample`, and the `interview` source type were added this way, and every earlier handoff stays valid. Required fields, field meanings and the label vocabulary will not change.
 - **A breaking change is a new schema id.** It would be `venturine-handoff/v2`. The v1 validator rejects any other version with a clear message instead of guessing.
 - **Custom fields.** Fields that start with `x_` are allowed anywhere an object is allowed. Consumers must ignore `x_` fields they do not understand. Any other unknown field is an error, which catches typos.
 - **Validator version.** The validator has its own version, reported in its output, because fixing a validator bug is not a change to the format.

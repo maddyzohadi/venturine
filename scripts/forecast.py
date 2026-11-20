@@ -4,7 +4,8 @@ Venturine forecasting calculator.
 Usage (run by file path):
 python3 scripts/forecast.py monthly-forecast 5000 12 100 0.03 24 9.50 1500 600
 
-Operations: monthly-forecast, scenario-compare, sensitivity, price-compare.
+Operations: monthly-forecast, scenario-compare, sensitivity, price-compare,
+channel-compare.
 Every result carries a calculation receipt: the exact inputs, the model
 assumptions and exclusions, the engine version, and a SHA-256 fingerprint,
 so a result can be reproduced and checked.
@@ -66,6 +67,7 @@ MAX_SCENARIOS = 5
 MIN_SCENARIOS = 2
 MAX_DELTAS = 5
 MAX_PRICES = 8
+MAX_CHANNELS = 6
 SCENARIO_NAME = re.compile(r"^[a-z][a-z0-9_-]{0,29}$")
 
 ASSUMPTIONS = (
@@ -99,6 +101,24 @@ PRICE_ASSUMPTIONS = (
     "per customer.",
 )
 
+CHANNEL_ASSUMPTIONS = (
+    "CAC is the spend in a channel test divided by the customers the "
+    "founder attributes to that test. Attribution is not checked.",
+    "The CAC seen in a test is assumed to hold at the full monthly budget. "
+    "CAC often rises as spend grows, and this model does not predict that.",
+    "Each customer buys exactly one unit, so the contribution per customer "
+    "is earned once.",
+    "Channels are compared one at a time. The budget is not split between "
+    "them, and overlap between channels is ignored.",
+)
+CHANNEL_EXCLUSIONS = (
+    "the cost of time, tools and creative beyond the test spend",
+    "attribution errors and overlap between channels",
+    "changes in CAC at larger spend",
+    "repeat purchases",
+    "taxes and payment fees",
+)
+
 DISPLAY_NOTE = (
     DISPLAY_ROUNDING_NOTE
     + " Do not feed displayed forecast values back in as inputs; re-run "
@@ -115,6 +135,9 @@ operations and input order:
                     [--vary PARAMETER ...]
   price-compare     VARIABLE_COST FIXED_COSTS CAC_PER_CUSTOMER
                     EXPECTED_UNITS PRICE [PRICE ...]   (up to 8 prices)
+  channel-compare   MONTHLY_BUDGET CONTRIBUTION_PER_CUSTOMER
+                    --channel NAME TEST_SPEND TEST_CUSTOMERS ...
+                    (1 to 6 channels; TEST_CUSTOMERS is a whole number)
 
 MONTHLY_UNIT_GROWTH is a fraction, for example 0.03 for 3 percent.
 FIXED_COSTS must exclude acquisition; ACQUISITION_SPEND is the total
@@ -247,7 +270,8 @@ def run_forecast(params):
 # ---------------------------------------------------------------- receipts
 
 
-def make_receipt(operation, named_inputs, assumptions=ASSUMPTIONS):
+def make_receipt(operation, named_inputs, assumptions=ASSUMPTIONS,
+                 exclusions=EXCLUSIONS):
     """
     A calculation receipt. The fingerprint is the SHA-256 of the operation,
     model, engine version and the inputs exactly as given, so the same
@@ -269,7 +293,7 @@ def make_receipt(operation, named_inputs, assumptions=ASSUMPTIONS):
         "engine_version": ENGINE_VERSION,
         "inputs": [{"name": n, "value": v} for n, v in pairs],
         "assumptions": list(assumptions),
-        "exclusions": list(EXCLUSIONS),
+        "exclusions": list(exclusions),
     }
 
 
@@ -519,6 +543,90 @@ def price_compare(values):
     return result, named
 
 
+def channel_compare(budget_text, contribution_text, channels):
+    """
+    channels: a list of (name, test_spend, test_customers) strings.
+
+    For each channel: CAC from the test, the customers the monthly budget
+    buys at that CAC, and whether one purchase recovers the CAC. It makes
+    no recommendation and does not split the budget.
+    """
+    budget = require_nonnegative(budget_text, "Monthly budget")
+    contribution = require_nonnegative(
+        contribution_text, "Contribution per customer")
+    if not 1 <= len(channels) <= MAX_CHANNELS:
+        raise ValueError(f"Compare from 1 to {MAX_CHANNELS} channels.")
+    names = [name for name, _, _ in channels]
+    for name in names:
+        if not SCENARIO_NAME.match(name):
+            raise ValueError(
+                "Channel names must be lowercase letters, digits, hyphens "
+                "or underscores, start with a letter, and be at most 30 "
+                "characters."
+            )
+    if len(set(names)) != len(names):
+        raise ValueError("Channel names must be unique.")
+
+    rows = []
+    for name, spend_text, customers_text in channels:
+        spend = require_nonnegative(spend_text, f"{name} test spend")
+        customers = require_nonnegative(customers_text,
+                                        f"{name} test customers")
+        if customers != customers.to_integral_value():
+            raise ValueError(
+                f"{name} test customers must be a whole number.")
+        notes = []
+        cac = at_budget = margin = net = None
+        if customers == 0:
+            notes.append(
+                "No customers were acquired in the test, so CAC is "
+                "undefined.")
+        else:
+            cac = spend / customers
+            margin = contribution - cac
+            if cac == 0:
+                notes.append(
+                    "The test cost nothing, so the budget does not limit "
+                    "customers here. Measure the real cost of the time or "
+                    "tools used.")
+            else:
+                at_budget = budget / cac
+                net = at_budget * contribution - budget
+                _guard(at_budget, net)
+        rows.append({
+            "channel": name,
+            "test_spend": spend,
+            "test_customers": customers,
+            "cac": cac,
+            "customers_at_budget": at_budget,
+            "first_purchase_margin_per_customer": margin,
+            "first_purchase_recovers_cac": (
+                None if margin is None else margin >= 0),
+            "net_contribution_if_all_budget_here": net,
+            "notes": notes,
+        })
+    with_cac = [r for r in rows if r["cac"] is not None]
+    result = {
+        "monthly_budget": budget,
+        "contribution_per_customer": contribution,
+        "assumes_one_purchase_per_customer": True,
+        "channels": rows,
+        "ordering_by_cac": [
+            r["channel"] for r in sorted(
+                with_cac, key=lambda r: (r["cac"], r["channel"]))
+        ],
+        "channels_without_cac": [
+            r["channel"] for r in rows if r["cac"] is None
+        ],
+    }
+    named = [("monthly_budget", budget_text),
+             ("contribution_per_customer", contribution_text)]
+    for name, spend_text, customers_text in channels:
+        named += [(f"{name}.test_spend", spend_text),
+                  (f"{name}.test_customers", customers_text)]
+    return result, named
+
+
 # ---------------------------------------------------------------- output
 
 
@@ -562,6 +670,13 @@ def build_parser():
 
     price = sub.add_parser("price-compare")
     price.add_argument("values", nargs="+", metavar="VALUE")
+
+    channel = sub.add_parser("channel-compare")
+    channel.add_argument("values", nargs=2, metavar="INPUT")
+    channel.add_argument(
+        "--channel", nargs=3, action="append", required=True,
+        metavar=("NAME", "TEST_SPEND", "TEST_CUSTOMERS"),
+    )
     return parser
 
 
@@ -578,20 +693,25 @@ def main():
             )
         elif args.operation == "sensitivity":
             result, named = sensitivity(args.values, args.delta, args.vary)
-        else:
+        elif args.operation == "price-compare":
             result, named = price_compare(args.values)
+        else:
+            result, named = channel_compare(
+                args.values[0], args.values[1],
+                [tuple(item) for item in args.channel])
 
-        assumptions = (
-            PRICE_ASSUMPTIONS if args.operation == "price-compare"
-            else ASSUMPTIONS
-        )
+        assumptions, exclusions = {
+            "price-compare": (PRICE_ASSUMPTIONS, EXCLUSIONS),
+            "channel-compare": (CHANNEL_ASSUMPTIONS, CHANNEL_EXCLUSIONS),
+        }.get(args.operation, (ASSUMPTIONS, EXCLUSIONS))
         output = {
             "engine": "venturine",
             "version": ENGINE_VERSION,
             "operation": args.operation,
             "inputs": dict(named),
             "result": display(result),
-            "receipt": make_receipt(args.operation, named, assumptions),
+            "receipt": make_receipt(args.operation, named, assumptions,
+                                    exclusions),
             "display_rounding": DISPLAY_NOTE,
             "status": "calculated",
         }
