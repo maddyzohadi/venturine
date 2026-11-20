@@ -10,12 +10,22 @@ Venturine's target architecture is **12 skills and 6 specialized agents**. This 
 - Plugin and marketplace manifests with strict validation in CI.
 - Community and project files, security and privacy documentation, and repository tests.
 
+## Built, not yet released (Phase 1)
+
+Phase 1 is implemented on the main branch and will ship as v0.3.0. The plugin version is still 0.2.1 until a release is cut.
+
+- Skills (2 added, 6 total): `venture-intake`, `evidence-audit`.
+- Agent (1 added, 4 total): `red-team-reviewer`.
+- The [`venturine-handoff/v1`](handoff-v1.md) format, with a JSON Schema and a standard-library validator.
+- An optional handoff output on every existing skill and agent. Their default output is unchanged.
+- No change to the calculator, which stays at v0.2.1.
+
 ## Planned phases
 
 | Phase | Version | Planned scope | Skills / agents after |
 |---|---|---|---|
 | 0 | v0.2.1 | Foundations and adoption hygiene (this release) | 4 / 3 |
-| 1 | v0.3.0 | Handoff and evidence-ledger schemas with a validator, `venture-intake`, `evidence-audit`, and a `red-team-reviewer` agent | 6 / 4 |
+| 1 | v0.3.0 | Handoff and evidence-ledger schemas with a validator, `venture-intake`, `evidence-audit`, and a `red-team-reviewer` agent (built, not yet released) | 6 / 4 |
 | 2 | v0.4.0 | Calculator v0.3.0 (scenario comparison, sensitivity, monthly cash flow, repeat-purchase LTV, calculation receipts), `scenario-comparison`, `pricing-analysis` | 8 / 4 |
 | 3 | v0.5.0 | `customer-discovery`, `go-to-market`, `assumption-ledger`, and a `go-to-market-strategist` agent | 11 / 5 |
 | 4 | v0.6.0 | `business-report` and a `report-editor` agent for an integrated report | 12 / 6 |

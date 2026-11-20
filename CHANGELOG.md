@@ -4,6 +4,16 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+Phase 1: handoff format, intake, evidence audit and red-team review. Built but not released: the plugin version stays 0.2.1 until a release is cut. No existing skill, agent or calculator operation changes its default behavior.
+
+### Added
+- **`venturine-handoff/v1`**, a JSON format that carries an analysis between components with its evidence labels, calculation inputs, decision and reviews. Specification in `docs/handoff-v1.md`, structure in `schemas/venturine-handoff.v1.schema.json`, and a hypothetical example in `docs/handoff-v1.example.json`.
+- **`scripts/validate_handoff.py`**, a standard-library validator for the format. It enforces the evidence rules (for example, `VERIFIED` needs an examined source, an `UNKNOWN` entry has no value, and `AUDITED` needs an auditor review), rejects secrets and oversized or malformed files, reads only the one `.json` file named, and never prints its contents.
+- **`venture-intake`** skill: structures a founder's description into a venture profile, a labeled input ledger, a prioritized list of missing information, and a handoff.
+- **`evidence-audit`** skill: prepares an analysis for independent review, dispatches the `evidence-auditor`, offers the `red-team-reviewer` when it fits, and marks the result AUDITED or PRELIMINARY.
+- **`red-team-reviewer`** agent: argues the strongest case against a conclusion, runs a premortem, stress-tests assumptions and looks for disconfirming evidence. Read-only and web tools only, no shell.
+- An optional "Handoff" section in every existing skill and agent. Output is unchanged unless a handoff is requested.
+
 Quality hardening before Phase 1, from the remaining low-severity audit findings. No new skills or operations.
 
 ### Changed

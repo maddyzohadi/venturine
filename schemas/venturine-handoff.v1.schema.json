@@ -1,0 +1,426 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/maddyzohadi/venturine/schemas/venturine-handoff.v1.schema.json",
+  "title": "venturine-handoff/v1",
+  "description": "Structure of a Venturine handoff document. Cross-field evidence rules (for example, that VERIFIED needs an examined source) are enforced by scripts/validate_handoff.py and documented in docs/handoff-v1.md; this schema covers structure only.",
+  "type": "object",
+  "required": [
+    "schema",
+    "created",
+    "producer",
+    "venture",
+    "evidence_ledger"
+  ],
+  "additionalProperties": false,
+  "patternProperties": {
+    "^x_": {}
+  },
+  "properties": {
+    "schema": {
+      "const": "venturine-handoff/v1"
+    },
+    "id": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "created": {
+      "type": "string",
+      "maxLength": 10,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "producer": {
+      "type": "object",
+      "required": [
+        "component",
+        "kind"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^x_": {}
+      },
+      "properties": {
+        "component": {
+          "type": "string",
+          "maxLength": 41,
+          "pattern": "^[a-z][a-z0-9-]{1,40}$"
+        },
+        "kind": {
+          "enum": [
+            "skill",
+            "agent",
+            "user",
+            "other"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "maxLength": 20,
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        }
+      }
+    },
+    "venture": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^x_": {}
+      },
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 120,
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "stage": {
+          "enum": [
+            "idea",
+            "validating",
+            "pre-launch",
+            "launched"
+          ]
+        },
+        "customer": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "problem": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "solution": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "business_model": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "geography": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "currency": {
+          "type": "string",
+          "maxLength": 3,
+          "pattern": "^[A-Z]{3}$"
+        },
+        "hypothetical": {
+          "type": "boolean"
+        }
+      }
+    },
+    "evidence_ledger": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "claim",
+          "label"
+        ],
+        "additionalProperties": false,
+        "patternProperties": {
+          "^x_": {}
+        },
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 8,
+            "pattern": "^E[0-9]{1,4}$"
+          },
+          "claim": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1
+          },
+          "label": {
+            "enum": [
+              "VERIFIED",
+              "PARTIALLY_SUPPORTED",
+              "UNVERIFIED",
+              "CONTRADICTED",
+              "FOUNDER_PROVIDED",
+              "DERIVED",
+              "ASSUMPTION",
+              "UNKNOWN"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 60
+          },
+          "source": {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false,
+            "patternProperties": {
+              "^x_": {}
+            },
+            "properties": {
+              "type": {
+                "enum": [
+                  "vendor_page",
+                  "official_statistic",
+                  "regulator",
+                  "filing",
+                  "news",
+                  "academic",
+                  "third_party_analysis",
+                  "search_summary",
+                  "founder",
+                  "calculation",
+                  "other"
+                ]
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 300
+              },
+              "url": {
+                "type": "string",
+                "maxLength": 2000,
+                "pattern": "^https?://[^\\s]+$"
+              },
+              "published": {
+                "type": "string",
+                "maxLength": 10,
+                "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+              },
+              "accessed": {
+                "type": "string",
+                "maxLength": 10,
+                "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+              },
+              "examined": {
+                "type": "boolean"
+              }
+            }
+          },
+          "derived_from": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "type": "string",
+              "maxLength": 8,
+              "pattern": "^E[0-9]{1,4}$"
+            }
+          },
+          "calculation": {
+            "type": "string",
+            "maxLength": 8,
+            "pattern": "^C[0-9]{1,4}$"
+          },
+          "limitations": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "validation": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      }
+    },
+    "calculations": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "operation",
+          "inputs",
+          "result",
+          "engine_validated"
+        ],
+        "additionalProperties": false,
+        "patternProperties": {
+          "^x_": {}
+        },
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 8,
+            "pattern": "^C[0-9]{1,4}$"
+          },
+          "operation": {
+            "enum": [
+              "revenue",
+              "gross-margin",
+              "contribution-margin",
+              "break-even",
+              "break-even-loaded",
+              "operating-profit",
+              "cac",
+              "runway",
+              "subscription-ltv",
+              "manual"
+            ]
+          },
+          "inputs": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "value",
+                "evidence"
+              ],
+              "additionalProperties": false,
+              "patternProperties": {
+                "^x_": {}
+              },
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "maxLength": 60,
+                  "minLength": 1
+                },
+                "value": {
+                  "type": "string",
+                  "maxLength": 64,
+                  "pattern": "^[+-]?([0-9]+\\.?[0-9]*|\\.[0-9]+)([eE][+-]?[0-9]+)?$"
+                },
+                "evidence": {
+                  "type": "string",
+                  "maxLength": 8,
+                  "pattern": "^E[0-9]{1,4}$"
+                }
+              }
+            }
+          },
+          "result": {},
+          "unrounded_result": {},
+          "engine_validated": {
+            "type": "boolean"
+          },
+          "engine_version": {
+            "type": "string",
+            "maxLength": 20,
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          },
+          "method": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "acquisition_counted_once": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "required": [
+        "label",
+        "confidence"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^x_": {}
+      },
+      "properties": {
+        "label": {
+          "enum": [
+            "PROCEED TO VALIDATION",
+            "REVISE THE CONCEPT",
+            "INSUFFICIENT EVIDENCE",
+            "NOT VIABLE UNDER STATED CONSTRAINTS"
+          ]
+        },
+        "confidence": {
+          "enum": [
+            "PRELIMINARY",
+            "AUDITED"
+          ]
+        },
+        "rationale": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      }
+    },
+    "reviews": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "required": [
+          "reviewer",
+          "result",
+          "date"
+        ],
+        "additionalProperties": false,
+        "patternProperties": {
+          "^x_": {}
+        },
+        "properties": {
+          "reviewer": {
+            "enum": [
+              "evidence-auditor",
+              "red-team-reviewer"
+            ]
+          },
+          "result": {
+            "enum": [
+              "DOES NOT STAND",
+              "INSUFFICIENT EVIDENCE",
+              "NOT ENOUGH INFORMATION",
+              "PASS",
+              "PASS WITH LIMITATIONS",
+              "REVISION REQUIRED",
+              "STANDS",
+              "STANDS WITH WEAKNESSES"
+            ]
+          },
+          "date": {
+            "type": "string",
+            "maxLength": 10,
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "string",
+        "maxLength": 1000,
+        "minLength": 1
+      }
+    },
+    "next_steps": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "string",
+        "maxLength": 1000,
+        "minLength": 1
+      }
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 2000
+    }
+  }
+}

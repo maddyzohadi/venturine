@@ -46,7 +46,8 @@ class TestEvidenceTerminology(unittest.TestCase):
         classifying = [
             p for p in SKILLS + AGENTS if p.stem != "research-lead"
         ]
-        self.assertEqual(len(classifying), 6)
+        # 6 skills, plus every agent except research-lead (3).
+        self.assertEqual(len(classifying), 9)
         for path in classifying:
             text = read(path)
             for label in LABELS:

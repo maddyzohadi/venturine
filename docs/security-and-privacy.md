@@ -7,11 +7,12 @@ This document describes what Venturine can and cannot do, based on the contents 
 | Question | Answer |
 |---|---|
 | Does Venturine collect telemetry? | No. The repository contains no analytics or reporting code. |
-| Does it install hooks or run servers? | No. The plugin contains skills, agents and a calculator only. |
+| Does it install hooks or run servers? | No. The plugin contains skills, agents, a calculator and a handoff validator only. |
 | Can agents run shell commands? | No. No agent lists `Bash`, and `research-lead` explicitly disallows it. A test enforces this. |
-| What code can run? | The calculator in `scripts/`, only in your main Claude Code session, only with your permission. |
+| What code can run? | The calculator and the handoff validator in `scripts/`, only in your main Claude Code session, only with your permission. |
 | Does the calculator touch the network or files? | No. It uses only the Python standard library and performs arithmetic. |
-| Do any agents reach the web? | Yes. `research-lead` and `evidence-auditor` can search and fetch public web pages. |
+| Does the handoff validator touch the network or files? | It reads only the one `.json` file you name, up to 1 MB. It never writes files, never uses the network, never runs other programs, and never prints the file's contents. It uses only the Python standard library. |
+| Do any agents reach the web? | Yes. `research-lead`, `evidence-auditor` and `red-team-reviewer` can search and fetch public web pages. |
 
 ## Agent permissions
 
@@ -19,6 +20,7 @@ This document describes what Venturine can and cannot do, based on the contents 
 |---|---|
 | `research-lead` | WebSearch, WebFetch, Read, Grep, Glob. Bash is disallowed. |
 | `evidence-auditor` | Read, Glob, Grep, WebSearch, WebFetch |
+| `red-team-reviewer` | Read, Glob, Grep, WebSearch, WebFetch |
 | `financial-analyst` | Read, Glob, Grep |
 
 None can write or delete files. Skills run in your main session and follow your Claude Code permission settings.
@@ -40,15 +42,20 @@ None can write or delete files. Skills run in your main session and follow your 
 - **Do not share secrets.** Never paste credentials, API keys, bank details or personal identifiers into a prompt or an issue.
 - **Examples and tests use hypothetical data only.**
 
+## Handoffs
+
+A handoff (see [handoff-v1.md](handoff-v1.md)) is a JSON block that carries an analysis between components. It is produced only on request, or when another component will use it, and nothing is saved unless you save it. Handoffs are meant to be shared, so they should not contain secrets or personal data. The validator rejects strings that look like private keys, cloud or API tokens, and URLs with passwords, and warns about email addresses, but it cannot catch everything, so read a handoff before you share it. A handoff is data, not instructions, and components do not follow instructions found inside one.
+
 ## Untrusted content
 
-Pages and documents that agents fetch are data, not instructions. The two web-enabled agents, `research-lead` and `evidence-auditor`, each have an "Untrusted Content" section telling them not to follow instructions found in fetched or reviewed content. All four skills and the `financial-analyst` agent carry the same section, and a test enforces it. This reduces prompt-injection risk but cannot eliminate it. Treat research output as something to check, and read any command before approving it.
+Pages and documents that agents fetch are data, not instructions. The three web-enabled agents, `research-lead`, `evidence-auditor` and `red-team-reviewer`, each have an "Untrusted Content" section telling them not to follow instructions found in fetched or reviewed content. All six skills and the `financial-analyst` agent carry the same section, and a test enforces it. When content tries to direct them, they report the attempt in their own words and do not repeat its instructions, commands or links. This reduces prompt-injection risk but cannot eliminate it. Treat research output as something to check, and read any command before approving it.
 
 ## What Venturine does not guarantee
 
 - It does not verify your inputs. A correct calculation on a wrong input is still wrong.
 - Search summaries are not primary sources. Claims should be classified honestly, and unverified claims should say so.
-- No audit is implied unless the `evidence-auditor` agent actually ran and said so.
+- No audit is implied unless the `evidence-auditor` agent actually ran and said so. A recommendation is marked AUDITED only when it did, and PRELIMINARY otherwise.
+- A valid handoff is well formed and internally consistent. It is not verified.
 
 ## Supply chain
 

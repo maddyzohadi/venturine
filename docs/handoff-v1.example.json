@@ -1,0 +1,122 @@
+{
+  "schema": "venturine-handoff/v1",
+  "id": "example-maple-loaf-001",
+  "created": "2026-11-20",
+  "producer": {
+    "component": "unit-economics",
+    "kind": "skill",
+    "version": "0.2.1"
+  },
+  "venture": {
+    "name": "Maple Loaf Bakery (hypothetical)",
+    "summary": "A fictional neighborhood bakery used to illustrate the handoff format.",
+    "stage": "idea",
+    "customer": "Households within walking distance (hypothetical)",
+    "geography": "A fictional town",
+    "currency": "USD",
+    "hypothetical": true
+  },
+  "evidence_ledger": [
+    {
+      "id": "E1",
+      "claim": "Selling price per loaf",
+      "label": "FOUNDER_PROVIDED",
+      "value": "8",
+      "unit": "USD per loaf"
+    },
+    {
+      "id": "E2",
+      "claim": "Ingredient and packaging cost per loaf",
+      "label": "FOUNDER_PROVIDED",
+      "value": "3.50",
+      "unit": "USD per loaf"
+    },
+    {
+      "id": "E3",
+      "claim": "Monthly fixed costs, excluding advertising",
+      "label": "ASSUMPTION",
+      "value": "2000",
+      "unit": "USD per month",
+      "validation": "Replace with written quotes for rent, utilities and insurance."
+    },
+    {
+      "id": "E4",
+      "claim": "A mixer rental of 90 USD per month is listed on a fictional equipment vendor's page",
+      "label": "VERIFIED",
+      "value": "90",
+      "unit": "USD per month",
+      "source": {
+        "type": "vendor_page",
+        "title": "Example Equipment Rentals pricing (fictional)",
+        "url": "https://example.com/rentals/pricing",
+        "accessed": "2026-11-20",
+        "examined": true
+      },
+      "limitations": "The vendor's list price only. It does not show what the bakery would actually pay."
+    },
+    {
+      "id": "E5",
+      "claim": "Local demand is at least 200 loaves a week",
+      "label": "UNVERIFIED",
+      "validation": "Pre-sell at a weekend market and count paid orders."
+    },
+    {
+      "id": "E6",
+      "claim": "Operating break-even volume",
+      "label": "DERIVED",
+      "calculation": "C1",
+      "derived_from": [
+        "E1",
+        "E2",
+        "E3"
+      ],
+      "value": "445",
+      "unit": "loaves per month"
+    },
+    {
+      "id": "E7",
+      "claim": "Monthly customer churn",
+      "label": "UNKNOWN"
+    }
+  ],
+  "calculations": [
+    {
+      "id": "C1",
+      "operation": "break-even",
+      "inputs": [
+        {
+          "name": "fixed_costs",
+          "value": "2000",
+          "evidence": "E3"
+        },
+        {
+          "name": "price",
+          "value": "8",
+          "evidence": "E1"
+        },
+        {
+          "name": "variable_cost",
+          "value": "3.50",
+          "evidence": "E2"
+        }
+      ],
+      "result": 445,
+      "engine_validated": true,
+      "engine_version": "0.2.1"
+    }
+  ],
+  "decision": {
+    "label": "INSUFFICIENT EVIDENCE",
+    "confidence": "PRELIMINARY",
+    "rationale": "Demand and fixed costs are untested, and no independent review has run."
+  },
+  "open_questions": [
+    "How many loaves can the bakery sell each week?",
+    "What do rent, utilities and insurance actually cost?"
+  ],
+  "next_steps": [
+    "Run a weekend pre-sale to test demand.",
+    "Collect written quotes for fixed costs."
+  ],
+  "notes": "Every figure in this file is invented for documentation."
+}
