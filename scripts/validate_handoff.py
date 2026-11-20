@@ -56,9 +56,19 @@ ENGINE_OPERATIONS = {
     "runway": 2,
     "subscription-ltv": 2,
 }
+# Operations of scripts/forecast.py, with the allowed range of input counts.
+# Each takes named inputs, and engine-validated results carry a receipt.
+FORECAST_OPERATIONS = {
+    "monthly-forecast": (8, 8),
+    "scenario-compare": (16, 40),
+    "sensitivity": (9, 13),
+    "price-compare": (5, 12),
+}
 MANUAL_OPERATION = "manual"
 # Operations where acquisition spending must be counted exactly once.
-ACQUISITION_SENSITIVE = ("break-even-loaded", "operating-profit")
+ACQUISITION_SENSITIVE = (
+    "break-even-loaded", "operating-profit",
+) + tuple(FORECAST_OPERATIONS)
 
 DECISION_LABELS = (
     "PROCEED TO VALIDATION", "REVISE THE CONCEPT", "INSUFFICIENT EVIDENCE",
@@ -102,7 +112,7 @@ SOURCE_KEYS = ("type", "title", "url", "published", "accessed", "examined")
 CALCULATION_KEYS = (
     "id", "operation", "inputs", "result", "unrounded_result",
     "engine_validated", "engine_version", "method",
-    "acquisition_counted_once",
+    "acquisition_counted_once", "receipt",
 )
 INPUT_KEYS = ("name", "value", "evidence")
 DECISION_KEYS = ("label", "confidence", "rationale")
@@ -117,6 +127,7 @@ CURRENCY_PATTERN = re.compile(r"^[A-Z]{3}$", re.ASCII)
 NUMBER_PATTERN = re.compile(
     r"^[+-]?(?:[0-9]+\.?[0-9]*|\.[0-9]+)(?:[eE][+-]?[0-9]+)?$", re.ASCII
 )
+RECEIPT_PATTERN = re.compile(r"^sha256:[0-9a-f]{64}$", re.ASCII)
 URL_PATTERN = re.compile(r"^https?://[^\s]+$", re.ASCII)
 EXTENSION_PREFIX = "x_"
 
@@ -552,7 +563,10 @@ def check_calculation(calc, index, report, ids, calc_ids):
             report.error(f"{path}.id", "duplicate id")
         else:
             calc_ids[calc_id] = index
-    operations = tuple(ENGINE_OPERATIONS) + (MANUAL_OPERATION,)
+    operations = (
+        tuple(ENGINE_OPERATIONS) + tuple(FORECAST_OPERATIONS)
+        + (MANUAL_OPERATION,)
+    )
     operation = check_choice(calc, "operation", path, report, operations,
                              required=True)
 
@@ -586,6 +600,12 @@ def check_calculation(calc, index, report, ids, calc_ids):
             if expected is not None and len(inputs) != expected:
                 report.error(f"{path}.inputs",
                              f"{operation} takes {expected} inputs")
+            allowed = FORECAST_OPERATIONS.get(operation)
+            if allowed and not allowed[0] <= len(inputs) <= allowed[1]:
+                report.error(
+                    f"{path}.inputs",
+                    f"{operation} takes from {allowed[0]} to {allowed[1]} "
+                    "inputs")
 
     validated = calc.get("engine_validated")
     if "engine_validated" in calc and not isinstance(validated, bool):
@@ -605,6 +625,19 @@ def check_calculation(calc, index, report, ids, calc_ids):
                 path, "a calculation that was not engine-validated needs a "
                       "method that says how it was done")
     check_text(calc, "method", path, report, 1000)
+
+    receipt = check_text(calc, "receipt", path, report, 80)
+    if receipt is not None and not RECEIPT_PATTERN.match(receipt):
+        report.error(f"{path}.receipt", "must look like sha256: followed by "
+                                        "64 hexadecimal characters")
+    if operation in FORECAST_OPERATIONS and validated is True \
+            and "receipt" not in calc:
+        report.error(f"{path}.receipt",
+                     f"an engine-validated {operation} result needs the "
+                     "receipt fingerprint the calculator printed")
+    if "receipt" in calc and validated is not True:
+        report.error(f"{path}.receipt",
+                     "only an engine-validated result has a receipt")
 
     if operation in ACQUISITION_SENSITIVE:
         counted = calc.get("acquisition_counted_once")

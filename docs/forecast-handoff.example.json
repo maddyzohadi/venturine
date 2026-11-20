@@ -1,0 +1,168 @@
+{
+  "schema": "venturine-handoff/v1",
+  "id": "example-maple-loaf-forecast",
+  "created": "2026-11-21",
+  "producer": {
+    "component": "scenario-comparison",
+    "kind": "skill",
+    "version": "0.2.1"
+  },
+  "venture": {
+    "name": "Maple Loaf Bakery (hypothetical)",
+    "summary": "A fictional bakery used to illustrate a forecast handoff.",
+    "stage": "idea",
+    "currency": "USD",
+    "hypothetical": true
+  },
+  "evidence_ledger": [
+    {
+      "id": "E1",
+      "claim": "Cash available at the start",
+      "label": "FOUNDER_PROVIDED",
+      "value": "1500",
+      "unit": "USD"
+    },
+    {
+      "id": "E2",
+      "claim": "Months to forecast",
+      "label": "ASSUMPTION",
+      "value": "12",
+      "unit": "months",
+      "validation": "Replace with a measured or quoted figure."
+    },
+    {
+      "id": "E3",
+      "claim": "Units sold in the first month",
+      "label": "ASSUMPTION",
+      "value": "150",
+      "unit": "loaves per month",
+      "validation": "Replace with a measured or quoted figure."
+    },
+    {
+      "id": "E4",
+      "claim": "Monthly unit growth, as a fraction",
+      "label": "ASSUMPTION",
+      "value": "0.03",
+      "unit": "fraction per month",
+      "validation": "Replace with a measured or quoted figure."
+    },
+    {
+      "id": "E5",
+      "claim": "Selling price per loaf",
+      "label": "FOUNDER_PROVIDED",
+      "value": "8",
+      "unit": "USD per loaf"
+    },
+    {
+      "id": "E6",
+      "claim": "Ingredient and packaging cost per loaf",
+      "label": "FOUNDER_PROVIDED",
+      "value": "3.50",
+      "unit": "USD per loaf"
+    },
+    {
+      "id": "E7",
+      "claim": "Monthly fixed costs, excluding advertising",
+      "label": "ASSUMPTION",
+      "value": "400",
+      "unit": "USD per month",
+      "validation": "Replace with a measured or quoted figure."
+    },
+    {
+      "id": "E8",
+      "claim": "Monthly advertising spend",
+      "label": "ASSUMPTION",
+      "value": "50",
+      "unit": "USD per month",
+      "validation": "Replace with a measured or quoted figure."
+    },
+    {
+      "id": "E9",
+      "claim": "Twelve-month cash flow result of this forecast",
+      "label": "DERIVED",
+      "calculation": "C1",
+      "derived_from": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E6",
+        "E7",
+        "E8"
+      ],
+      "limitations": "Only as reliable as its assumed inputs. Revenue is treated as cash in the month it is earned, and taxes, financing and capital spending are left out."
+    }
+  ],
+  "calculations": [
+    {
+      "id": "C1",
+      "operation": "monthly-forecast",
+      "inputs": [
+        {
+          "name": "starting_cash",
+          "value": "1500",
+          "evidence": "E1"
+        },
+        {
+          "name": "months",
+          "value": "12",
+          "evidence": "E2"
+        },
+        {
+          "name": "starting_units",
+          "value": "150",
+          "evidence": "E3"
+        },
+        {
+          "name": "monthly_unit_growth",
+          "value": "0.03",
+          "evidence": "E4"
+        },
+        {
+          "name": "price",
+          "value": "8",
+          "evidence": "E5"
+        },
+        {
+          "name": "variable_cost",
+          "value": "3.50",
+          "evidence": "E6"
+        },
+        {
+          "name": "fixed_costs",
+          "value": "400",
+          "evidence": "E7"
+        },
+        {
+          "name": "acquisition_spend",
+          "value": "50",
+          "evidence": "E8"
+        }
+      ],
+      "result": {
+        "months": 12,
+        "total_revenue": "17030.44",
+        "total_operating_profit": "4179.62",
+        "ending_cash": "5679.62",
+        "minimum_cash": "1725.00",
+        "minimum_cash_month": 1,
+        "cash_out_month": null,
+        "runway_months": null,
+        "break_even_month": 1
+      },
+      "engine_validated": true,
+      "engine_version": "0.2.1",
+      "receipt": "sha256:e0326499194927f1a93dd9f699a9cc2b845ef9232d41029a9aa055e62b60bc2b",
+      "acquisition_counted_once": true
+    }
+  ],
+  "open_questions": [
+    "How many loaves can be sold each month?",
+    "What do rent, utilities and insurance cost?"
+  ],
+  "next_steps": [
+    "Replace each assumption with a quote or a measured figure, then run the forecast again."
+  ],
+  "notes": "Every figure in this file is invented for documentation. The receipt is the fingerprint the calculator printed for these exact inputs."
+}

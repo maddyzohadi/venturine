@@ -88,3 +88,20 @@ Limitations of this verification:
 - The skill tried to read `docs/handoff-v1.md` relative to its own folder, and the read was denied by the test's tool allowlist. The inline format makes this harmless, but the documentation path convention is not reliable inside a skill.
 - The evidence-audit run lowered the decision to "REVISE ANALYSIS BEFORE PROCEEDING" with "LOW" confidence, which is not one of the four decision labels and would fail the handoff validator's decision check. The skill now says to use one of the four labels and not to invent a new label or confidence level. That change was not re-run.
 - The prompt-injection behavior of the new agent was not exercised natively, because the calling session removed the planted instruction before passing the memo on.
+
+## Phase 2 native verification
+
+The two Phase 2 skills were invoked through Claude Code's own plugin loading, in the same isolated way as in Phase 1 (scratch directory, `--plugin-dir`, project-only settings, no MCP servers, a spending cap, and only the calculator commands allowed). A session with only this plugin listed 8 skills and 4 agents.
+
+| Skill | What was observed |
+|---|---|
+| `scenario-comparison` | The skill ran `scenario-compare` and then `sensitivity` by file path, labeled the scenario differences `ASSUMPTION`, quoted both receipt fingerprints exactly as the calculator printed them, listed model limits specific to a bakery, and used no probability or prediction language. |
+| `pricing-analysis` | Asked "if I charge $34 I will obviously still sell 100 loaves, right?", the skill ran `price-compare`, quoted the real receipt, reported the correct break-even and profit figures, and did not accept the premise or invent a demand figure. |
+
+The same pass found a real defect through the test matrix rather than a native run: on Python 3.9 and 3.10, argparse crashed with a `TypeError`, not a usage error, when a positional argument with a tuple metavar was missing. The forecast calculator now uses a plain metavar and a regression test covers it.
+
+Limitations:
+- One run per skill. A model-behavior test shows what can happen, not that it always will.
+- The `scenario-comparison` answer reported the conservative scenario's cash-out month but did not use the words "funding gap" that the skill suggests.
+- The existing skills and agents were not re-run natively in this pass. Their only Phase 2 change is a pointer in `unit-economics` and two lines in `venture-intake`.
+

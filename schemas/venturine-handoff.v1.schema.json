@@ -268,6 +268,10 @@
               "cac",
               "runway",
               "subscription-ltv",
+              "monthly-forecast",
+              "scenario-compare",
+              "sensitivity",
+              "price-compare",
               "manual"
             ]
           },
@@ -320,6 +324,11 @@
           },
           "acquisition_counted_once": {
             "type": "boolean"
+          },
+          "receipt": {
+            "type": "string",
+            "maxLength": 80,
+            "pattern": "^sha256:[0-9a-f]{64}$"
           }
         }
       }

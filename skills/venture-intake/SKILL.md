@@ -72,6 +72,8 @@ For each skill, say whether the intake has enough to start and what is still mis
 - `market-intelligence`: the market definition, geography, customer segments
 - `competitor-intelligence`: the product, customer, and known alternatives
 - `unit-economics`: price, variable cost, fixed costs, volume or acquisition cost, and cash and burn; churn if lifetime value is wanted
+- `scenario-comparison`: starting cash, a forecast horizon, first-month units, monthly unit growth, price, variable cost, fixed costs excluding acquisition, and monthly acquisition spending
+- `pricing-analysis`: the candidate prices, variable cost, fixed costs, acquisition cost per customer, and the expected monthly units
 
 Recommend one next step. A founder who will commit money or time to a decision should plan an `evidence-audit` before relying on the result.
 

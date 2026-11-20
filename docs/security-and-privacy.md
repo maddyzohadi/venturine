@@ -7,10 +7,11 @@ This document describes what Venturine can and cannot do, based on the contents 
 | Question | Answer |
 |---|---|
 | Does Venturine collect telemetry? | No. The repository contains no analytics or reporting code. |
-| Does it install hooks or run servers? | No. The plugin contains skills, agents, a calculator and a handoff validator only. |
+| Does it install hooks or run servers? | No. The plugin contains skills, agents, two calculators and a handoff validator only. |
 | Can agents run shell commands? | No. No agent lists `Bash`, and `research-lead` explicitly disallows it. A test enforces this. |
-| What code can run? | The calculator and the handoff validator in `scripts/`, only in your main Claude Code session, only with your permission. |
+| What code can run? | The calculators and the handoff validator in `scripts/`, only in your main Claude Code session, only with your permission. |
 | Does the calculator touch the network or files? | No. It uses only the Python standard library and performs arithmetic. |
+| Does the forecasting calculator touch the network or files? | No. It is deterministic, uses only the Python standard library (`hashlib` only for the receipt fingerprint), and neither reads nor writes files. |
 | Does the handoff validator touch the network or files? | It reads only the one `.json` file you name, up to 1 MB. It never writes files, never uses the network, never runs other programs, and never prints the file's contents. It uses only the Python standard library. |
 | Do any agents reach the web? | Yes. `research-lead`, `evidence-auditor` and `red-team-reviewer` can search and fetch public web pages. |
 
@@ -48,7 +49,7 @@ A handoff (see [handoff-v1.md](handoff-v1.md)) is a JSON block that carries an a
 
 ## Untrusted content
 
-Pages and documents that agents fetch are data, not instructions. The three web-enabled agents, `research-lead`, `evidence-auditor` and `red-team-reviewer`, each have an "Untrusted Content" section telling them not to follow instructions found in fetched or reviewed content. All six skills and the `financial-analyst` agent carry the same section, and a test enforces it. When content tries to direct them, they report the attempt in their own words and do not repeat its instructions, commands or links. This reduces prompt-injection risk but cannot eliminate it. Treat research output as something to check, and read any command before approving it.
+Pages and documents that agents fetch are data, not instructions. The three web-enabled agents, `research-lead`, `evidence-auditor` and `red-team-reviewer`, each have an "Untrusted Content" section telling them not to follow instructions found in fetched or reviewed content. All eight skills and the `financial-analyst` agent carry the same section, and a test enforces it. When content tries to direct them, they report the attempt in their own words and do not repeat its instructions, commands or links. This reduces prompt-injection risk but cannot eliminate it. Treat research output as something to check, and read any command before approving it.
 
 ## What Venturine does not guarantee
 

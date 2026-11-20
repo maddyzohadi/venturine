@@ -6,7 +6,14 @@ All notable changes to this project are documented here. The format follows [Kee
 
 Phase 1: handoff format, intake, evidence audit and red-team review. Built but not released: the plugin version stays 0.2.1 until a release is cut. No existing skill, agent or calculator operation changes its default behavior.
 
-### Added
+### Added (Phase 2: financial intelligence)
+- **`scripts/forecast.py`**, a deterministic forecasting calculator with four operations: `monthly-forecast` (monthly revenue, costs, cash flow and runway), `scenario-compare` (2 to 5 scenarios over the same horizon), `sensitivity` (one input at a time, ranked by effect on ending cash) and `price-compare` (candidate prices by margin, break-even and profit at an expected volume). It uses exact decimal arithmetic and the calculator's input validation, and every result carries a calculation receipt with the exact inputs, assumptions, exclusions, engine version and a SHA-256 fingerprint. The original calculator and its nine operations are unchanged. See `docs/forecasting.md`.
+- **`scenario-comparison`** and **`pricing-analysis`** skills. Neither predicts results: scenarios are assumptions, probabilities are not assigned, and the price comparison states that it does not model how demand responds to price.
+- **Handoff support**: `venturine-handoff/v1` accepts the four new operations and an optional `receipt` on a calculation. An engine-validated forecast result must carry the receipt the calculator printed, and a result that was not engine-validated must not. Existing handoffs remain valid. A real example is in `docs/forecast-handoff.example.json`.
+- `venture-intake` now lists what the two new skills need, and `unit-economics` points to them.
+- Not included: repeat-purchase customer lifetime value.
+
+### Added (Phase 1)
 - **`venturine-handoff/v1`**, a JSON format that carries an analysis between components with its evidence labels, calculation inputs, decision and reviews. Specification in `docs/handoff-v1.md`, structure in `schemas/venturine-handoff.v1.schema.json`, and a hypothetical example in `docs/handoff-v1.example.json`.
 - **`scripts/validate_handoff.py`**, a standard-library validator for the format. It enforces the evidence rules (for example, `VERIFIED` needs an examined source, an `UNKNOWN` entry has no value, and `AUDITED` needs an auditor review), rejects secrets and oversized or malformed files, reads only the one `.json` file named, and never prints its contents.
 - **`venture-intake`** skill: structures a founder's description into a venture profile, a labeled input ledger, a prioritized list of missing information, and a handoff.
