@@ -154,7 +154,7 @@ class TestBackwardCompatibility(unittest.TestCase):
 
     def test_plugin_version_is_unchanged_until_a_release_is_cut(self):
         plugin = json.loads(read(".claude-plugin/plugin.json"))
-        self.assertEqual(plugin["version"], "0.2.1")
+        self.assertEqual(plugin["version"], "0.3.0")
         self.assertEqual(ENGINE_VERSION, "0.2.1")
 
     def test_calculator_operations_are_unchanged(self):
@@ -572,8 +572,8 @@ class TestDocumentation(unittest.TestCase):
         text = read("README.md")
         for name in ALL_SKILLS + ALL_AGENTS:
             self.assertIn(f"`{name}`", text, name)
-        self.assertIn("(unreleased)", text)
-        self.assertIn("Release v0.2.1 ships 4 skills and 3 agents", text)
+        self.assertNotIn("(unreleased)", text)
+        self.assertIn("Release v0.3.0 ships all 12 skills and 6 agents", text)
         self.assertIn("handoff-v1.md", text)
         self.assertNotRegex(text, r"(?i)\bsix skills and four agents are "
                                   r"shipped")
@@ -588,8 +588,8 @@ class TestDocumentation(unittest.TestCase):
 
     def test_roadmap_records_phase_one_as_built_but_unreleased(self):
         text = read("docs/roadmap.md")
-        self.assertIn("## Built, not yet released (Phases 1 to 4)", text)
-        self.assertIn("The plugin version is still 0.2.1", text)
+        self.assertIn("## Released in v0.3.0 (Phases 1 to 4)", text)
+        self.assertIn("The calculator engine stays at 0.2.1", text)
         self.assertIn("No change to the original calculator", text)
         self.assertIn("## Shipped (v0.2.1)", text)
         self.assertIn("- Skills (4):", text)
@@ -597,13 +597,13 @@ class TestDocumentation(unittest.TestCase):
 
     def test_changelog_lists_each_new_component_under_unreleased(self):
         text = read("CHANGELOG.md")
-        unreleased = text.split("## [Unreleased]", 1)[1].split("## [0.2.1]",
-                                                               1)[0]
+        unreleased = text.split("## [0.3.0]", 1)[1].split("## [0.2.1]",
+                                                          1)[0]
         for needle in ("venturine-handoff/v1", "validate_handoff.py",
                        "venture-intake", "evidence-audit",
                        "red-team-reviewer", "Handoff"):
             self.assertIn(needle, unreleased, needle)
-        self.assertIn("plugin version stays 0.2.1", unreleased)
+        self.assertIn("The calculator engine stays at 0.2.1", unreleased)
 
     def test_security_doc_lists_the_new_agent_and_validator(self):
         text = read("docs/security-and-privacy.md")

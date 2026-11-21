@@ -105,7 +105,7 @@ unverified or unsupported.
 
 Expect a list of claims with their evidence status. If the agent could not run, it should say no audit took place rather than implying one did.
 
-## 5. Intake, handoff, audit and red team (unreleased)
+## 5. Intake, handoff, audit and red team
 
 These components are built but not yet in a release. The scenario is hypothetical: a weekend market stall that sells sourdough loaves.
 
@@ -146,7 +146,7 @@ recommendation, a premortem, and any evidence that contradicts it.
 
 Expect a verdict of `STANDS`, `STANDS WITH WEAKNESSES`, `DOES NOT STAND` or `NOT ENOUGH INFORMATION`, with ranked failure paths, assumption stress tests and a statement of what evidence would change its mind. It does not invent counter-evidence, and finding none is not proof that the claim is right.
 
-## 6. Forecasts, scenarios and prices (unreleased)
+## 6. Forecasts, scenarios and prices
 
 These components are built but not yet in a release. The scenario is a hypothetical bakery with invented numbers.
 
@@ -188,7 +188,7 @@ For each price: the contribution and margin, break-even units with and without a
 python3 scripts/validate_handoff.py docs/forecast-handoff.example.json
 ```
 
-## 7. Customer research, go-to-market and assumptions (unreleased)
+## 7. Customer research, go-to-market and assumptions
 
 These components are built but not yet in a release. The scenario is the same hypothetical bakery, with invented numbers. In real use you would give a skill only research you actually did.
 

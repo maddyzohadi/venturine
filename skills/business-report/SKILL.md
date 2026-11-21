@@ -36,6 +36,7 @@ Use these labels. They are defined in `docs/evidence-terminology.md` and are the
 
 ## 3. Carry Every Calculation Through
 
+- Cite each figure by the id of the finding or calculation that produced it. A figure from calculation `C1` is cited as `C1`, never as another calculation, even when both are in the same section. Before finishing, re-check every `E` and `C` reference against the source findings.
 - Report each figure exactly as the source printed it, with its inputs, its `engine_validated` status, its `engine_version` and its receipt fingerprint, if it had one.
 - Do not recompute, round differently, convert, or combine figures into a new number. A figure you work out yourself is "manual calculation, not engine-validated", and is labeled DERIVED only when its inputs are documented.
 - Check that units, currency, period and customer counts agree wherever figures from different analyses meet. If they do not, report the mismatch. Do not pick one.

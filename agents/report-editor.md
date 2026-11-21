@@ -21,10 +21,11 @@ Compare the report with the findings it was built from, and report material prob
 1. Check that each material claim in the report appears in a source finding, and that its label is the source's label or weaker.
 2. Check that every figure matches its source exactly: value, unit, currency, period and customer count.
 3. Check each calculation receipt: the operation, the inputs and their labels, `engine_validated`, `engine_version` and the receipt fingerprint, as the source printed them. Flag a figure with no receipt, a receipt with no run, and a figure the report worked out itself without calling it a manual calculation.
-4. Find contradictions inside the report and between the report and its sources, such as differing prices, segments, customer counts or margins.
-5. Find unsupported conclusions: a recommendation stronger than its evidence, a label upgraded in a summary, a comparison with no common basis, or a sentence that states a fact no finding contains.
-6. Check that unknowns, assumptions and limitations were carried through and not smoothed over.
-7. Check the status: AUDITED only if the `evidence-auditor` actually ran, and PRELIMINARY otherwise.
+4. Check every citation reference (`E` and `C` ids): each must point to the finding or calculation that actually supports the claim, and a figure must not be cited to a different calculation than the one that produced it. Check this claim by claim, not id by id: for every sentence that carries a reference, compare the figure in that sentence with the value in the finding that has the cited id. If the figure is the result of a different finding, the reference is wrong even when the cited id exists. Flag a wrong, missing or dangling reference.
+5. Find contradictions inside the report and between the report and its sources, such as differing prices, segments, customer counts or margins.
+6. Find unsupported conclusions: a recommendation stronger than its evidence, a label upgraded in a summary, a comparison with no common basis, or a sentence that states a fact no finding contains.
+7. Check that unknowns, assumptions and limitations were carried through and not smoothed over.
+8. Check the status: AUDITED only if the `evidence-auditor` actually ran, and PRELIMINARY otherwise.
 
 ## Method
 
@@ -71,6 +72,9 @@ For each calculated figure: matches its source, mismatch, missing receipt, or no
 
 ### Label Check
 Each label that is stronger than its source, and each claim with no label.
+
+### Citation References
+Each wrong, missing or dangling `E` or `C` reference, with the sentence, the id the report uses and the id the source supports. Do not write "correct throughout" for an id you did not compare claim by claim.
 
 ### Contradictions
 Conflicts within the report and between the report and its sources.

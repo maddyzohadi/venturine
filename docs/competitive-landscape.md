@@ -35,7 +35,7 @@ This compares what each project's public documentation describes. It does not ra
 | Overlapping area | Market sizing, competitor analysis, unit economics, idea validation | Market sizing, competitive positioning, financial model review, plus deck review, investment-committee simulation and cap-table modeling |
 | Audience framing | Founders and independent builders validating a business idea | Startup founders, with an emphasis on investor scrutiny |
 | License | Apache-2.0 | Apache-2.0 |
-| Maturity signal | v0.2.1, private beta, four skills and three agents | v0.28.0 listed as the latest release, six skills, 55 stars |
+| Maturity signal | v0.3.0, beta, twelve skills and six agents | v0.28.0 listed as the latest release, six skills, 55 stars |
 | Not compared | Anything not stated in public documentation, including output quality and accuracy | |
 
 Founder Skills is the more mature project by the release and star signals above. Venturine's goals, such as explicit evidence labels and an agent set with no shell access, are design choices, not demonstrated advantages.

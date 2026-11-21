@@ -813,15 +813,14 @@ class TestIntegrationAndDocs(unittest.TestCase):
             self.assertIn(f"`{name}`", readme)
             self.assertIn(f"`{name}`", intake)
         self.assertIn(f"`{AGENT}`", readme)
-        self.assertIn("Phases 1 to 4", readme)
-        self.assertIn("Release v0.2.1 ships 4 skills and 3 agents", readme)
+        self.assertIn("Release v0.3.0 ships all 12 skills and 6 agents", readme)
 
     def test_the_roadmap_changelog_and_security_doc_record_phase_three(self):
         roadmap = read("docs/roadmap.md")
         self.assertIn("Phase 3 adds:", roadmap)
-        self.assertIn("(built, not yet released) | 11 / 5", roadmap)
+        self.assertIn("(released in v0.3.0) | 11 / 5", roadmap)
         changelog = read("CHANGELOG.md")
-        unreleased = changelog.split("## [Unreleased]", 1)[1].split(
+        unreleased = changelog.split("## [0.3.0]", 1)[1].split(
             "## [0.2.1]", 1)[0]
         for needle in SKILLS + (AGENT, "channel-compare", "interview",
                                 "11 skills and 5 agents"):
@@ -860,7 +859,7 @@ class TestIntegrationAndDocs(unittest.TestCase):
         self.assertEqual(ENGINE_VERSION, "0.2.1")
         self.assertEqual(len(OPERATIONS), 9)
         plugin = json.loads(read(".claude-plugin/plugin.json"))
-        self.assertEqual(plugin["version"], "0.2.1")
+        self.assertEqual(plugin["version"], "0.3.0")
         for name in ("scenario-comparison", "pricing-analysis"):
             self.assertIn("Do not fabricate JSON output",
                           read(f"skills/{name}/SKILL.md"))
