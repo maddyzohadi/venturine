@@ -36,7 +36,9 @@ runs:
         npm install --ignore-scripts --no-audit --no-fund --save-exact \
           "@anthropic-ai/claude-code@${version}"
 
-        # Step 2: every installed package must match a pinned hash.
+        # Step 2: every installed package must match a pinned hash. Where a
+        # package came from does not matter: bytes that match the pinned
+        # sha512 hash are the pinned package.
         PINNED_PACKAGES="$PINNED_PACKAGES" python3 - <<'PY'
         import json, os, sys
 
@@ -55,8 +57,6 @@ runs:
                 sys.exit(f"unpinned package installed: {name}")
             if (meta.get("version"), meta.get("integrity")) != pin:
                 sys.exit(f"version or integrity mismatch: {name}")
-            if not meta.get("resolved", "").startswith("https://registry.npmjs.org/"):
-                sys.exit(f"unexpected download location: {name}")
             seen.add(name)
         if "@anthropic-ai/claude-code" not in seen:
             sys.exit("claude-code was not installed")

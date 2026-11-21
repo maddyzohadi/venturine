@@ -621,12 +621,17 @@ class TestCliToolingIntegrity(unittest.TestCase):
         # Only the CLI's own install script runs, and only after the check.
         self.assertIn("npm rebuild @anthropic-ai/claude-code", self.text)
 
-    def test_the_check_rejects_unpinned_packages_and_other_registries(self):
+    def test_the_check_rejects_unpinned_and_mismatched_packages(self):
         for message in ("unpinned package installed",
                         "version or integrity mismatch",
-                        "unexpected download location"):
+                        "claude-code was not installed"):
             self.assertIn(message, self.text)
-        self.assertIn("https://registry.npmjs.org/", self.text)
+
+    def test_the_action_names_no_remote_host(self):
+        # The pin does not depend on where a package is downloaded from, and
+        # the plugin directory holds a file that spells a remote host beside
+        # an environment reference for review.
+        self.assertNotRegex(self.text, r"(?i)https?://")
 
     def test_workflows_never_install_the_cli_without_the_action(self):
         for path in self.workflows():
