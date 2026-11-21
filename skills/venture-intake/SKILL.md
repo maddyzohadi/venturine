@@ -74,6 +74,9 @@ For each skill, say whether the intake has enough to start and what is still mis
 - `unit-economics`: price, variable cost, fixed costs, volume or acquisition cost, and cash and burn; churn if lifetime value is wanted
 - `scenario-comparison`: starting cash, a forecast horizon, first-month units, monthly unit growth, price, variable cost, fixed costs excluding acquisition, and monthly acquisition spending
 - `pricing-analysis`: the candidate prices, variable cost, fixed costs, acquisition cost per customer, and the expected monthly units
+- `customer-discovery`: the customer segments you have in mind, and any research you have actually done
+- `go-to-market`: the segments and evidence, the price and margin, the alternatives customers use, the budget, and any channel tests with their spend and customers
+- `assumption-ledger`: nothing beyond the intake itself, since it ranks the assumptions the intake recorded
 
 Recommend one next step. A founder who will commit money or time to a decision should plan an `evidence-audit` before relying on the result.
 
@@ -91,8 +94,10 @@ Recommend one next step. A founder who will commit money or time to a decision s
 
 The handoff is part of this skill's normal output. End with one fenced `json` block in the `venturine-handoff/v1` format. The full format is in `docs/handoff-v1.md` in the Venturine plugin folder, and this is the part you need:
 
-- Required top-level fields: `schema` (exactly `venturine-handoff/v1`), `created` (today's date as YYYY-MM-DD), `producer` (`component` set to your own name, and `kind` set to `skill` or `agent`), `venture` (with a `name`), and `evidence_ledger`.
-- Each ledger entry has an `id` (`E1`, `E2` and so on), a `claim`, and a `label` from the shared evidence labels. Optional fields are `value` (always a string), `unit`, `source`, `derived_from`, `calculation`, `limitations` and `validation`. Leave `value` out of an UNKNOWN entry.
+- Required top-level fields: `schema` (exactly `venturine-handoff/v1`), `created` (today's date as YYYY-MM-DD), `producer` (`component` set to your own name in lowercase with no prefix, such as `go-to-market` and not `venturine:go-to-market`, and `kind` set to `skill` or `agent`), `venture` (with a `name`), and `evidence_ledger`.
+- Each ledger entry has an `id` (`E1`, `E2` and so on), a `claim`, and a `label` from the shared evidence labels. Optional fields are `value` (always a string), `unit`, `source`, `derived_from`, `calculation`, `limitations`, `validation`, `category` (customer, segment, problem, channel, positioning, pricing, cost, market, competition, operations, regulatory or other), `priority` (high, medium or low), `risk`, and `sample` (whole numbers: `n`, the people asked, and `supporting`, how many back the claim, if counted). Leave `value` out of an UNKNOWN entry.
+- A `source` is an object with a `type` (`vendor_page`, `official_statistic`, `regulator`, `filing`, `news`, `academic`, `third_party_analysis`, `search_summary`, `founder`, `interview`, `calculation` or `other`) and optionally `title`, `url`, `published`, `accessed` and `examined`. Put anything else, such as which interviewee, in `title`.
+- `VERIFIED`, `PARTIALLY_SUPPORTED` and `CONTRADICTED` entries each need a `source` with a `title` or `url`. `PARTIALLY_SUPPORTED` also needs `limitations`, and `VERIFIED` also needs `accessed` and `examined` set to true. `DERIVED` needs `derived_from` or `calculation`.
 - `open_questions` and `next_steps` are lists of plain strings.
 - Do not add other fields. A custom field must start with `x_`.
 

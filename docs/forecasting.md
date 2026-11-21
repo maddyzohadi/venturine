@@ -1,6 +1,6 @@
 # Forecasting, scenarios, sensitivity and pricing
 
-This page describes the forecasting calculator, `scripts/forecast.py`. It sits beside the original calculator (`scripts/calculate.py`), which is unchanged, and it is used by the `scenario-comparison` and `pricing-analysis` skills.
+This page describes the forecasting calculator, `scripts/forecast.py`. It sits beside the original calculator (`scripts/calculate.py`), which is unchanged, and it is used by the `scenario-comparison`, `pricing-analysis` and `go-to-market` skills.
 
 A forecast shows what follows from the inputs you give it. It does not predict results and does not verify the inputs. Every figure comes from deterministic code, never from a model's arithmetic, and every result carries a receipt.
 
@@ -68,6 +68,12 @@ python3 scripts/forecast.py price-compare 9.50 1500 12 100 24 29 34
 ```
 
 Takes `VARIABLE_COST FIXED_COSTS CAC_PER_CUSTOMER EXPECTED_UNITS` and then 1 to 8 candidate prices. For each price it reports the contribution per unit and margin, break-even units with and without acquisition cost, revenue and operating profit at the expected volume, and the units needed to match the first price's profit. **Expected units are the same at every price. The model does not predict how demand responds to price.** Each customer is assumed to buy one unit, so CAC is charged once per unit.
+
+```bash
+python3 scripts/forecast.py channel-compare 200 4.50 --channel flyers 40 4 --channel referrals 0 3
+```
+
+Takes `MONTHLY_BUDGET` and `CONTRIBUTION_PER_CUSTOMER`, then 1 to 6 channel tests as `--channel NAME TEST_SPEND TEST_CUSTOMERS`. `TEST_CUSTOMERS` is a whole number the founder reports. For each channel it reports the CAC (the test spend divided by the customers), the customers the monthly budget buys at that CAC, the margin of the first purchase after CAC, whether that purchase recovers the CAC, and the net contribution if the whole budget went to that channel. A channel with no customers has no CAC, and a channel that cost nothing is reported as such, because its real cost is time. It orders channels by CAC but does not recommend one and does not split the budget. **A CAC seen in a small test may not hold at a larger budget, and the model does not predict how it changes.** The customers are whatever the founder attributes to each test, and attribution is not checked.
 
 ## Calculation receipts
 

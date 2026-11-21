@@ -1,0 +1,242 @@
+{
+  "schema": "venturine-handoff/v1",
+  "id": "example-maple-loaf-growth",
+  "created": "2026-11-21",
+  "producer": {
+    "component": "go-to-market",
+    "kind": "skill",
+    "version": "0.2.1"
+  },
+  "venture": {
+    "name": "Maple Loaf Bakery (hypothetical)",
+    "summary": "A fictional bakery used to illustrate a customer and growth handoff.",
+    "stage": "validating",
+    "customer": "Households near a weekend market stall (hypothetical)",
+    "currency": "USD",
+    "hypothetical": true
+  },
+  "evidence_ledger": [
+    {
+      "id": "E1",
+      "claim": "Households within walking distance of the stall are the best first segment",
+      "label": "ASSUMPTION",
+      "category": "segment",
+      "priority": "high",
+      "risk": "If the first customers are not nearby households, the stall location and the flyer channel both miss.",
+      "validation": "Ask 20 more neighbors and a sample of market visitors where they live and how they heard of the stall."
+    },
+    {
+      "id": "E2",
+      "claim": "Interviewees say fresh bread is hard to find on weekends",
+      "label": "FOUNDER_PROVIDED",
+      "category": "problem",
+      "source": {
+        "type": "interview",
+        "title": "Founder's interview notes (hypothetical)"
+      },
+      "sample": {
+        "n": 8,
+        "supporting": 5
+      },
+      "limitations": "Eight neighbors chosen by the founder. They may agree more than typical customers, and the notes were not examined."
+    },
+    {
+      "id": "E3",
+      "claim": "Customers will pay $8 for a loaf",
+      "label": "UNVERIFIED",
+      "category": "pricing",
+      "priority": "high",
+      "risk": "If customers will not pay $8 the margin per customer disappears.",
+      "validation": "Take paid pre-orders at $8 from comparable customers and count them."
+    },
+    {
+      "id": "E4",
+      "claim": "Selling price per loaf",
+      "label": "FOUNDER_PROVIDED",
+      "value": "8",
+      "unit": "USD per loaf"
+    },
+    {
+      "id": "E5",
+      "claim": "Ingredient and packaging cost per loaf",
+      "label": "FOUNDER_PROVIDED",
+      "value": "3.50",
+      "unit": "USD per loaf"
+    },
+    {
+      "id": "E6",
+      "claim": "Contribution per customer, one loaf",
+      "label": "DERIVED",
+      "value": "4.50",
+      "unit": "USD",
+      "calculation": "C1",
+      "derived_from": [
+        "E4",
+        "E5"
+      ]
+    },
+    {
+      "id": "E7",
+      "claim": "Spent on a flyer test",
+      "label": "FOUNDER_PROVIDED",
+      "value": "40",
+      "unit": "USD",
+      "category": "channel"
+    },
+    {
+      "id": "E8",
+      "claim": "Customers the founder attributes to the flyer test",
+      "label": "FOUNDER_PROVIDED",
+      "value": "4",
+      "unit": "customers",
+      "category": "channel"
+    },
+    {
+      "id": "E9",
+      "claim": "Spent on the referral test",
+      "label": "FOUNDER_PROVIDED",
+      "value": "0",
+      "unit": "USD",
+      "category": "channel"
+    },
+    {
+      "id": "E10",
+      "claim": "Customers the founder attributes to the referral test",
+      "label": "FOUNDER_PROVIDED",
+      "value": "3",
+      "unit": "customers",
+      "category": "channel"
+    },
+    {
+      "id": "E11",
+      "claim": "Monthly budget for acquiring customers",
+      "label": "ASSUMPTION",
+      "value": "200",
+      "unit": "USD per month",
+      "category": "cost",
+      "validation": "Replace with the amount the founder can actually spend."
+    },
+    {
+      "id": "E12",
+      "claim": "Channel comparison of the two tests",
+      "label": "DERIVED",
+      "category": "channel",
+      "calculation": "C2",
+      "derived_from": [
+        "E6",
+        "E7",
+        "E8",
+        "E9",
+        "E10",
+        "E11"
+      ],
+      "limitations": "Two very small tests. A CAC from a small test may not hold at a larger budget, and attribution is the founder's own."
+    }
+  ],
+  "calculations": [
+    {
+      "id": "C1",
+      "operation": "contribution-margin",
+      "inputs": [
+        {
+          "name": "price",
+          "value": "8",
+          "evidence": "E4"
+        },
+        {
+          "name": "variable_cost",
+          "value": "3.50",
+          "evidence": "E5"
+        }
+      ],
+      "result": "4.50",
+      "engine_validated": true,
+      "engine_version": "0.2.1"
+    },
+    {
+      "id": "C2",
+      "operation": "channel-compare",
+      "inputs": [
+        {
+          "name": "monthly_budget",
+          "value": "200",
+          "evidence": "E11"
+        },
+        {
+          "name": "contribution_per_customer",
+          "value": "4.50",
+          "evidence": "E6"
+        },
+        {
+          "name": "flyers.test_spend",
+          "value": "40",
+          "evidence": "E7"
+        },
+        {
+          "name": "flyers.test_customers",
+          "value": "4",
+          "evidence": "E8"
+        },
+        {
+          "name": "referrals.test_spend",
+          "value": "0",
+          "evidence": "E9"
+        },
+        {
+          "name": "referrals.test_customers",
+          "value": "3",
+          "evidence": "E10"
+        }
+      ],
+      "result": {
+        "monthly_budget": "200.00",
+        "contribution_per_customer": "4.50",
+        "assumes_one_purchase_per_customer": true,
+        "channels": [
+          {
+            "channel": "flyers",
+            "test_spend": "40.00",
+            "test_customers": "4.00",
+            "cac": "10.00",
+            "customers_at_budget": "20.00",
+            "first_purchase_margin_per_customer": "-5.50",
+            "first_purchase_recovers_cac": false,
+            "net_contribution_if_all_budget_here": "-110.00",
+            "notes": []
+          },
+          {
+            "channel": "referrals",
+            "test_spend": "0.00",
+            "test_customers": "3.00",
+            "cac": "0.00",
+            "customers_at_budget": null,
+            "first_purchase_margin_per_customer": "4.50",
+            "first_purchase_recovers_cac": true,
+            "net_contribution_if_all_budget_here": null,
+            "notes": [
+              "The test cost nothing, so the budget does not limit customers here. Measure the real cost of the time or tools used."
+            ]
+          }
+        ],
+        "ordering_by_cac": [
+          "referrals",
+          "flyers"
+        ],
+        "channels_without_cac": []
+      },
+      "engine_validated": true,
+      "engine_version": "0.2.1",
+      "receipt": "sha256:8501d58df191e10f26df80e3aba3e8ef4f4f3ef01831df5e1735c979bea2d9e4",
+      "acquisition_counted_once": true
+    }
+  ],
+  "open_questions": [
+    "Do customers pay $8 when asked to commit money?",
+    "Does the flyer CAC hold at a larger budget?"
+  ],
+  "next_steps": [
+    "Run a paid pre-order at $8.",
+    "Repeat the flyer test with a larger spend and count the customers."
+  ],
+  "notes": "Every figure and every interview result in this file is invented for documentation. A real handoff records only research the founder actually did."
+}

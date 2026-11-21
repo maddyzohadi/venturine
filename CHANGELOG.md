@@ -6,6 +6,15 @@ All notable changes to this project are documented here. The format follows [Kee
 
 Phase 1: handoff format, intake, evidence audit and red-team review. Built but not released: the plugin version stays 0.2.1 until a release is cut. No existing skill, agent or calculator operation changes its default behavior.
 
+### Added (Phase 3: customer and growth intelligence)
+- **`customer-discovery`** skill: structures segments, problems, interview findings and evidence gaps. It records only research the founder actually did: counts exactly as given, quotes only if supplied, no invented interviews or results, and no interview ever makes a claim `VERIFIED`.
+- **`go-to-market`** skill: a plan from the available evidence covering the starting segment, positioning, channels, budget limits and an experiment sequence. It runs the calculators for channel economics and never invents a conversion rate, CAC or benchmark.
+- **`assumption-ledger`** skill: tracks assumptions with their evidence status, impact, priority (from a stated impact-by-evidence table), what rests on each, and the validation to run first.
+- **`go-to-market-strategist`** agent: analyzes channels, positioning and growth options from the available evidence. Read-only and web tools, no shell.
+- **`channel-compare`** in `scripts/forecast.py`: CAC from channel tests, the customers a monthly budget buys at that CAC, and whether a first purchase recovers it, with a calculation receipt. It makes no recommendation, and its receipt states that a test's CAC may not hold at scale.
+- **Handoff support**, added compatibly to `venturine-handoff/v1`: the optional ledger fields `category`, `priority`, `risk` and `sample` (people asked and how many back a finding), an `interview` source type that can never make a claim `VERIFIED`, and the `channel-compare` operation. Existing handoffs stay valid. A real example is in `docs/customer-growth-handoff.example.json`.
+- `venture-intake` lists what each new skill needs. Totals: 11 skills and 5 agents.
+
 ### Added (Phase 2: financial intelligence)
 - **`scripts/forecast.py`**, a deterministic forecasting calculator with four operations: `monthly-forecast` (monthly revenue, costs, cash flow and runway), `scenario-compare` (2 to 5 scenarios over the same horizon), `sensitivity` (one input at a time, ranked by effect on ending cash) and `price-compare` (candidate prices by margin, break-even and profit at an expected volume). It uses exact decimal arithmetic and the calculator's input validation, and every result carries a calculation receipt with the exact inputs, assumptions, exclusions, engine version and a SHA-256 fingerprint. The original calculator and its nine operations are unchanged. See `docs/forecasting.md`.
 - **`scenario-comparison`** and **`pricing-analysis`** skills. Neither predicts results: scenarios are assumptions, probabilities are not assigned, and the price comparison states that it does not model how demand responds to price.
