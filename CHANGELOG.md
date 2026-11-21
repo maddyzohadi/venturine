@@ -4,6 +4,10 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-11-21
+
+Maintenance release. The 12 skills, 6 agents and the calculator engine (0.2.1) are unchanged in scope; only skill wording and documentation change.
+
 ### Fixed
 - **Calculator permission guidance.** In a native test the calculator was refused because the session had not allowed it, and nothing told the user how to fix that. `unit-economics`, `scenario-comparison`, `pricing-analysis` and `go-to-market` now tell the user before the first calculator command, show the exact command, run commands one at a time, ask only for the exact script path to be allowed, and, if the user declines, label figures "manual calculation, not engine-validated" instead of computing them another way. A skill's `allowed-tools` setting did not grant permission when tested, so none is used, and a test forbids it.
 - **Multi-step requests stopped after intake.** In two native runs, a request naming several steps ended after `venture-intake`. The skill now continues to the next requested step and asks only when a missing fact blocks it.
@@ -126,8 +130,9 @@ Foundations and adoption hygiene, plus two security and robustness fixes to the 
 ### Added
 - Initial release: skills `idea-validator`, `market-intelligence`, `competitor-intelligence` and `unit-economics`; agents `research-lead`, `financial-analyst` and `evidence-auditor`; a standard-library financial calculator with seven operations and automated tests; plugin and marketplace manifests; CI workflows.
 
-[Unreleased]: https://github.com/maddyzohadi/venturine/compare/v0.3.0...HEAD
-[0.3.0]: https://github.com/maddyzohadi/venturine/compare/v0.2.1...main
+[Unreleased]: https://github.com/maddyzohadi/venturine/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/maddyzohadi/venturine/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/maddyzohadi/venturine/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/maddyzohadi/venturine/compare/72f0b6d...v0.2.1
 [0.2.0]: https://github.com/maddyzohadi/venturine/compare/b17fb10...f8eba45
 [0.1.1]: https://github.com/maddyzohadi/venturine/compare/7231175...b17fb10

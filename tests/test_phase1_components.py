@@ -154,7 +154,7 @@ class TestBackwardCompatibility(unittest.TestCase):
 
     def test_plugin_version_is_unchanged_until_a_release_is_cut(self):
         plugin = json.loads(read(".claude-plugin/plugin.json"))
-        self.assertEqual(plugin["version"], "0.3.0")
+        self.assertEqual(plugin["version"], "0.3.1")
         self.assertEqual(ENGINE_VERSION, "0.2.1")
 
     def test_calculator_operations_are_unchanged(self):
