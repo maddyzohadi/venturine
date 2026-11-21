@@ -28,7 +28,7 @@ This applies to all project spaces: the repository, issues, pull requests, discu
 
 Maintainers may edit, hide or remove contributions and may warn, temporarily restrict or ban people who violate this code.
 
-To report a concern, contact the maintainer, Maddy Zohadi, through GitHub (account `maddyzohadi`). While the repository is private, reports go through that route. A dedicated private contact will be listed here before the repository becomes public. Reports will be handled as privately as practical.
+To report a concern, contact the maintainer, Maddy Zohadi, through GitHub (account `maddyzohadi`). If you would rather not name the person involved in public, open an issue titled "Conduct concern" that says only that you have one, without details, and the maintainer will arrange a private channel. There is no conduct email address. Reports will be handled as privately as practical.
 
 ## Attribution
 

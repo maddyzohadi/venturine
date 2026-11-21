@@ -8,8 +8,8 @@ Security fixes are made against the latest released version on `main`. Older ver
 
 Please do not open a public issue for a security problem.
 
-- **While the repository is private:** contact the maintainer, Maddy Zohadi, privately through GitHub (account `maddyzohadi`).
-- **After the repository is public:** use GitHub's "Report a vulnerability" private advisory form on the Security tab. Enabling that form is on the pre-public checklist in [docs/security-and-privacy.md](docs/security-and-privacy.md). It is not available under the current private configuration; see [docs/repository-settings.md](docs/repository-settings.md).
+- **Preferred:** if the repository's Security tab shows a "Report a vulnerability" button, use it. It opens a private advisory that only you and the maintainer can see.
+- **If that button is not shown:** open a public issue titled "Security contact request" that says only that you have a security concern. Do not put details, proof of concept or affected versions in it. The maintainer, Maddy Zohadi (GitHub account `maddyzohadi`), will arrange a private channel. There is no security email address.
 
 Include what you found, how to reproduce it, which version you used, and the impact you believe it has. Do not include real confidential business data.
 
