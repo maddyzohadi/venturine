@@ -859,7 +859,7 @@ class TestIntegrationAndDocs(unittest.TestCase):
         self.assertEqual(ENGINE_VERSION, "0.2.1")
         self.assertEqual(len(OPERATIONS), 9)
         plugin = json.loads(read(".claude-plugin/plugin.json"))
-        self.assertEqual(plugin["version"], "0.3.0")
+        self.assertEqual(plugin["version"], "0.3.1")
         for name in ("scenario-comparison", "pricing-analysis"):
             self.assertIn("Do not fabricate JSON output",
                           read(f"skills/{name}/SKILL.md"))

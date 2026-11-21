@@ -8,7 +8,7 @@ Evidence-labeled startup analysis for Claude Code: validate an idea, size a mark
 
 Venturine is a Claude Code plugin made of skills and agents for founders and independent builders. It is built around two habits: label what you actually know versus what you assume, and compute numbers with a reproducible calculator instead of doing arithmetic in prose.
 
-> **Status: beta (v0.3.0).** Venturine is early software and its analysis is AI-generated, so check anything that matters. See the [roadmap](docs/roadmap.md) for what is shipped and what is planned.
+> **Status: beta (v0.3.1).** Venturine is early software and its analysis is AI-generated, so check anything that matters. See the [roadmap](docs/roadmap.md) for what is shipped and what is planned.
 
 ## Who it is for
 
