@@ -371,12 +371,24 @@ When execution succeeds:
 
 Do not treat a successful arithmetic calculation as verification of its input data.
 
+### Permission to run the calculator
+
+Before the first calculator command in a session, tell the user in plain words:
+
+- Venturine will run its own calculator (`calculate.py` or `forecast.py`), which only does arithmetic and has no network or file access.
+- Claude Code will ask for permission. They can approve the command, choose the option that allows that exact command for the session, or decline.
+- Show the exact command you will run.
+
+Run the commands one at a time. Wait for each to finish before starting the next, because a refused command cancels any command started alongside it. Never ask the user to allow `python3` or `Bash` in general; only the exact calculator script path is needed.
+
 When execution fails or permission is unavailable:
 
 - Explain that the calculation was not executed.
 - Do not fabricate JSON output or an engine receipt.
 - Show the applicable formula and documented inputs.
 - Clearly label any independently derived calculation.
+- If the user declines, do not run the arithmetic another way (for example `python3 -c`, a shell one-liner or another script path). Carry on with the figures labelled "manual calculation, not engine-validated", and say once that allowing the calculator and re-running would replace them with engine results.
+- Never describe a figure as engine-validated, a receipt, or calculator output unless a command actually ran and printed it.
 
 ### Security
 
