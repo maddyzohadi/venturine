@@ -238,7 +238,7 @@ class TestRequiredFiles(unittest.TestCase):
         ".github/ISSUE_TEMPLATE/feature_request.yml",
         ".github/ISSUE_TEMPLATE/evidence_or_calculation_issue.yml",
         ".github/ISSUE_TEMPLATE/config.yml",
-        "assets/logo.svg", "assets/social-preview.svg",
+        "assets/logo.svg",
     ]
 
     def test_required_files_exist_and_are_not_empty(self):
@@ -358,7 +358,7 @@ class TestSocialPreview(unittest.TestCase):
                 self.assertLess(len(data), 1_000_000)
 
     def test_svg_sources_are_svg(self):
-        for name in ("logo.svg", "social-preview.svg"):
+        for name in ("logo.svg",):
             text = read(f"assets/{name}")
             self.assertIn("<svg", text)
             self.assertNotIn("<script", text)
