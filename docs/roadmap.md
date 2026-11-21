@@ -10,9 +10,9 @@ Venturine's target architecture is **12 skills and 6 specialized agents**. This 
 - Plugin and marketplace manifests with strict validation in CI.
 - Community and project files, security and privacy documentation, and repository tests.
 
-## Built, not yet released (Phases 1 to 3)
+## Built, not yet released (Phases 1 to 4)
 
-Phases 1 to 3 are implemented on the main branch. The plugin version is still 0.2.1 until a release is cut, and the roadmap versions below are planned, not assigned.
+Phases 1 to 4 are implemented on the main branch. The plugin version is still 0.2.1 until a release is cut, and the roadmap versions below are planned, not assigned.
 
 - Skills (2 added, 6 total): `venture-intake`, `evidence-audit`.
 - Agent (1 added, 4 total): `red-team-reviewer`.
@@ -34,6 +34,12 @@ Phase 3 adds:
 - A `channel-compare` operation in the forecasting calculator: CAC from a channel test, the customers a budget buys at that CAC, and whether a first purchase recovers it. It makes no recommendation. See [forecasting.md](forecasting.md).
 - Compatible handoff additions: the ledger fields `category`, `priority`, `risk` and `sample`, and an `interview` source type that can never make a claim `VERIFIED`.
 
+Phase 4 adds:
+
+- Skill (1 added, 12 total): `business-report`.
+- Agent (1 added, 6 total): `report-editor`, which has read-only file tools and no web access.
+- No change to the handoff schema or to either calculator.
+
 ## Planned phases
 
 | Phase | Version | Planned scope | Skills / agents after |
@@ -42,7 +48,7 @@ Phase 3 adds:
 | 1 | v0.3.0 | Handoff and evidence-ledger schemas with a validator, `venture-intake`, `evidence-audit`, and a `red-team-reviewer` agent (built, not yet released) | 6 / 4 |
 | 2 | v0.4.0 | Calculator v0.3.0 (scenario comparison, sensitivity, monthly cash flow, repeat-purchase LTV, calculation receipts), `scenario-comparison`, `pricing-analysis` (all but repeat-purchase LTV built, not yet released) | 8 / 4 |
 | 3 | v0.5.0 | `customer-discovery`, `go-to-market`, `assumption-ledger`, and a `go-to-market-strategist` agent (built, not yet released) | 11 / 5 |
-| 4 | v0.6.0 | `business-report` and a `report-editor` agent for an integrated report | 12 / 6 |
+| 4 | v0.6.0 | `business-report` and a `report-editor` agent for an integrated report (built, not yet released) | 12 / 6 |
 | 5 | v1.0.0 | Compatibility checks, independent security review, semver and deprecation policy, release process | 12 / 6 |
 
 ## Principles for every phase

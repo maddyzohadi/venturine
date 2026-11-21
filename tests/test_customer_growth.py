@@ -813,7 +813,7 @@ class TestIntegrationAndDocs(unittest.TestCase):
             self.assertIn(f"`{name}`", readme)
             self.assertIn(f"`{name}`", intake)
         self.assertIn(f"`{AGENT}`", readme)
-        self.assertIn("Phases 1 to 3", readme)
+        self.assertIn("Phases 1 to 4", readme)
         self.assertIn("Release v0.2.1 ships 4 skills and 3 agents", readme)
 
     def test_the_roadmap_changelog_and_security_doc_record_phase_three(self):

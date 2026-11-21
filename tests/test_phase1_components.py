@@ -64,6 +64,8 @@ NEW_SKILLS = ("venture-intake", "evidence-audit")
 PHASE2_SKILLS = ("scenario-comparison", "pricing-analysis")
 PHASE3_SKILLS = ("customer-discovery", "go-to-market", "assumption-ledger")
 PHASE3_AGENTS = ("go-to-market-strategist",)
+PHASE4_SKILLS = ("business-report",)
+PHASE4_AGENTS = ("report-editor",)
 NEW_AGENTS = ("red-team-reviewer",)
 LABELS = list(vh.LABELS)
 
@@ -99,23 +101,25 @@ def section(text, heading, level="##"):
 
 
 ALL_SKILLS = (sorted(ORIGINAL_SKILLS) + list(NEW_SKILLS)
-              + list(PHASE2_SKILLS) + list(PHASE3_SKILLS))
-ALL_AGENTS = sorted(ORIGINAL_AGENTS) + list(NEW_AGENTS) + list(PHASE3_AGENTS)
+              + list(PHASE2_SKILLS) + list(PHASE3_SKILLS)
+              + list(PHASE4_SKILLS))
+ALL_AGENTS = sorted(ORIGINAL_AGENTS) + list(NEW_AGENTS) + list(PHASE3_AGENTS) + list(PHASE4_AGENTS)
 HANDOFF_OPTIONAL = [f"skills/{n}/SKILL.md" for n in sorted(ORIGINAL_SKILLS)]
 HANDOFF_OPTIONAL += ["skills/evidence-audit/SKILL.md"]
 HANDOFF_OPTIONAL += [f"skills/{n}/SKILL.md" for n in PHASE2_SKILLS]
 HANDOFF_OPTIONAL += [f"skills/{n}/SKILL.md" for n in PHASE3_SKILLS]
+HANDOFF_OPTIONAL += [f"skills/{n}/SKILL.md" for n in PHASE4_SKILLS]
 HANDOFF_OPTIONAL += [f"agents/{n}.md" for n in ALL_AGENTS]
 
 
 class TestComponentInventory(unittest.TestCase):
 
-    def test_there_are_exactly_eleven_skills_and_five_agents(self):
+    def test_there_are_exactly_twelve_skills_and_six_agents(self):
         skills = sorted(p.name for p in (ROOT / "skills").iterdir())
         agents = sorted(p.stem for p in (ROOT / "agents").glob("*.md"))
         self.assertEqual(skills, sorted(ALL_SKILLS))
         self.assertEqual(agents, sorted(ALL_AGENTS))
-        self.assertEqual((len(skills), len(agents)), (11, 5))
+        self.assertEqual((len(skills), len(agents)), (12, 6))
 
     def test_every_component_has_complete_frontmatter(self):
         for name in NEW_SKILLS:
@@ -584,7 +588,7 @@ class TestDocumentation(unittest.TestCase):
 
     def test_roadmap_records_phase_one_as_built_but_unreleased(self):
         text = read("docs/roadmap.md")
-        self.assertIn("## Built, not yet released (Phases 1 to 3)", text)
+        self.assertIn("## Built, not yet released (Phases 1 to 4)", text)
         self.assertIn("The plugin version is still 0.2.1", text)
         self.assertIn("No change to the original calculator", text)
         self.assertIn("## Shipped (v0.2.1)", text)

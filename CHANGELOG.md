@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows [Kee
 
 Phase 1: handoff format, intake, evidence audit and red-team review. Built but not released: the plugin version stays 0.2.1 until a release is cut. No existing skill, agent or calculator operation changes its default behavior.
 
+### Added (Phase 4: integrated business reporting)
+- **`business-report`** skill: combines existing validation, market, competitor, financial, customer discovery and go-to-market findings into one report. It carries every evidence label and calculation receipt through unchanged, lists contradictions across sections, never recomputes or invents figures, and marks the report PRELIMINARY unless the `evidence-auditor` ran.
+- **`report-editor`** agent: checks a report against its source findings for accuracy, consistency, calculation receipts, evidence labels, contradictions and unsupported conclusions. Read, Glob and Grep only: no web, no shell, no file writes. It flags issues without inventing information, and it is not an audit.
+- Both support the optional `venturine-handoff/v1` output. There is no schema or calculator change. Totals: 12 skills and 6 agents.
+
 ### Added (Phase 3: customer and growth intelligence)
 - **`customer-discovery`** skill: structures segments, problems, interview findings and evidence gaps. It records only research the founder actually did: counts exactly as given, quotes only if supplied, no invented interviews or results, and no interview ever makes a claim `VERIFIED`.
 - **`go-to-market`** skill: a plan from the available evidence covering the starting segment, positioning, channels, budget limits and an experiment sequence. It runs the calculators for channel economics and never invents a conversion rate, CAC or benchmark.
