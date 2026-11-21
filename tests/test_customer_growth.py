@@ -870,7 +870,7 @@ class TestIntegrationAndDocs(unittest.TestCase):
 
     def test_the_apache_license_and_notice_are_untouched(self):
         self.assertIn("Apache License", read("LICENSE"))
-        self.assertIn("Copyright 2026 Mahdokht Zohadi", read("NOTICE"))
+        self.assertIn("Copyright 2026 Maddy Zohadi", read("NOTICE"))
 
 
 if __name__ == "__main__":

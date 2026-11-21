@@ -247,7 +247,7 @@ python3 -m unittest discover -s tests
 
 ## License and name
 
-Released under the [Apache License 2.0](LICENSE). Copyright 2026 Mahdokht Zohadi (see [NOTICE](NOTICE)). Created by Maddy Zohadi.
+Released under the [Apache License 2.0](LICENSE). Copyright 2026 Maddy Zohadi (see [NOTICE](NOTICE)). Created by Maddy Zohadi.
 
 The Apache License does not grant permission to use the Venturine name or logo as branding for independent products. See the [name and logo policy](TRADEMARK.md).
 

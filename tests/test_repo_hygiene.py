@@ -193,7 +193,7 @@ class TestLicenseAndTrademark(unittest.TestCase):
 
     def test_notice_has_copyright_holder(self):
         text = read("NOTICE")
-        self.assertIn("Copyright 2026 Mahdokht Zohadi", text)
+        self.assertIn("Copyright 2026 Maddy Zohadi", text)
         self.assertIn("Apache License, Version 2.0", text)
 
     def test_no_stale_mit_references(self):

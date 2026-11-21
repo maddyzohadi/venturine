@@ -67,7 +67,7 @@ Tagged as `v0.2.1`; no GitHub Release has been published. The audit follow-up wo
 Foundations and adoption hygiene, plus two security and robustness fixes to the calculator found in a pre-release audit. Analysis behavior is otherwise unchanged.
 
 ### Added
-- `LICENSE` (Apache License 2.0), a `NOTICE` file (copyright 2026 Mahdokht Zohadi), and `TRADEMARK.md`, a name and logo policy that makes no registration claim.
+- `LICENSE` (Apache License 2.0), a `NOTICE` file (copyright 2026 Maddy Zohadi), and `TRADEMARK.md`, a name and logo policy that makes no registration claim.
 - `README.md` rewrite with a quick start and hypothetical examples.
 - `docs/security-and-privacy.md`, `docs/competitive-landscape.md`, `docs/examples.md`, `docs/roadmap.md`.
 - `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`.
