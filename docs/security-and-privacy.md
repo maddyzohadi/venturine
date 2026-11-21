@@ -37,6 +37,7 @@ None can write or delete files. Skills run in your main session and follow your 
 - Command-line arguments are parsed with `argparse`, and numbers are parsed with `Decimal`, so arguments are never evaluated as code.
 - **The calculator must be run by file path** (`python3 "${CLAUDE_PLUGIN_ROOT}/scripts/calculate.py" ...`). Running it as `python -m scripts.calculate` puts the current directory first on Python's module path, so a `scripts` folder in an unrelated project would run instead. Running by path uses the calculator's own directory first. A test runs the calculator from a directory containing a decoy and requires the real engine to run; another test requires the documented commands to use the path form.
 - Skills say to run the calculator only when you ask for a calculation, never to chain commands with pipes, redirection or command substitution, and never to pass secrets as arguments.
+- **Permission is yours, and scoped to one script.** Skills tell you before the first calculator command, show the exact command, and ask you to allow only that script path, never `python3` or `Bash` in general. Skills and agents do not set permissions themselves: a skill's `allowed-tools` setting did not grant calculator permission when tested, and tests forbid it in this plugin so no skill can widen access. If you decline, skills must not compute the figures another way and present them as engine output; they label them "manual calculation, not engine-validated". See the README for the exact allow rule.
 
 ## Privacy
 

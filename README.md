@@ -10,6 +10,10 @@ Venturine is a Claude Code plugin made of skills and agents for founders and ind
 
 > **Status: beta (v0.3.0).** Venturine is early software and its analysis is AI-generated, so check anything that matters. See the [roadmap](docs/roadmap.md) for what is shipped and what is planned.
 
+## Who it is for
+
+Venturine is for founders, solo builders and small teams who want a structured, evidence-labeled first pass on a business idea before they spend money or time on it. It helps you see what you know, what you are assuming and what to test next. It is not for investment decisions, legal, tax or accounting advice, or anyone who needs verified research without checking the sources.
+
 ## What you get today
 
 | Area | What it does |
@@ -69,7 +73,7 @@ sales volume for a $149 kit with $19.37 variable cost per sale, $1,500 monthly
 fixed costs excluding marketing, and an assumed $60 customer acquisition cost.
 ```
 
-Claude Code will ask permission before running the calculator. The command looks like this, and you can run it yourself to check:
+Claude will first tell you it is about to run the calculator, and Claude Code will ask your permission. The command looks like this, and you can run it yourself to check:
 
 ```bash
 python3 scripts/calculate.py break-even-loaded 1500 149 19.37 60
@@ -77,7 +81,33 @@ python3 scripts/calculate.py break-even-loaded 1500 149 19.37 60
 
 Expected result: 22 units, with `loaded_contribution_per_unit` of `69.63`. The plain `break-even` command gives 12 units because it leaves acquisition cost out, and its output says so. The difference is the reason both exist.
 
+**If Claude Code asks for permission to run the calculator.** The calculator only does arithmetic: no network, no files. Approve the command, or choose the option that allows that exact command for the rest of the session. You will see the full command, which starts with `python3` and ends with `scripts/calculate.py` or `scripts/forecast.py`. Do not allow `python3` or `Bash` in general; only that script is needed.
+
+To allow it permanently, add an allow rule to your Claude Code settings using the exact path from the prompt, keeping the quotes:
+
+```text
+Bash(python3 "/path/to/venturine/scripts/calculate.py" *)
+Bash(python3 "/path/to/venturine/scripts/forecast.py" *)
+```
+
+The installed path contains the plugin version, so a plugin update changes it and the rule needs updating.
+
+**If you decline, or run Claude Code non-interactively (`claude -p`).** The calculator does not run, and Venturine will say so. Any figure it works out itself is labeled "manual calculation, not engine-validated" and carries `engine_validated: false` in a handoff, so you can tell it apart from a calculator result. Allow the calculator and ask again to replace those figures. In non-interactive mode, pass an allow rule such as `--allowedTools 'Bash(python3 "/path/to/venturine/scripts/calculate.py" *)'`.
+
 More prompts and full outputs are in [docs/examples.md](docs/examples.md).
+
+## A complete analysis, step by step
+
+Skills work one at a time, and each can start from your own description. To go from an idea to a report, run them in this order and answer any questions each asks. Say "proceed with stated assumptions" if you do not know an answer, and Venturine will label it an assumption:
+
+1. `venture-intake` turns your description into a labeled profile and lists what is missing.
+2. `idea-validator`, `market-intelligence` and `competitor-intelligence` cover demand, market and competitors. They use web research, so keep confidential details out of the prompt.
+3. `unit-economics`, `scenario-comparison` and `pricing-analysis` cover the economics, with the calculator doing the arithmetic.
+4. `customer-discovery`, `go-to-market` and `assumption-ledger` cover customers, channels and what to test first.
+5. `evidence-audit` and `red-team-reviewer` give a second AI pass and the strongest case against the plan.
+6. `business-report` assembles one report, and the `report-editor` agent checks it against the findings.
+
+Each step ends by saying what it did not verify. Your findings stay in the conversation, so later steps can use them.
 
 ## Examples
 
@@ -236,6 +266,14 @@ assets/           logo and social preview image
 ## Roadmap
 
 The planned architecture is 12 skills and 6 agents, delivered in phases: shared evidence and handoff contracts, scenario comparison, go-to-market and customer discovery, and an integrated business report. Release v0.3.0 ships all 12 skills and 6 agents. Over v0.2.1 it adds 8 skills, 3 agents, the handoff format, forecasting and pricing calculations, customer and growth analysis, and integrated business reporting. See [docs/roadmap.md](docs/roadmap.md).
+
+## Help, bugs and feature requests
+
+- **Something broke or a result looks wrong:** open a [bug report](https://github.com/maddyzohadi/venturine/issues/new?template=bug_report.yml). For a wrong label, citation or calculation, use the [evidence or calculation issue](https://github.com/maddyzohadi/venturine/issues/new?template=evidence_or_calculation_issue.yml) form.
+- **An idea for a feature:** open a [feature request](https://github.com/maddyzohadi/venturine/issues/new?template=feature_request.yml).
+- **A security problem:** do not use a public issue. Follow [SECURITY.md](SECURITY.md).
+
+Please do not paste confidential business details, credentials or personal data into an issue.
 
 ## Contributing
 

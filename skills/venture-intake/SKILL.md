@@ -32,6 +32,7 @@ Do not invent anything the user did not say. Do not fill a gap with a typical va
 
 - Ask at most five questions at a time, ordered by how much the answer would change the analysis.
 - If the user wants to continue without answering, continue and mark the gap UNKNOWN.
+- If the user asked for further steps in the same request, or said not to stop, do not end your turn after the intake. Record each gap as UNKNOWN or as a labeled ASSUMPTION, give the intake output below, then carry straight on with the next step they named. Stop and ask only when a missing fact makes that step impossible.
 - When a figure is ambiguous, ask for its unit, currency and period (for example, per month or per year) instead of guessing.
 - Ask for business facts only. Never ask for passwords, API keys, bank or card numbers, government identifiers, home addresses, or other personal data.
 - If the user pastes any of those, tell them not to share them, and leave them out of everything you produce.

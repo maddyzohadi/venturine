@@ -84,10 +84,22 @@ When a command succeeds:
 5. Acquisition spending enters a model exactly once. In `monthly-forecast` the growth rate is an input, not a result of the budget, so the link between spending and growth stays an ASSUMPTION until a test measures it.
 6. Quote the receipt fingerprint and engine version for each run.
 
+### Permission to run the calculator
+
+Before the first calculator command in a session, tell the user in plain words:
+
+- Venturine will run its own calculator (`calculate.py` or `forecast.py`), which only does arithmetic and has no network or file access.
+- Claude Code will ask for permission. They can approve the command, choose the option that allows that exact command for the session, or decline.
+- Show the exact command you will run.
+
+Run the commands one at a time. Wait for each to finish before starting the next, because a refused command cancels any command started alongside it. Never ask the user to allow `python3` or `Bash` in general; only the exact calculator script path is needed.
+
 When a command fails or permission is unavailable:
 - Explain that the calculation was not executed.
 - Do not fabricate JSON output or a receipt.
 - Show the formulas and inputs, and label any figure you work out yourself "manual calculation, not engine-validated".
+- If the user declines, do not run the arithmetic another way (for example `python3 -c`, a shell one-liner or another script path). Carry on with the figures labelled "manual calculation, not engine-validated", and say once that allowing the calculator and re-running would replace them with engine results.
+- Never describe a figure as engine-validated, a receipt, or calculator output unless a command actually ran and printed it.
 
 ## 8. Sequence the Experiments
 

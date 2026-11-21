@@ -4,6 +4,13 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Fixed
+- **Calculator permission guidance.** In a native test the calculator was refused because the session had not allowed it, and nothing told the user how to fix that. `unit-economics`, `scenario-comparison`, `pricing-analysis` and `go-to-market` now tell the user before the first calculator command, show the exact command, run commands one at a time, ask only for the exact script path to be allowed, and, if the user declines, label figures "manual calculation, not engine-validated" instead of computing them another way. A skill's `allowed-tools` setting did not grant permission when tested, so none is used, and a test forbids it.
+- **Multi-step requests stopped after intake.** In two native runs, a request naming several steps ended after `venture-intake`. The skill now continues to the next requested step and asks only when a missing fact blocks it.
+
+### Changed
+- README: who Venturine is for, how to allow the calculator, a step-by-step full analysis, and where to report bugs and request features.
+
 ## [0.3.0] - 2026-11-20
 
 Phases 1 to 4: the handoff format, intake, evidence audit and red-team review, forecasting and pricing, customer and growth analysis, and integrated business reporting. The plugin grows from 4 skills and 3 agents to 12 skills and 6 agents. The calculator engine stays at 0.2.1, and no existing skill, agent or calculator operation changes its default behavior.
