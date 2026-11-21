@@ -6,7 +6,7 @@ Security fixes are made against the latest released version on `main`. Older ver
 
 ## Reporting a vulnerability
 
-Please do not open a public issue for a security problem.
+Please do not put details of a security problem in a public issue.
 
 - **Preferred:** if the repository's Security tab shows a "Report a vulnerability" button, use it. It opens a private advisory that only you and the maintainer can see.
 - **If that button is not shown:** open a public issue titled "Security contact request" that says only that you have a security concern. Do not put details, proof of concept or affected versions in it. The maintainer, Maddy Zohadi (GitHub account `maddyzohadi`), will arrange a private channel. There is no security email address.
