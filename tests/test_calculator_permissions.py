@@ -64,9 +64,9 @@ class TestNoPermissionWidening(unittest.TestCase):
             self.assertNotRegex(head, r"(?m)^allowed-tools\s*:", path.name)
 
     def test_no_document_tells_users_to_allow_bash_or_python_broadly(self):
-        pattern = re.compile(
-            r"Bash\(\s*(python3?)?\s*(:\s*)?\*?\s*\)|Bash\(\*\)|"
-            r"Bash\(python3?:\*\)")
+        # One pattern covers every broad form: Bash(), Bash(*), Bash(python3),
+        # Bash(python3:*) and Bash(python:*).
+        pattern = re.compile(r"Bash\(\s*(?:python3?)?\s*(?::\s*)?\*?\s*\)")
         for path in list((ROOT / "skills").glob("*/SKILL.md")) + [
                 ROOT / "README.md"] + list((ROOT / "docs").glob("*.md")):
             self.assertIsNone(pattern.search(

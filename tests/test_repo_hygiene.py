@@ -239,7 +239,6 @@ class TestRequiredFiles(unittest.TestCase):
         ".github/ISSUE_TEMPLATE/evidence_or_calculation_issue.yml",
         ".github/ISSUE_TEMPLATE/config.yml",
         "assets/logo.svg", "assets/social-preview.svg",
-        "assets/social-preview.png",
     ]
 
     def test_required_files_exist_and_are_not_empty(self):
@@ -314,6 +313,13 @@ class TestWorkflows(unittest.TestCase):
                 if not match:
                     continue
                 ref = match.group(1)
+                if ref.startswith("./"):
+                    # A composite action from this repository: it is part of
+                    # the reviewed commit, so there is nothing to pin.
+                    self.assertTrue(
+                        (ROOT / ref / "action.yml").is_file(),
+                        f"{path.name}: {ref} has no action.yml")
+                    continue
                 self.assertIn("@", ref, f"{path.name}: {ref}")
                 self.assertRegex(
                     ref.split("@", 1)[1], SHA,
@@ -341,11 +347,15 @@ class TestWorkflows(unittest.TestCase):
 class TestSocialPreview(unittest.TestCase):
 
     def test_png_is_valid_size_and_under_github_limit(self):
-        data = (ROOT / "assets" / "social-preview.png").read_bytes()
-        self.assertEqual(data[:8], b"\x89PNG\r\n\x1a\n")
-        width, height = struct.unpack(">II", data[16:24])
-        self.assertEqual((width, height), (1280, 640))
-        self.assertLess(len(data), 1_000_000)
+        pngs = sorted((ROOT / "assets").glob("*.png"))
+        self.assertTrue(pngs, "assets/ must keep its PNG social preview")
+        for path in pngs:
+            with self.subTest(file=path.name):
+                data = path.read_bytes()
+                self.assertEqual(data[:8], b"\x89PNG\r\n\x1a\n")
+                width, height = struct.unpack(">II", data[16:24])
+                self.assertEqual((width, height), (1280, 640))
+                self.assertLess(len(data), 1_000_000)
 
     def test_svg_sources_are_svg(self):
         for name in ("logo.svg", "social-preview.svg"):

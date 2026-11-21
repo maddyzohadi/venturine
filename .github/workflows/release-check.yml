@@ -58,11 +58,10 @@ jobs:
         run: python -m unittest discover -s tests -v
 
       - name: Install Claude Code (pinned, integrity-checked)
-        # The lockfile pins every package by exact version and integrity
-        # hash; npm ci fails on any mismatch. Scripts must stay enabled
-        # because the CLI links its native binary in a postinstall step.
-        working-directory: .github/ci/claude-code
-        run: npm ci --no-audit --no-fund
+        # The action pins every package by exact version and sha512
+        # integrity hash and fails on any mismatch before an install script
+        # runs. The CLI still links its native binary in a postinstall step.
+        uses: ./.github/actions/install-claude-code
 
       - name: Validate Venturine
-        run: .github/ci/claude-code/node_modules/.bin/claude plugin validate . --strict
+        run: claude plugin validate . --strict

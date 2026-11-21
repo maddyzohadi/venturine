@@ -209,8 +209,15 @@ class TestRunByScriptPath(unittest.TestCase):
     shadowing (H1). The documented command is run by file path, so a
     "scripts" package in the caller's directory must never be used."""
 
+    # The child process gets only these variables, never the caller's whole
+    # environment, so nothing else in it can reach the script. PYTHONPATH is
+    # deliberately absent; tests that need it pass it through extra_env.
+    ENV_ALLOWLIST = ("PATH", "SYSTEMROOT", "SYSTEMDRIVE", "TEMP", "TMP",
+                     "TMPDIR", "HOME", "USERPROFILE", "LANG", "LC_ALL")
+
     def run_script(self, *args, cwd=None, extra_env=None):
-        env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+        env = {name: os.environ[name] for name in self.ENV_ALLOWLIST
+               if name in os.environ}
         env.update(extra_env or {})
         return subprocess.run(
             [sys.executable, "-B", str(SCRIPT), *args],
