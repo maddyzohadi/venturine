@@ -8,13 +8,10 @@ on:
       - "agents/**"
       - ".github/workflows/validate-plugin.yml"
       - ".github/ci/**"
+  # No path filter on pull requests: this check is required by the "Protect
+  # main" ruleset, so it must report on every pull request, including
+  # documentation-only changes.
   pull_request:
-    paths:
-      - ".claude-plugin/**"
-      - "skills/**"
-      - "agents/**"
-      - ".github/workflows/validate-plugin.yml"
-      - ".github/ci/**"
   workflow_dispatch:
 
 permissions:

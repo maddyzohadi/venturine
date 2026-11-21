@@ -629,7 +629,16 @@ class TestCliToolingIntegrity(unittest.TestCase):
 
     def test_ci_tooling_changes_retrigger_validation(self):
         text = read(ROOT / ".github" / "workflows" / "validate-plugin.yml")
-        self.assertGreaterEqual(text.count('".github/ci/**"'), 2)
+        self.assertIn('".github/ci/**"', text)
+
+    def test_required_validation_runs_on_every_pull_request(self):
+        # "Validate Plugin and Marketplace" is a required status check, so a
+        # path filter on pull_request would block documentation-only PRs.
+        text = read(ROOT / ".github" / "workflows" / "validate-plugin.yml")
+        pull_request = text.split("  pull_request:\n", 1)[1].split(
+            "  workflow_dispatch:", 1)[0]
+        self.assertNotIn("paths:", pull_request)
+        self.assertIn("name: Validate Plugin and Marketplace", text)
 
     def test_lockfile_is_not_ignored_by_git(self):
         result = subprocess.run(
