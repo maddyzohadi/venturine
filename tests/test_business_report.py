@@ -61,5 +61,20 @@ class TestBusinessReportSkill(unittest.TestCase):
         self.assertNotIn("allowed-tools", SKILL)
 
 
+class TestCitationReferences(unittest.TestCase):
+    """A native run cited a contribution-margin figure to C2 instead of C1,
+    and the editor missed it. Both components must now check ids."""
+
+    def test_the_skill_cites_each_figure_to_its_own_calculation(self):
+        self.assertIn("never as another calculation", SKILL)
+        self.assertIn("re-check every `E` and `C` reference", SKILL)
+
+    def test_the_editor_checks_citation_references(self):
+        self.assertIn("### Citation References", AGENT)
+        self.assertIn("must not be cited to a different calculation", AGENT)
+        self.assertIn("wrong, missing or dangling reference", AGENT)
+        self.assertIn("claim by claim, not id by id", AGENT)
+
+
 if __name__ == "__main__":
     unittest.main()

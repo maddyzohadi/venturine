@@ -8,7 +8,7 @@ Evidence-labeled startup analysis for Claude Code: validate an idea, size a mark
 
 Venturine is a Claude Code plugin made of skills and agents for founders and independent builders. It is built around two habits: label what you actually know versus what you assume, and compute numbers with a reproducible calculator instead of doing arithmetic in prose.
 
-> **Status: private beta (v0.2.1).** The repository is private while the beta is prepared, so installation requires access to it. See the [roadmap](docs/roadmap.md) for what is shipped and what is planned.
+> **Status: beta (v0.3.0).** Venturine is early software and its analysis is AI-generated, so check anything that matters. See the [roadmap](docs/roadmap.md) for what is shipped and what is planned.
 
 ## What you get today
 
@@ -20,11 +20,11 @@ Venturine is a Claude Code plugin made of skills and agents for founders and ind
 | **Unit economics** | `unit-economics` covers margins, CAC, LTV, payback, break-even and runway, using a calculator for the arithmetic. |
 | **Research and review agents** | `research-lead` gathers evidence, `financial-analyst` models the economics, `evidence-auditor` runs a second AI review pass over claims and calculations. It is not a human audit and does not guarantee accuracy. |
 | **Financial calculator** | A standard-library Python engine (v0.2.1) with nine operations and an automated test suite. |
-| **Customer and growth** (unreleased) | `customer-discovery` structures segments, problems and interview findings from research you actually did, and never invents interviews or results. `go-to-market` builds a plan from the evidence: starting segment, positioning, channels, budget and experiments, with channel economics from the calculator. `assumption-ledger` ranks what a plan depends on and what to validate first. The `go-to-market-strategist` agent analyzes channels, positioning and growth options from the available evidence. |
-| **Integrated reporting** (unreleased) | `business-report` combines the validation, market, competitor, financial, customer and go-to-market findings into one report. It keeps every evidence label, calculation receipt and contradiction, and adds no new facts. The `report-editor` agent checks the report against its source findings for accuracy, consistency, receipts, labels and unsupported conclusions. It has no web access and is not an audit. |
-| **Forecasting and pricing** (unreleased) | `scenario-comparison` compares scenarios over a monthly forecast of cash flow and runway, and shows how sensitive the outcome is to each input. `pricing-analysis` compares candidate prices by margin, break-even and profit. A separate calculator does the arithmetic and gives each result a receipt. See [docs/forecasting.md](docs/forecasting.md). |
-| **Intake and handoff** (unreleased) | `venture-intake` turns a rough description into a structured venture profile with labeled inputs and a list of what is missing. Skills can pass their results on in the [`venturine-handoff/v1`](docs/handoff-v1.md) format, which a standard-library validator checks. |
-| **Independent review** (unreleased) | `evidence-audit` prepares an analysis for the `evidence-auditor` and reports what changed. `red-team-reviewer` argues the strongest case against a conclusion and looks for disconfirming evidence. Both are AI passes, not human audits. |
+| **Customer and growth** | `customer-discovery` structures segments, problems and interview findings from research you actually did, and never invents interviews or results. `go-to-market` builds a plan from the evidence: starting segment, positioning, channels, budget and experiments, with channel economics from the calculator. `assumption-ledger` ranks what a plan depends on and what to validate first. The `go-to-market-strategist` agent analyzes channels, positioning and growth options from the available evidence. |
+| **Integrated reporting** | `business-report` combines the validation, market, competitor, financial, customer and go-to-market findings into one report. It keeps every evidence label, calculation receipt and contradiction, and adds no new facts. The `report-editor` agent checks the report against its source findings for accuracy, consistency, receipts, labels and unsupported conclusions. It has no web access and is not an audit. |
+| **Forecasting and pricing** | `scenario-comparison` compares scenarios over a monthly forecast of cash flow and runway, and shows how sensitive the outcome is to each input. `pricing-analysis` compares candidate prices by margin, break-even and profit. A separate calculator does the arithmetic and gives each result a receipt. See [docs/forecasting.md](docs/forecasting.md). |
+| **Intake and handoff** | `venture-intake` turns a rough description into a structured venture profile with labeled inputs and a list of what is missing. Skills can pass their results on in the [`venturine-handoff/v1`](docs/handoff-v1.md) format, which a standard-library validator checks. |
+| **Independent review** | `evidence-audit` prepares an analysis for the `evidence-auditor` and reports what changed. `red-team-reviewer` argues the strongest case against a conclusion and looks for disconfirming evidence. Both are AI passes, not human audits. |
 
 ## Design principles
 
@@ -43,7 +43,6 @@ Venturine does not claim to be better than other tools. If you are comparing opt
 
 - Claude Code with plugin support
 - Python 3.9 or newer: run `python3 --version` (macOS ships 3.9, which works)
-- Access to this repository (it is private during the beta)
 
 **2. Install (1 minute).** In Claude Code:
 
@@ -113,7 +112,7 @@ Ask the evidence-auditor agent for a second review pass over the claims and
 calculations above and list what remains unverified.
 ```
 
-**Start with an intake** (unreleased)
+**Start with an intake**
 
 ```text
 Use venture-intake on this hypothetical idea: a weekend market stall selling
@@ -121,7 +120,7 @@ sourdough loaves. Ask me only what changes the analysis, label what I tell
 you, and give me a handoff I can pass to the other skills.
 ```
 
-**Audit before you commit money or time** (unreleased)
+**Audit before you commit money or time**
 
 ```text
 Use evidence-audit on the analysis above before I decide. Run the
@@ -129,7 +128,7 @@ evidence-auditor, tell me what changed, and say whether the result is
 AUDITED or PRELIMINARY.
 ```
 
-**Compare scenarios** (unreleased)
+**Compare scenarios**
 
 ```text
 Use scenario-comparison on this hypothetical bakery: $5,000 cash, 12 months,
@@ -138,7 +137,7 @@ month, advertising $600 a month. Conservative is 80 loaves growing 1% a month;
 base is 100 growing 3%. Label every input and give me the receipts.
 ```
 
-**Test a price** (unreleased)
+**Test a price**
 
 ```text
 Use pricing-analysis to compare $24, $29 and $34 for that bakery: variable
@@ -146,7 +145,7 @@ cost $9.50, fixed costs $1,500, acquisition cost $12 per customer, 100 units a
 month. Do not assume how demand changes with price.
 ```
 
-**Organize customer research** (unreleased)
+**Organize customer research**
 
 ```text
 Use customer-discovery on my notes from five conversations with hypothetical
@@ -154,7 +153,7 @@ bakery customers (pasted below). Report counts exactly as I gave them, do not
 add anything I did not say, and tell me what I still do not know.
 ```
 
-**Plan how to reach customers** (unreleased)
+**Plan how to reach customers**
 
 ```text
 Use go-to-market for that bakery. I spent $40 on flyers and got 4 customers,
@@ -163,7 +162,7 @@ $4.50 and I can spend $200 a month. Compare the channels and plan my next
 experiments.
 ```
 
-**Rank your assumptions** (unreleased)
+**Rank your assumptions**
 
 ```text
 Use assumption-ledger on my plan and the handoff above. Show what each
@@ -171,7 +170,7 @@ result rests on, rank what to validate first, and track what changes as I
 learn more.
 ```
 
-**Assemble a report** (unreleased)
+**Assemble a report**
 
 ```text
 Use business-report to combine my validation, market, competitor, financial,
@@ -179,7 +178,7 @@ customer and go-to-market findings into one report, then have the
 report-editor check it against those findings.
 ```
 
-**Challenge a conclusion** (unreleased)
+**Challenge a conclusion**
 
 ```text
 Ask the red-team-reviewer agent for the strongest case against this
@@ -236,7 +235,7 @@ assets/           logo and social preview image
 
 ## Roadmap
 
-The planned architecture is 12 skills and 6 agents, delivered in phases: shared evidence and handoff contracts, scenario comparison, go-to-market and customer discovery, and an integrated business report. Release v0.2.1 ships 4 skills and 3 agents. Phases 1 to 4 (8 more skills, 3 more agents, the handoff format, forecasting and pricing calculations, customer and growth analysis, and integrated business reporting) are built but not yet released. See [docs/roadmap.md](docs/roadmap.md).
+The planned architecture is 12 skills and 6 agents, delivered in phases: shared evidence and handoff contracts, scenario comparison, go-to-market and customer discovery, and an integrated business report. Release v0.3.0 ships all 12 skills and 6 agents. Over v0.2.1 it adds 8 skills, 3 agents, the handoff format, forecasting and pricing calculations, customer and growth analysis, and integrated business reporting. See [docs/roadmap.md](docs/roadmap.md).
 
 ## Contributing
 
@@ -248,7 +247,7 @@ python3 -m unittest discover -s tests
 
 ## License and name
 
-Released under the [Apache License 2.0](LICENSE). Copyright 2026 Mahdokht Zohadi (see [NOTICE](NOTICE)). Created by Maddy Zohadi.
+Released under the [Apache License 2.0](LICENSE). Copyright 2026 Maddy Zohadi (see [NOTICE](NOTICE)). Created by Maddy Zohadi.
 
 The Apache License does not grant permission to use the Venturine name or logo as branding for independent products. See the [name and logo policy](TRADEMARK.md).
 

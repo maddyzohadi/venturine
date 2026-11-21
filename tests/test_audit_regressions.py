@@ -288,7 +288,7 @@ class TestDocsHonesty(unittest.TestCase):
 
     def test_license_and_copyright_are_preserved(self):
         self.assertIn("Apache License", read(ROOT / "LICENSE"))
-        self.assertIn("Mahdokht Zohadi", read(ROOT / "NOTICE"))
+        self.assertIn("Maddy Zohadi", read(ROOT / "NOTICE"))
 
 
 class TestCliDeterminism(unittest.TestCase):

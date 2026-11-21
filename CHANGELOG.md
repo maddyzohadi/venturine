@@ -4,7 +4,12 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
-Phase 1: handoff format, intake, evidence audit and red-team review. Built but not released: the plugin version stays 0.2.1 until a release is cut. No existing skill, agent or calculator operation changes its default behavior.
+## [0.3.0] - 2026-11-20
+
+Phases 1 to 4: the handoff format, intake, evidence audit and red-team review, forecasting and pricing, customer and growth analysis, and integrated business reporting. The plugin grows from 4 skills and 3 agents to 12 skills and 6 agents. The calculator engine stays at 0.2.1, and no existing skill, agent or calculator operation changes its default behavior.
+
+### Fixed
+- **Citation references.** A native test of `business-report` cited a contribution-margin figure to the wrong calculation (`C2` instead of `C1`), and `report-editor` did not catch it. `business-report` now cites each figure to the id that produced it and re-checks every reference, and `report-editor` compares each cited figure with the finding that has the cited id, claim by claim, and reports wrong, missing or dangling references.
 
 ### Added (Phase 4: integrated business reporting)
 - **`business-report`** skill: combines existing validation, market, competitor, financial, customer discovery and go-to-market findings into one report. It carries every evidence label and calculation receipt through unchanged, lists contradictions across sections, never recomputes or invents figures, and marks the report PRELIMINARY unless the `evidence-auditor` ran.
@@ -62,7 +67,7 @@ Tagged as `v0.2.1`; no GitHub Release has been published. The audit follow-up wo
 Foundations and adoption hygiene, plus two security and robustness fixes to the calculator found in a pre-release audit. Analysis behavior is otherwise unchanged.
 
 ### Added
-- `LICENSE` (Apache License 2.0), a `NOTICE` file (copyright 2026 Mahdokht Zohadi), and `TRADEMARK.md`, a name and logo policy that makes no registration claim.
+- `LICENSE` (Apache License 2.0), a `NOTICE` file (copyright 2026 Maddy Zohadi), and `TRADEMARK.md`, a name and logo policy that makes no registration claim.
 - `README.md` rewrite with a quick start and hypothetical examples.
 - `docs/security-and-privacy.md`, `docs/competitive-landscape.md`, `docs/examples.md`, `docs/roadmap.md`.
 - `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`.
@@ -114,7 +119,8 @@ Foundations and adoption hygiene, plus two security and robustness fixes to the 
 ### Added
 - Initial release: skills `idea-validator`, `market-intelligence`, `competitor-intelligence` and `unit-economics`; agents `research-lead`, `financial-analyst` and `evidence-auditor`; a standard-library financial calculator with seven operations and automated tests; plugin and marketplace manifests; CI workflows.
 
-[Unreleased]: https://github.com/maddyzohadi/venturine/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/maddyzohadi/venturine/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/maddyzohadi/venturine/compare/v0.2.1...main
 [0.2.1]: https://github.com/maddyzohadi/venturine/compare/72f0b6d...v0.2.1
 [0.2.0]: https://github.com/maddyzohadi/venturine/compare/b17fb10...f8eba45
 [0.1.1]: https://github.com/maddyzohadi/venturine/compare/7231175...b17fb10
