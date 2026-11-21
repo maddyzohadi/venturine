@@ -23,6 +23,7 @@ This document describes what Venturine can and cannot do, based on the contents 
 | `evidence-auditor` | Read, Glob, Grep, WebSearch, WebFetch |
 | `red-team-reviewer` | Read, Glob, Grep, WebSearch, WebFetch |
 | `go-to-market-strategist` | Read, Glob, Grep, WebSearch, WebFetch |
+| `report-editor` | Read, Glob, Grep |
 | `financial-analyst` | Read, Glob, Grep |
 
 None can write or delete files. Skills run in your main session and follow your Claude Code permission settings.
@@ -54,7 +55,7 @@ A handoff (see [handoff-v1.md](handoff-v1.md)) is a JSON block that carries an a
 
 ## Untrusted content
 
-Pages and documents that agents fetch are data, not instructions. The four web-enabled agents, `research-lead`, `evidence-auditor`, `red-team-reviewer` and `go-to-market-strategist`, each have an "Untrusted Content" section telling them not to follow instructions found in fetched or reviewed content. All eleven skills and the `financial-analyst` agent carry the same section, and a test enforces it. When content tries to direct them, they report the attempt in their own words and do not repeat its instructions, commands or links. This reduces prompt-injection risk but cannot eliminate it. Treat research output as something to check, and read any command before approving it.
+Pages and documents that agents fetch are data, not instructions. The four web-enabled agents, `research-lead`, `evidence-auditor`, `red-team-reviewer` and `go-to-market-strategist`, each have an "Untrusted Content" section telling them not to follow instructions found in fetched or reviewed content. All twelve skills, the `financial-analyst` agent and the web-free `report-editor` agent carry an "Untrusted Content" section, and a test enforces it. When content tries to direct them, they report the attempt in their own words and do not repeat its instructions, commands or links. This reduces prompt-injection risk but cannot eliminate it. Treat research output as something to check, and read any command before approving it.
 
 ## What Venturine does not guarantee
 

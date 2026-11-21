@@ -21,6 +21,7 @@ Venturine is a Claude Code plugin made of skills and agents for founders and ind
 | **Research and review agents** | `research-lead` gathers evidence, `financial-analyst` models the economics, `evidence-auditor` runs a second AI review pass over claims and calculations. It is not a human audit and does not guarantee accuracy. |
 | **Financial calculator** | A standard-library Python engine (v0.2.1) with nine operations and an automated test suite. |
 | **Customer and growth** (unreleased) | `customer-discovery` structures segments, problems and interview findings from research you actually did, and never invents interviews or results. `go-to-market` builds a plan from the evidence: starting segment, positioning, channels, budget and experiments, with channel economics from the calculator. `assumption-ledger` ranks what a plan depends on and what to validate first. The `go-to-market-strategist` agent analyzes channels, positioning and growth options from the available evidence. |
+| **Integrated reporting** (unreleased) | `business-report` combines the validation, market, competitor, financial, customer and go-to-market findings into one report. It keeps every evidence label, calculation receipt and contradiction, and adds no new facts. The `report-editor` agent checks the report against its source findings for accuracy, consistency, receipts, labels and unsupported conclusions. It has no web access and is not an audit. |
 | **Forecasting and pricing** (unreleased) | `scenario-comparison` compares scenarios over a monthly forecast of cash flow and runway, and shows how sensitive the outcome is to each input. `pricing-analysis` compares candidate prices by margin, break-even and profit. A separate calculator does the arithmetic and gives each result a receipt. See [docs/forecasting.md](docs/forecasting.md). |
 | **Intake and handoff** (unreleased) | `venture-intake` turns a rough description into a structured venture profile with labeled inputs and a list of what is missing. Skills can pass their results on in the [`venturine-handoff/v1`](docs/handoff-v1.md) format, which a standard-library validator checks. |
 | **Independent review** (unreleased) | `evidence-audit` prepares an analysis for the `evidence-auditor` and reports what changed. `red-team-reviewer` argues the strongest case against a conclusion and looks for disconfirming evidence. Both are AI passes, not human audits. |
@@ -170,6 +171,14 @@ result rests on, rank what to validate first, and track what changes as I
 learn more.
 ```
 
+**Assemble a report** (unreleased)
+
+```text
+Use business-report to combine my validation, market, competitor, financial,
+customer and go-to-market findings into one report, then have the
+report-editor check it against those findings.
+```
+
 **Challenge a conclusion** (unreleased)
 
 ```text
@@ -216,8 +225,8 @@ Read [docs/security-and-privacy.md](docs/security-and-privacy.md) for the full p
 
 ```text
 .claude-plugin/   plugin and marketplace manifests
-skills/           idea-validator, market-intelligence, competitor-intelligence, unit-economics, venture-intake, evidence-audit, scenario-comparison, pricing-analysis, customer-discovery, go-to-market, assumption-ledger
-agents/           research-lead, financial-analyst, evidence-auditor, red-team-reviewer, go-to-market-strategist
+skills/           idea-validator, market-intelligence, competitor-intelligence, unit-economics, venture-intake, evidence-audit, scenario-comparison, pricing-analysis, customer-discovery, go-to-market, assumption-ledger, business-report
+agents/           research-lead, financial-analyst, evidence-auditor, red-team-reviewer, go-to-market-strategist, report-editor
 schemas/          JSON Schema for the handoff format
 scripts/          calculator, forecasting calculator, handoff validator, and command-line interfaces
 tests/            calculator and repository tests
@@ -227,7 +236,7 @@ assets/           logo and social preview image
 
 ## Roadmap
 
-The planned architecture is 12 skills and 6 agents, delivered in phases: shared evidence and handoff contracts, scenario comparison, go-to-market and customer discovery, and an integrated business report. Release v0.2.1 ships 4 skills and 3 agents. Phases 1 to 3 (7 more skills, 2 more agents, the handoff format, forecasting and pricing calculations, and customer and growth analysis) are built but not yet released. See [docs/roadmap.md](docs/roadmap.md).
+The planned architecture is 12 skills and 6 agents, delivered in phases: shared evidence and handoff contracts, scenario comparison, go-to-market and customer discovery, and an integrated business report. Release v0.2.1 ships 4 skills and 3 agents. Phases 1 to 4 (8 more skills, 3 more agents, the handoff format, forecasting and pricing calculations, customer and growth analysis, and integrated business reporting) are built but not yet released. See [docs/roadmap.md](docs/roadmap.md).
 
 ## Contributing
 
