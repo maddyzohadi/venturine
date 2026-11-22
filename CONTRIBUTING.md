@@ -27,7 +27,7 @@ To validate the plugin and marketplace manifests (needs Claude Code):
 claude plugin validate . --strict
 ```
 
-CI installs Claude Code from `.github/ci/claude-code/` with `npm ci`, which verifies an integrity hash for every package. To change the pinned version, edit `package.json` there, run `npm install --package-lock-only` in that directory, and commit both files. Do not install it with an unlocked `npm install`.
+CI installs Claude Code with the composite action in `.github/actions/install-claude-code/`. It installs one exact version, checks a pinned sha512 hash for every package before any install script runs, and fails on any mismatch. The repository holds no `package.json` or lockfile, because the plugin directory does not accept package-manager files, and a test keeps it that way. To change the pinned version, run `npm view @anthropic-ai/claude-code@VERSION dist.integrity` for the CLI and for each platform package listed in the action (`optionalDependencies` in `npm view @anthropic-ai/claude-code@VERSION`), then update every line of `PINNED_PACKAGES`. Do not install the CLI in a workflow any other way.
 
 ## Project rules
 

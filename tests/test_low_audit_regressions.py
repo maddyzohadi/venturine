@@ -571,39 +571,69 @@ class TestMarketplaceMetadata(unittest.TestCase):
 
 
 class TestCliToolingIntegrity(unittest.TestCase):
-    """L6: CI installed an unlocked CLI with no integrity check."""
+    """L6: CI installed an unlocked CLI with no integrity check.
 
-    CI = ROOT / ".github" / "ci" / "claude-code"
+    The plugin directory accepts no package-manager files, so the pin lives in
+    a composite action instead of a committed lockfile. The guarantee is the
+    same: exact versions, a sha512 hash per package, and no install script
+    runs before every hash has been checked.
+    """
+
+    ACTION = ROOT / ".github" / "actions" / "install-claude-code" / "action.yml"
+    ENTRY = re.compile(
+        r"(?m)^\s+(@anthropic-ai/[\w.-]+) (\d+\.\d+\.\d+) "
+        r"(sha512-[A-Za-z0-9+/]{86}==)$")
+    PACKAGE_MANAGER_FILES = {
+        "package.json", "package-lock.json", "npm-shrinkwrap.json",
+        "pnpm-lock.yaml", "pnpm-workspace.yaml", "yarn.lock",
+        "requirements.txt", "bun.lockb",
+    }
 
     def setUp(self):
-        self.package = json.loads(read(self.CI / "package.json"))
-        self.lock = json.loads(read(self.CI / "package-lock.json"))
+        self.text = read(self.ACTION)
+        self.pins = self.ENTRY.findall(self.text)
 
     def workflows(self):
         return sorted((ROOT / ".github" / "workflows").glob("*.yml"))
 
-    def test_package_json_pins_an_exact_version(self):
-        version = self.package["dependencies"]["@anthropic-ai/claude-code"]
-        self.assertRegex(version, r"^\d+\.\d+\.\d+$")
-        self.assertTrue(self.package["private"])
+    def test_the_action_pins_the_cli_and_every_platform_package(self):
+        names = [name for name, _, _ in self.pins]
+        self.assertIn("@anthropic-ai/claude-code", names)
+        self.assertEqual(len(names), len(set(names)))
+        self.assertGreater(len(names), 1)
+        self.assertEqual(len({version for _, version, _ in self.pins}), 1,
+                         "every package must be pinned to the same exact version")
 
-    def test_lockfile_matches_the_pin(self):
-        pin = self.package["dependencies"]["@anthropic-ai/claude-code"]
-        entry = self.lock["packages"]["node_modules/@anthropic-ai/claude-code"]
-        self.assertEqual(entry["version"], pin)
-        self.assertGreaterEqual(self.lock["lockfileVersion"], 2)
+    def test_every_pin_line_has_a_full_sha512_hash(self):
+        lines = [l for l in self.text.splitlines()
+                 if l.strip().startswith("@anthropic-ai/")]
+        self.assertEqual(len(lines), len(self.pins),
+                         "a pin line is missing a version or sha512 hash")
 
-    def test_every_locked_package_has_an_integrity_hash_and_registry_url(self):
-        packages = {k: v for k, v in self.lock["packages"].items() if k}
-        self.assertTrue(packages)
-        for name, entry in packages.items():
-            with self.subTest(package=name):
-                self.assertRegex(entry["integrity"], r"^sha512-")
-                self.assertTrue(
-                    entry["resolved"].startswith(
-                        "https://registry.npmjs.org/"), entry["resolved"])
+    def test_nothing_runs_before_the_integrity_check(self):
+        install = self.text.index("npm install")
+        check = self.text.index("integrity mismatch")
+        rebuild = self.text.index("npm rebuild")
+        self.assertLess(install, check)
+        self.assertLess(check, rebuild)
+        self.assertIn("--ignore-scripts", self.text[install:check])
+        self.assertIn("--save-exact", self.text[install:check])
+        # Only the CLI's own install script runs, and only after the check.
+        self.assertIn("npm rebuild @anthropic-ai/claude-code", self.text)
 
-    def test_workflows_never_install_the_cli_without_the_lockfile(self):
+    def test_the_check_rejects_unpinned_and_mismatched_packages(self):
+        for message in ("unpinned package installed",
+                        "version or integrity mismatch",
+                        "claude-code was not installed"):
+            self.assertIn(message, self.text)
+
+    def test_the_action_names_no_remote_host(self):
+        # The pin does not depend on where a package is downloaded from, and
+        # the plugin directory holds a file that spells a remote host beside
+        # an environment reference for review.
+        self.assertNotRegex(self.text, r"(?i)https?://")
+
+    def test_workflows_never_install_the_cli_without_the_action(self):
         for path in self.workflows():
             text = read(path)
             with self.subTest(workflow=path.name):
@@ -614,22 +644,24 @@ class TestCliToolingIntegrity(unittest.TestCase):
                 )
                 self.assertNotRegex(text, r"npx\s+[^\n]*claude-code")
 
-    def test_validating_workflows_use_npm_ci_in_the_pinned_directory(self):
+    def test_validating_workflows_use_the_pinned_action(self):
         for name in ("validate-plugin.yml", "release-check.yml"):
             text = read(ROOT / ".github" / "workflows" / name)
             with self.subTest(workflow=name):
-                self.assertIn("working-directory: .github/ci/claude-code",
+                self.assertIn("uses: ./.github/actions/install-claude-code",
                               text)
-                self.assertIn("npm ci", text)
-                # The CLI links a native binary in a postinstall step.
-                self.assertNotIn("--ignore-scripts", text)
-                self.assertIn(
-                    ".github/ci/claude-code/node_modules/.bin/claude "
-                    "plugin validate . --strict", text)
+                self.assertIn("run: claude plugin validate . --strict", text)
+
+    def test_repository_has_no_package_manager_files(self):
+        found = [p.relative_to(ROOT).as_posix() for p in ROOT.rglob("*")
+                 if p.is_file() and p.name in self.PACKAGE_MANAGER_FILES
+                 and ".git" not in p.relative_to(ROOT).parts
+                 and "node_modules" not in p.relative_to(ROOT).parts]
+        self.assertEqual(found, [])
 
     def test_ci_tooling_changes_retrigger_validation(self):
         text = read(ROOT / ".github" / "workflows" / "validate-plugin.yml")
-        self.assertIn('".github/ci/**"', text)
+        self.assertIn('".github/actions/**"', text)
 
     def test_required_validation_runs_on_every_pull_request(self):
         # "Validate Plugin and Marketplace" is a required status check, so a
@@ -639,13 +671,6 @@ class TestCliToolingIntegrity(unittest.TestCase):
             "  workflow_dispatch:", 1)[0]
         self.assertNotIn("paths:", pull_request)
         self.assertIn("name: Validate Plugin and Marketplace", text)
-
-    def test_lockfile_is_not_ignored_by_git(self):
-        result = subprocess.run(
-            ["git", "check-ignore", "-q",
-             ".github/ci/claude-code/package-lock.json"],
-            cwd=ROOT, capture_output=True, check=False)
-        self.assertEqual(result.returncode, 1, "lockfile must be tracked")
 
 
 class TestSharedWordingDoesNotDrift(unittest.TestCase):

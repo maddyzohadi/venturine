@@ -315,7 +315,7 @@ class TestInlineHandoffFormat(unittest.TestCase):
                     self.assertIn(f"`{key}`", text, key)
                 for kind in vh.SOURCE_TYPES:
                     self.assertIn(f"`{kind}`", text, kind)
-                self.assertIn("in lowercase with no prefix", text)
+                self.assertIn("your own name in lowercase and has no namespace", text)
                 self.assertIn("not `venturine:go-to-market`", text)
                 self.assertIn("if counted", text)
                 self.assertIn("each need a `source` with a `title` or "

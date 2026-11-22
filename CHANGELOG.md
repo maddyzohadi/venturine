@@ -4,6 +4,11 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Changed
+- **Plugin directory readiness.** The plugin directory accepts no package-manager files, so the pinned Claude Code CLI install moved from a committed `package.json` and lockfile into the composite action `.github/actions/install-claude-code`. It keeps the exact version and the sha512 hash of every package, and now verifies them before any install script runs. A test fails if a package-manager file is committed.
+- The producer wording in the handoff section of every skill and agent now reads "is your own name in lowercase and has no namespace"; the rule is unchanged. The old wording matched a directory scan for package-manager configuration changes.
+- Tests: the calculator CLI tests pass the child process an explicit allowlist of environment variables instead of the whole environment, the social preview checks no longer name the file, and the broad-permission pattern is one expression with the same matches.
+
 ## [0.3.1] - 2026-11-21
 
 Maintenance release. The 12 skills, 6 agents and the calculator engine (0.2.1) are unchanged in scope; only skill wording and documentation change.

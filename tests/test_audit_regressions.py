@@ -190,11 +190,14 @@ class TestGitignore(unittest.TestCase):
     def test_required_assets_are_not_ignored(self):
         required = [
             ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json",
-            "assets/logo.svg", "assets/social-preview.png",
+            "assets/logo.svg",
             "skills/idea-validator/SKILL.md", "agents/research-lead.md",
             "scripts/calculator.py", "tests/test_calculator.py",
             ".github/workflows/test-calculator.yml", "LICENSE", "NOTICE",
         ]
+        pngs = sorted((ROOT / "assets").glob("*.png"))
+        self.assertTrue(pngs, "assets/ must keep its PNG social preview")
+        required += [p.relative_to(ROOT).as_posix() for p in pngs]
         for rel in required:
             self.assertTrue((ROOT / rel).is_file(), rel)
         try:
