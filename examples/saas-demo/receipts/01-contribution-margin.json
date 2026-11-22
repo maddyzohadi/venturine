@@ -1,0 +1,12 @@
+{
+  "engine": "venturine",
+  "version": "0.2.1",
+  "operation": "contribution-margin",
+  "inputs": [
+    "49",
+    "9"
+  ],
+  "result": "40.00",
+  "status": "calculated",
+  "display_rounding": "Decimal results are displayed in plain notation, rounded half-up to 2 decimal places, or to 4 significant digits when the magnitude is below 1. Calculations use exact decimal arithmetic; whole-unit results are exact integers."
+}
