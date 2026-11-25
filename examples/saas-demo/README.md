@@ -67,10 +67,11 @@ Every command is listed in [receipts/README.md](receipts/README.md). The output 
 - **Every input is invented,** and the growth rates, churn and market ceiling are assumptions. The calculators show the arithmetic is right for them, not that they are true.
 - **No outside facts.** With web search off, the market analysis only has the founder's assumed 1,000 reachable clinics to work from, and its market size is derived from that assumption. A real analysis would add sourced research, which Venturine labels separately.
 - **The forecast does not model churn.** Growth is applied as a gross rate, so the lifetime-value figure and the scenarios rest on different churn assumptions. The report says so itself.
-- **Small slips in the generated report.** On review I found three, left as they were produced:
-  1. The report says the month-24 clinic counts (about 35, 149 and 581) are not in the engine output. They are: the `units` column of each forecast gives 35.23, 149.35 and 581.34.
-  2. It writes those counts as 6 × (1 + g)²⁴. The exponent should be 23, because month 1 is 6 clinics. The values are right.
-  3. It estimates the optimistic case reaches the 1,000-clinic ceiling in month 27 and gives 6 × 1.22²⁶ ≈ 988. The product is about 1,056. Month 27 is still right.
+- **Small slips in the generated report, since corrected.** On review I found three, and commit `0b31087` fixed them in [report.md](report.md) against the receipts. The original wording is in git history (`cbbe7a8`).
+  1. The report said the month-24 clinic counts (about 35, 149 and 581) were not in the engine output. They are: the `units` column of each forecast gives 35.23, 149.35 and 581.34.
+  2. It wrote those counts as 6 × (1 + g)²⁴. The exponent should be 23, because month 1 is 6 clinics.
+  3. It estimated the optimistic case reaches the 1,000-clinic ceiling in month 27 and gave 6 × 1.22²⁶ ≈ 988. The product is about 1,056. Month 27 was still right.
+  The step outputs and [run-log.md](run-log.md) are unedited and still show the original wording. The report stays PRELIMINARY.
 - **Some model-written text has no label,** for example the idea validator's remark that missed appointments are a known problem in clinical settings. It is general knowledge, not a sourced statistic.
 - **The report is longer than a summary** (about 320 lines). The tables above are the short version.
 
