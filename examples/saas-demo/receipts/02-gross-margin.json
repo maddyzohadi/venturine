@@ -1,0 +1,19 @@
+{
+  "engine": "venturine",
+  "version": "0.2.1",
+  "operation": "gross-margin",
+  "inputs": [
+    "49",
+    "9"
+  ],
+  "result": {
+    "gross_profit": "40.00",
+    "gross_margin_percent": "81.63"
+  },
+  "status": "calculated",
+  "unrounded_result": {
+    "gross_profit": "40",
+    "gross_margin_percent": "81.63265306122448979591836735"
+  },
+  "display_rounding": "Decimal results are displayed in plain notation, rounded half-up to 2 decimal places, or to 4 significant digits when the magnitude is below 1. Calculations use exact decimal arithmetic; whole-unit results are exact integers. unrounded_result holds full-precision values for feeding a result into another calculation, because rounding can change a whole-unit answer by one. Report the rounded result, not these digits."
+}

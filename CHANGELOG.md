@@ -4,6 +4,9 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Added
+- **SlotKeeper worked example** in `examples/saas-demo/`: a recorded run on an invented company, with evidence labels, an assumption ledger and nine re-runnable calculator receipts. Every input is hypothetical, no web search was used, and the report is PRELIMINARY because no re-audit followed the review. A short `CLAUDE.md` of project instructions was added too. No skill, agent or calculator changed.
+
 ### Changed
 - **Plugin directory readiness.** The plugin directory accepts no package-manager files, so the pinned Claude Code CLI install moved from a committed `package.json` and lockfile into the composite action `.github/actions/install-claude-code`. It keeps the exact version and the sha512 hash of every package, and now verifies them before any install script runs. A test fails if a package-manager file is committed.
 - The producer wording in the handoff section of every skill and agent now reads "is your own name in lowercase and has no namespace"; the rule is unchanged. The old wording matched a directory scan for package-manager configuration changes.

@@ -1,0 +1,353 @@
+{
+  "engine": "venturine",
+  "version": "0.2.1",
+  "operation": "monthly-forecast",
+  "inputs": {
+    "starting_cash": "40000",
+    "months": "24",
+    "starting_units": "6",
+    "monthly_unit_growth": "0.22",
+    "price": "49",
+    "variable_cost": "9",
+    "fixed_costs": "1200",
+    "acquisition_spend": "900"
+  },
+  "result": {
+    "summary": {
+      "months": 24,
+      "total_revenue": "156628.53",
+      "total_operating_profit": "77460.03",
+      "ending_cash": "117460.03",
+      "minimum_cash": "25530.89",
+      "minimum_cash_month": 11,
+      "cash_out_month": null,
+      "runway_months": null,
+      "break_even_month": 12
+    },
+    "months": [
+      {
+        "month": 1,
+        "units": "6.00",
+        "revenue": "294.00",
+        "variable_costs": "54.00",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "-1860.00",
+        "opening_cash": "40000.00",
+        "ending_cash": "38140.00"
+      },
+      {
+        "month": 2,
+        "units": "7.32",
+        "revenue": "358.68",
+        "variable_costs": "65.88",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "-1807.20",
+        "opening_cash": "38140.00",
+        "ending_cash": "36332.80"
+      },
+      {
+        "month": 3,
+        "units": "8.93",
+        "revenue": "437.59",
+        "variable_costs": "80.37",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "-1742.78",
+        "opening_cash": "36332.80",
+        "ending_cash": "34590.02"
+      },
+      {
+        "month": 4,
+        "units": "10.90",
+        "revenue": "533.86",
+        "variable_costs": "98.06",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "-1664.20",
+        "opening_cash": "34590.02",
+        "ending_cash": "32925.82"
+      },
+      {
+        "month": 5,
+        "units": "13.29",
+        "revenue": "651.31",
+        "variable_costs": "119.63",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "-1568.32",
+        "opening_cash": "32925.82",
+        "ending_cash": "31357.50"
+      },
+      {
+        "month": 6,
+        "units": "16.22",
+        "revenue": "794.60",
+        "variable_costs": "145.95",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "-1451.35",
+        "opening_cash": "31357.50",
+        "ending_cash": "29906.15"
+      },
+      {
+        "month": 7,
+        "units": "19.78",
+        "revenue": "969.41",
+        "variable_costs": "178.05",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "-1308.65",
+        "opening_cash": "29906.15",
+        "ending_cash": "28597.50"
+      },
+      {
+        "month": 8,
+        "units": "24.14",
+        "revenue": "1182.68",
+        "variable_costs": "217.23",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "-1134.55",
+        "opening_cash": "28597.50",
+        "ending_cash": "27462.95"
+      },
+      {
+        "month": 9,
+        "units": "29.45",
+        "revenue": "1442.87",
+        "variable_costs": "265.02",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "-922.15",
+        "opening_cash": "27462.95",
+        "ending_cash": "26540.80"
+      },
+      {
+        "month": 10,
+        "units": "35.92",
+        "revenue": "1760.30",
+        "variable_costs": "323.32",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "-663.02",
+        "opening_cash": "26540.80",
+        "ending_cash": "25877.78"
+      },
+      {
+        "month": 11,
+        "units": "43.83",
+        "revenue": "2147.56",
+        "variable_costs": "394.45",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "-346.89",
+        "opening_cash": "25877.78",
+        "ending_cash": "25530.89"
+      },
+      {
+        "month": 12,
+        "units": "53.47",
+        "revenue": "2620.03",
+        "variable_costs": "481.23",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "38.80",
+        "opening_cash": "25530.89",
+        "ending_cash": "25569.69"
+      },
+      {
+        "month": 13,
+        "units": "65.23",
+        "revenue": "3196.43",
+        "variable_costs": "587.10",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "509.33",
+        "opening_cash": "25569.69",
+        "ending_cash": "26079.02"
+      },
+      {
+        "month": 14,
+        "units": "79.58",
+        "revenue": "3899.65",
+        "variable_costs": "716.26",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "1083.38",
+        "opening_cash": "26079.02",
+        "ending_cash": "27162.40"
+      },
+      {
+        "month": 15,
+        "units": "97.09",
+        "revenue": "4757.57",
+        "variable_costs": "873.84",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "1783.73",
+        "opening_cash": "27162.40",
+        "ending_cash": "28946.13"
+      },
+      {
+        "month": 16,
+        "units": "118.45",
+        "revenue": "5804.23",
+        "variable_costs": "1066.08",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "2638.15",
+        "opening_cash": "28946.13",
+        "ending_cash": "31584.28"
+      },
+      {
+        "month": 17,
+        "units": "144.51",
+        "revenue": "7081.16",
+        "variable_costs": "1300.62",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "3680.54",
+        "opening_cash": "31584.28",
+        "ending_cash": "35264.82"
+      },
+      {
+        "month": 18,
+        "units": "176.31",
+        "revenue": "8639.02",
+        "variable_costs": "1586.76",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "4952.26",
+        "opening_cash": "35264.82",
+        "ending_cash": "40217.08"
+      },
+      {
+        "month": 19,
+        "units": "215.09",
+        "revenue": "10539.60",
+        "variable_costs": "1935.85",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "6503.76",
+        "opening_cash": "40217.08",
+        "ending_cash": "46720.84"
+      },
+      {
+        "month": 20,
+        "units": "262.41",
+        "revenue": "12858.32",
+        "variable_costs": "2361.73",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "8396.58",
+        "opening_cash": "46720.84",
+        "ending_cash": "55117.43"
+      },
+      {
+        "month": 21,
+        "units": "320.15",
+        "revenue": "15687.15",
+        "variable_costs": "2881.31",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "10705.83",
+        "opening_cash": "55117.43",
+        "ending_cash": "65823.26"
+      },
+      {
+        "month": 22,
+        "units": "390.58",
+        "revenue": "19138.32",
+        "variable_costs": "3515.20",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "13523.12",
+        "opening_cash": "65823.26",
+        "ending_cash": "79346.38"
+      },
+      {
+        "month": 23,
+        "units": "476.51",
+        "revenue": "23348.75",
+        "variable_costs": "4288.55",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "16960.20",
+        "opening_cash": "79346.38",
+        "ending_cash": "96306.58"
+      },
+      {
+        "month": 24,
+        "units": "581.34",
+        "revenue": "28485.47",
+        "variable_costs": "5232.03",
+        "acquisition_spend": "900.00",
+        "fixed_costs": "1200.00",
+        "operating_profit": "21153.45",
+        "opening_cash": "96306.58",
+        "ending_cash": "117460.03"
+      }
+    ]
+  },
+  "receipt": {
+    "fingerprint": "sha256:bfaa054e7e0a45f047ceeafbce119823dc50af637a66c1a685f1eb373051f9ee",
+    "operation": "monthly-forecast",
+    "model": "venturine-forecast/v1",
+    "engine_version": "0.2.1",
+    "inputs": [
+      {
+        "name": "starting_cash",
+        "value": "40000"
+      },
+      {
+        "name": "months",
+        "value": "24"
+      },
+      {
+        "name": "starting_units",
+        "value": "6"
+      },
+      {
+        "name": "monthly_unit_growth",
+        "value": "0.22"
+      },
+      {
+        "name": "price",
+        "value": "49"
+      },
+      {
+        "name": "variable_cost",
+        "value": "9"
+      },
+      {
+        "name": "fixed_costs",
+        "value": "1200"
+      },
+      {
+        "name": "acquisition_spend",
+        "value": "900"
+      }
+    ],
+    "assumptions": [
+      "Revenue is received as cash in the month it is earned.",
+      "Units sold in month 1 equal starting_units and then change by monthly_unit_growth each month. Growth is an input, not a result of acquisition spending.",
+      "Price, variable cost per unit, fixed costs and acquisition spending are the same every month.",
+      "acquisition_spend is the total acquisition spending for the month. It is counted once, so fixed_costs must exclude it.",
+      "Net cash flow in a month equals operating profit: revenue minus variable costs, acquisition spending and fixed costs.",
+      "Cash is allowed to go below zero so the size of a funding gap is visible. No new funding is assumed."
+    ],
+    "exclusions": [
+      "taxes",
+      "interest and other financing flows",
+      "capital expenditures",
+      "working capital and payment timing",
+      "seasonality",
+      "refunds and chargebacks",
+      "owner pay, unless it is included in fixed_costs"
+    ]
+  },
+  "display_rounding": "Decimal results are displayed in plain notation, rounded half-up to 2 decimal places, or to 4 significant digits when the magnitude is below 1. Calculations use exact decimal arithmetic; whole-unit results are exact integers. Do not feed displayed forecast values back in as inputs; re-run with the original inputs.",
+  "status": "calculated"
+}

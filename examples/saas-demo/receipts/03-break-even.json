@@ -1,0 +1,15 @@
+{
+  "engine": "venturine",
+  "version": "0.2.1",
+  "operation": "break-even",
+  "inputs": [
+    "2100",
+    "49",
+    "9"
+  ],
+  "result": 53,
+  "status": "calculated",
+  "units_rounding": "Rounded up to whole units.",
+  "acquisition_included": false,
+  "warning": "Operating break-even only. Customer acquisition costs are not included; use break-even-loaded when acquisition spending is relevant."
+}

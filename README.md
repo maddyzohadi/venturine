@@ -113,6 +113,8 @@ Each step ends by saying what it did not verify. Your findings stay in the conve
 
 All examples use hypothetical businesses and illustrative numbers. They are not real results.
 
+For a recorded end-to-end run with evidence labels, an assumption ledger and re-runnable calculator receipts, see the [SlotKeeper worked example](examples/saas-demo/README.md).
+
 **Validate an idea**
 
 ```text
