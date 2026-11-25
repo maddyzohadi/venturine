@@ -148,8 +148,8 @@ scenario-comparison skill output.
 | Break-even month | **Never (<24 mo.)** | **Month 17** | **Month 12** |
 | Minimum cash | $5,623.54 (Mo. 24) | $19,772.19 (Mo. 16) | $25,530.89 (Mo. 11) |
 | Ending cash (Mo. 24) | **$5,623.54** | $33,800.28 | $117,460.03 |
-| Total cash change vs start [DERIVED (manual): ending cash − $40,000 E5] | −$34,376.46 | −$6,199.72 | +$77,460.03 |
-| Month 24 clinics [DERIVED (manual): 6×(1+g)²⁴; not in engine output] | ~35 | ~149 | ~581 |
+| Total operating profit [engine `total_operating_profit` = ending cash − $40,000 E5; no new cash flows] | −$34,376.46 | −$6,199.72 | +$77,460.03 |
+| Month 24 clinics [engine month-24 `units`; equals 6×(1+g)²³] | ~35 | ~149 | ~581 |
 | Receipt fingerprint | sha256:aef4f1d… | sha256:1f2c6d1… | sha256:bfaa054… |
 
 > Full receipt fingerprints: F1 sha256:aef4f1d400108130d4dc2361fd395d9d856c8369afa9b210f13a0b52a6a5eee4 · F2 sha256:1f2c6d14b65f353896d0b4e02765c3b801fed30efc4e026959ab957338d03bdb · F3 sha256:bfaa054e7e0a45f047ceeafbce119823dc50af637a66c1a685f1eb373051f9ee
@@ -163,9 +163,9 @@ would produce a cash-out within the horizon.
 
 **Market ceiling note:** The 1,000-clinic assumption [E12 — ASSUMPTION] caps the
 regional addressable market. The optimistic scenario reaches ~581 clinics at
-Month 24 [DERIVED (manual) — not in engine output]. At 22%/month growth, the
-1,000-clinic ceiling would be reached at approximately Month 27 [DERIVED (manual):
-6 × 1.22²⁶ ≈ 988 clinics — not engine-validated]. The model does not enforce this
+Month 24 [engine output, F3]. At 22%/month growth, the 1,000-clinic ceiling
+would be passed in Month 27 [DERIVED (manual): 6 × 1.22²⁶ ≈ 1,056 clinics, versus
+≈ 865 in Month 26; not engine-validated]. The model does not enforce this
 ceiling; the final months of F3 are overstated if saturation occurs.
 
 ---
@@ -214,11 +214,14 @@ which requires a validated churn figure [E11 — ASSUMPTION].
 The report-editor (REVISION REQUIRED, 2026-11-21) identified three additional
 material issues, now corrected:
 
-- **Total cash change figures** relabelled from "total operating profit" to
-  DERIVED (manual): ending cash minus starting cash ($40,000 E5). These are not
-  engine-validated and are not accrual profit figures.
-- **Month 24 clinic counts** (~35, ~149, ~581) relabelled DERIVED (manual):
-  computed from 6 × (1+g)²⁴; not present in engine output.
+- **Total operating profit figures** (−$34,376.46, −$6,199.72, +$77,460.03) are
+  the engine's `total_operating_profit` for F1–F3. They equal ending cash minus
+  the $40,000 starting cash (E5) because the model has no other cash flows. They
+  are cash-basis, not accrual profit. An earlier version of this note called them
+  manual figures; the receipts show the engine reports them.
+- **Month 24 clinic counts** (~35, ~149, ~581) are the engine's month-24 `units`
+  (6 × (1+g)²³), not manual figures. The Month 27 ceiling figure was corrected
+  from ≈ 988 to ≈ 1,056 clinics (6 × 1.22²⁶); it remains a manual figure.
 - **Status** downgraded from AUDITED to PRELIMINARY: the report-editor found
   REVISION REQUIRED; no second auditor pass has confirmed the corrections.
 
